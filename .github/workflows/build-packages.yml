@@ -38,7 +38,7 @@ jobs:
       - name: Upload to release
         uses: svenstaro/upload-release-action@v2
         with:
-          file: ./output/${{ github.event.inputs.package}}.pkg.tar.zst
+          file: ./output/*.pkg.tar.zst
           tag: artifact
           overwrite: true
           file_glob: true
