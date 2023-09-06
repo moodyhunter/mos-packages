@@ -17,7 +17,7 @@ usage() {
 
 package=$1
 package_full="$package$ext"
-mkdir -p downloads
+mkdir -p $shell_dir/downloads/
 curl -f -L -o $shell_dir/downloads/$package_full "$base_url/$package_full" || failed=1
 curl_exit_code=$?
 
