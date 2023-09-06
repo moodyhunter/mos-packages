@@ -1,0 +1,44 @@
+name: Build or Bootstrap Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: "Package to build"
+        required: true
+      full_bootstrap:
+        type: boolean
+        description: "Perform a full bootstrap"
+        required: true
+        default: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    name: ${{ fromJSON('["Bootstrap", "Build"]')[github.event.inputs.full_bootstrap == 'false'] }} ${{ github.event.inputs.package }}
+    steps:
+      - name: Update Package Cache
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm git base-devel jq
+          sed -i '/E_ROOT/d' /usr/bin/makepkg
+
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+          repository: "moodyhunter/mos-packages"
+
+      - name: Install Package(s)
+        run: |
+          script=./${{ fromJSON('["bootstrap", "build"]')[github.event.inputs.full_bootstrap == 'false'] }}-package.sh
+          echo "Invoking $script ${{ github.event.inputs.package }}"
+          $script ${{ github.event.inputs.package }}
+
+      - name: Upload to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file: ./output/${{ github.event.inputs.package}}.pkg.tar.zst
+          tag: artifact
+          overwrite: true
+          file_glob: true
