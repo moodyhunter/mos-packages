@@ -26,7 +26,7 @@ if [ -f "$package_dir/pkg.json" ]; then
     pkg_deps=$(echo $pkg_json | jq -r '.deps[]')
 
     for dep in $pkg_deps; do
-        echo "-> Building dependency '$dep'..."
+        echo "-> Found dependency '$dep' required by '$package'"
         $shell_dir/bootstrap-package.sh $dep -i -f
     done
 fi
