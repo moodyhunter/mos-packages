@@ -62,3 +62,15 @@ echo "  -> Lunching makepkg with args: '${extra_makepkg_args[@]}'"
 echo "::group::Invoke 'makepkg ${extra_makepkg_args[@]}' for '$package'"
 makepkg "${extra_makepkg_args[@]}"
 echo "::endgroup::"
+
+package_output=$(makepkg --packagelist)
+package_output_num=$(echo "$package_output" | wc -l)
+if [ "$package_output_num" -gt 1 ]; then
+    echo "  -> Multiple packages found. This is not supported yet."
+    exit 1
+fi
+
+mkdir -p $shell_dir/output/
+cp -v $package_output $shell_dir/output/$package.pkg.tar.zst
+
+echo "==> Done building '$package'."
