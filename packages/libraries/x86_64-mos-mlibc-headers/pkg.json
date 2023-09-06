@@ -1,0 +1,6 @@
+{
+    "$schema": "../../../pkg.schema.json",
+    "deps": [
+        "mos-api-headers-x86_64-git"
+    ]
+}
