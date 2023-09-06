@@ -13,9 +13,8 @@ depends=(zlib libelf)
 provides=($pkgname)
 groups=($_target-toolchain)
 options=(!emptydirs !docs)
-source=(https://mirrors.kernel.org/gnu/binutils/binutils-$pkgver.tar.xz{,.sig})
-sha256sums=('ae9a5789e23459e59606e6714723f2d3ffc31c03174191ef0d015bdf06007450'
-    'SKIP')
+source=(https://mirrors.kernel.org/gnu/binutils/binutils-$pkgver.tar.xz)
+sha256sums=('ae9a5789e23459e59606e6714723f2d3ffc31c03174191ef0d015bdf06007450')
 
 prepare() {
     cd $_basedir
