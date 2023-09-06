@@ -28,6 +28,7 @@ prepare_deps() {
 
     for dep in $pkg_deps; do
         echo "-> Dependency '$dep' required by '$package'"
+        pacman -Q $dep >/dev/null 2>&1 && continue
         $shell_dir/fetch-package.sh $dep
         $sudo pacman -U --noconfirm $shell_dir/downloads/$dep.pkg.tar.zst
     done
