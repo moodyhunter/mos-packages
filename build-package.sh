@@ -59,6 +59,6 @@ fi
 
 echo "  -> Lunching makepkg with args: '${extra_makepkg_args[@]}'"
 
-echo "::group::Invoke 'makepkg ${extra_makepkg_args[@]}'"
+echo "::group::Invoke 'makepkg ${extra_makepkg_args[@]}' for '$package'"
 makepkg "${extra_makepkg_args[@]}"
 echo "::endgroup::"
