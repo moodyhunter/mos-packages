@@ -1,4 +1,5 @@
 ./output
+./downloads
 pkg/
 src/
 *.xz

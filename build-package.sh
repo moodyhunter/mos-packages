@@ -2,7 +2,10 @@
 
 set -e
 
-shell_dir=$(cd "$(dirname "$0")" && pwd) # absolutized and normalized
+sudo="sudo"
+if [ "$(whoami)" = "root" ]; then
+    sudo=""
+fi
 
 usage() {
     pattern=") #"
@@ -11,6 +14,39 @@ usage() {
     echo "Options:"
     grep " .$pattern" $0 | sed -e "s/$pattern/:/g"
 }
+
+prepare_deps() {
+    echo "==> Preparing dependencies..."
+
+    if [ ! -f $package_dir/pkg.json ]; then
+        echo "  -> No dependencies found."
+        return
+    fi
+
+    pkg_json=$(cat $package_dir/pkg.json)
+    pkg_deps=$(echo $pkg_json | jq -r '.deps[]')
+
+    for dep in $pkg_deps; do
+        echo "-> Dependency '$dep' required by '$package'"
+        $shell_dir/fetch-package.sh $dep
+        $sudo pacman -U --noconfirm $shell_dir/downloads/$dep.pkg.tar.zst
+    done
+}
+
+finalize() {
+    echo "==> Finalizing..."
+    package_output=$(makepkg --packagelist)
+    package_output_num=$(echo "$package_output" | wc -l)
+    if [ "$package_output_num" -gt 1 ]; then
+        echo "  -> Multiple packages found. This is not supported yet."
+        exit 1
+    fi
+
+    mkdir -p $shell_dir/output/
+    cp -v $package_output $shell_dir/output/$package.pkg.tar.zst
+}
+
+shell_dir=$(cd "$(dirname "$0")" && pwd) # absolutized and normalized
 
 [ $# -eq 0 ] && usage && exit
 
@@ -49,28 +85,13 @@ done
 
 extra_makepkg_args+=("$@")
 
-echo "==> Building '$package'..."
-pushd $package_dir >/dev/null 2>&1
+cd $package_dir
 
-if [ -f "build.sh" ]; then
-    echo "  -> Lunching custom build script..."
-    exec ./build.sh
-fi
-
-echo "  -> Lunching makepkg with args: '${extra_makepkg_args[@]}'"
+prepare_deps
 
 echo "::group::Invoke 'makepkg ${extra_makepkg_args[@]}' for '$package'"
 makepkg "${extra_makepkg_args[@]}"
 echo "::endgroup::"
 
-package_output=$(makepkg --packagelist)
-package_output_num=$(echo "$package_output" | wc -l)
-if [ "$package_output_num" -gt 1 ]; then
-    echo "  -> Multiple packages found. This is not supported yet."
-    exit 1
-fi
-
-mkdir -p $shell_dir/output/
-cp -v $package_output $shell_dir/output/$package.pkg.tar.zst
-
+finalize
 echo "==> Done building '$package'."
