@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 set -e
-# set -x
 
 shell_dir=$(cd "$(dirname "$0")" && pwd) # absolutized and normalized
 
@@ -19,6 +18,7 @@ cd $shell_dir
 
 package=$1
 package_dir=$(find $shell_dir/packages/*/ -type d -name "$package")
+shift
 
 if [ -z "$package_dir" ]; then
     echo "Package '$package' not found."
@@ -27,7 +27,6 @@ fi
 
 extra_makepkg_args=(-s -c --noconfirm)
 
-OPTIND=2
 while getopts "idp:h" arg; do
     case $arg in
     i) # Install package after build.
@@ -45,21 +44,18 @@ while getopts "idp:h" arg; do
         extra_makepkg_args+=(-p $OPTARG)
         echo "Will use '$OPTARG' as PKGBUILD file."
         ;;
-    *)
-        echo "Invalid/incomplete argument '$OPTARG'"
-        exit 1
-        ;;
     esac
 done
 
-echo "Building '$package'..."
+extra_makepkg_args+=("$@")
 
+echo "==> Building '$package'..."
 pushd $package_dir >/dev/null 2>&1
 
 if [ -f "build.sh" ]; then
-    echo "Lunching custom build script..."
+    echo "  -> Lunching custom build script..."
     exec ./build.sh
 fi
 
-echo "Lunching makepkg with args: '${extra_makepkg_args[@]}'"
+echo "  -> Lunching makepkg with args: '${extra_makepkg_args[@]}'"
 makepkg "${extra_makepkg_args[@]}"

@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "title": "MOS Package Descriptor",
+    "type": "object",
+    "properties": {
+        "deps": {
+            "type": "array",
+            "description": "The packages that are required to build this package",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}
