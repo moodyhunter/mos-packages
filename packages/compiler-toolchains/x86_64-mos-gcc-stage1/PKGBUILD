@@ -64,7 +64,7 @@ package() {
     # Install stage 2
     make install-gcc DESTDIR=$pkgdir
     make install-target-libgcc DESTDIR=$pkgdir
-    Remove conflicting files
+    # Remove conflicting files
     rm -rf $pkgdir/usr/share/info
     rm -rf $pkgdir/usr/share/man/man7
 }
