@@ -31,6 +31,7 @@ jobs:
         with:
           submodules: true
           repository: "moodyhunter/mos-packages"
+          ref: main
 
       - name: Install Package(s)
         run: |
