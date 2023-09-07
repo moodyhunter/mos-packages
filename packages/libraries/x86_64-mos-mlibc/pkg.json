@@ -7,5 +7,6 @@
         "- Finally change deps=[x86_64-mos-gcc] to build the final mlibc."
     ],
     "deps": [
+        "x86_64-mos-gcc"
     ]
 }
