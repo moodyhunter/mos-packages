@@ -23,7 +23,7 @@ _do_get_deps() {
     fi
 
     _package_json=$(cat $_package_dir/pkg.json)
-    _package_deps=$(echo $_package_json | jq -r ".$_dep_type[]")
+    _package_deps=$(echo $_package_json | jq -r ".$_dep_type[]" 2>/dev/null)
     echo $_package_deps
 }
 
