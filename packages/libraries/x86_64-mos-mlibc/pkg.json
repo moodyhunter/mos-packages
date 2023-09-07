@@ -1,11 +1,11 @@
 {
     "$schema": "../../../pkg.schema.json",
     "note": [ "When bootstraping:",
-        "- Firstly use deps=[x86_64-mos-gcc-stage1] to build mlibc",
-        "- Then build the full gcc with this package",
+        "- Firstly use deps=[x86_64-mos-gcc-stage1] to build mlibc,",
+        "- Remove the deps,",
+        "- Then build the full gcc with this package,",
         "- Finally change deps=[x86_64-mos-gcc] to build the final mlibc."
     ],
     "deps": [
-        "x86_64-mos-gcc-stage1"
     ]
 }
