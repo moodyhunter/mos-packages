@@ -14,7 +14,7 @@ _do_get_deps() {
     _dep_type=$2
     _package_dir=$(find $shell_dir/packages/*/ -type d -name "$_package")
     if [ -z "$_package_dir" ]; then
-        echo "Package not found: $_package"
+        echo "Package not found: $_package" >&2
         exit 1
     fi
 
@@ -23,7 +23,7 @@ _do_get_deps() {
     fi
 
     _package_json=$(cat $_package_dir/pkg.json)
-    _package_deps=$(echo $_package_json | jq -r ".$_dep_type[]" 2>/dev/null)
+    _package_deps=$(echo $_package_json | jq -r ".$_dep_type[]" 2>/dev/null || true)
     echo $_package_deps
 }
 

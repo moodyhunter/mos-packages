@@ -7,6 +7,9 @@
         "- Finally change deps=[x86_64-mos-gcc] to build the final mlibc."
     ],
     "deps": [
+        "mos-api-headers-x86_64-git"
+    ],
+    "makedeps": [
         "x86_64-mos-gcc"
     ]
 }

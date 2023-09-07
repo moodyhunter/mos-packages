@@ -15,7 +15,7 @@ usage() {
 prepare_deps() {
     echo "==> Preparing dependencies..."
 
-    for dep in $(get_makedeps $package); do
+    for dep in $(get_deps $package); do
         echo "-> Dependency '$dep' required by '$package'"
         fetch_package $dep
     done
