@@ -5,6 +5,13 @@
     "properties": {
         "deps": {
             "type": "array",
+            "description": "The packages that are required to use this package",
+            "items": {
+                "type": "string"
+            }
+        },
+        "makedeps": {
+            "type": "array",
             "description": "The packages that are required to build this package",
             "items": {
                 "type": "string"

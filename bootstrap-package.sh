@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 set -e
-
 shell_dir=$(cd "$(dirname "$0")" && pwd) # absolutized and normalized
+. $shell_dir/scripts/common.sh
 
 usage() {
     echo "Usage:"
@@ -21,15 +21,10 @@ if [ -z "$package_dir" ]; then
 fi
 
 # first read the package's pkg.json, if it exists
-if [ -f "$package_dir/pkg.json" ]; then
-    pkg_json=$(cat $package_dir/pkg.json)
-    pkg_deps=$(echo $pkg_json | jq -r '.deps[]')
-
-    for dep in $pkg_deps; do
-        echo "-> Found dependency '$dep' required by '$package'"
-        $shell_dir/bootstrap-package.sh $dep -i -f
-    done
-fi
+for dep in $(get_deps $package); do
+    echo "-> Found dependency '$dep' required by '$package'"
+    $shell_dir/bootstrap-package.sh $dep -i -f
+done
 
 # then build the package, with any extra arguments
 echo "-> Building package '$package'"

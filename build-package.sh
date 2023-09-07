@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 
 set -e
-
-sudo="sudo"
-if [ "$(whoami)" = "root" ]; then
-    sudo=""
-fi
+shell_dir=$(cd "$(dirname "$0")" && pwd) # absolutized and normalized
+. $shell_dir/scripts/common.sh
 
 usage() {
     pattern=") #"
@@ -18,19 +15,14 @@ usage() {
 prepare_deps() {
     echo "==> Preparing dependencies..."
 
-    if [ ! -f $package_dir/pkg.json ]; then
-        echo "  -> No dependencies found."
-        return
-    fi
-
-    pkg_json=$(cat $package_dir/pkg.json)
-    pkg_deps=$(echo $pkg_json | jq -r '.deps[]')
-
-    for dep in $pkg_deps; do
+    for dep in $(get_makedeps $package); do
         echo "-> Dependency '$dep' required by '$package'"
-        pacman -Q $dep >/dev/null 2>&1 && continue
-        $shell_dir/fetch-package.sh $dep
-        $sudo pacman -U --noconfirm $shell_dir/downloads/$dep.pkg.tar.zst
+        fetch_package $dep
+    done
+
+    for makedep in $(get_makedeps $package); do
+        echo "-> Make dependency '$makedep' required by '$package'"
+        fetch_package $makedep
     done
 }
 

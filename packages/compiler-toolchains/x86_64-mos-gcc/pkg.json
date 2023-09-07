@@ -1,7 +1,9 @@
 {
     "$schema": "../../../pkg.schema.json",
     "deps": [
-        "x86_64-mos-binutils",
+        "x86_64-mos-binutils"
+    ],
+    "makedeps": [
         "x86_64-mos-mlibc"
     ]
 }
