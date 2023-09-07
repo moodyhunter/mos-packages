@@ -13,8 +13,10 @@ provides=($_pkgbase)
 conflicts=($_pkgbase)
 groups=($_target-toolchain)
 makedepends=(git gcc meson mos-api-headers-${_mos_arch} $_target-gcc)
-source=("mlibc::git+https://github.com/moodyhunter/mlibc-mos.git")
-sha512sums=('SKIP')
+source=("mlibc::git+https://github.com/moodyhunter/mlibc-mos.git"
+    "meson-fix-stdio.patch")
+sha512sums=('SKIP'
+            '493a4143fe0d1472fae8826a7f3d70dd234404e9890108089758ba733ab216cd33cbf080caf8616678bb3711b1a00111c6456d969c9072b55f9bc95452f4fea2')
 options+=(staticlibs)
 
 pkgver() {
@@ -23,6 +25,9 @@ pkgver() {
 }
 
 prepare() {
+    echo "Applying hack to meson's clike.py"
+    patch /usr/lib/python3.11/site-packages/mesonbuild/compilers/mixins/clike.py meson-fix-stdio.patch
+
     cd mlibc
     meson setup build \
         --prefix=$pkgdir/usr/$_target \
