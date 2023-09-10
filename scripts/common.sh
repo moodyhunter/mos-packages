@@ -9,6 +9,12 @@ if [ "$(whoami)" = "root" ]; then
     sudo=""
 fi
 
+# check if jq is installed
+if test ! $(which jq 2>/dev/null); then
+    echo "jq is required to parse json" >&2
+    exit 1
+fi
+
 _do_get_deps() {
     _package=$1
     _dep_type=$2

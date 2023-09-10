@@ -22,6 +22,10 @@ usage() {
 
 package=$1
 package_dir=$(find $shell_dir/packages/*/ -type d -name "$package")
+if [ -z "$package_dir" ]; then
+    echo "Package not found: $package" >&2
+    exit 1
+fi
 shift
 
 prepare_deps
