@@ -45,7 +45,7 @@ jobs:
           git config user.name "$(git log -n 1 --pretty=format:%an)"
           git config user.email "$(git log -n 1 --pretty=format:%ae)"
           git add **/PKGBUILD
-          git commit -m "[Update] PKGBUILD for ${{ github.event.inputs.package }}"
+          git commit -m "[Update] PKGBUILD for ${{ github.event.inputs.package }}" || true
           git push
 
       - name: Upload to release
