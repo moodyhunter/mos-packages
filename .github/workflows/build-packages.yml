@@ -39,6 +39,15 @@ jobs:
           echo "Invoking $script ${{ github.event.inputs.package }}"
           $script ${{ github.event.inputs.package }}
 
+      - name: Commit PKGBUILD changes
+        run: |
+          git config --global --add safe.directory /__w/mos-packages/mos-packages
+          git config user.name "$(git log -n 1 --pretty=format:%an)"
+          git config user.email "$(git log -n 1 --pretty=format:%ae)"
+          git add **/PKGBUILD
+          git commit -m "[Update] PKGBUILD for ${{ github.event.inputs.package }}"
+          git push
+
       - name: Upload to release
         uses: svenstaro/upload-release-action@v2
         with:

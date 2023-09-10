@@ -2,6 +2,9 @@
 ./downloads
 pkg/
 src/
+
+# subdirectories of packages
+packages/*/*/*
 *.xz
 *.sig
 *.asc
