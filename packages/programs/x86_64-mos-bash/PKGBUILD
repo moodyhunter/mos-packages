@@ -69,10 +69,6 @@ build() {
   make
 }
 
-check() {
-  make -C $_pkgname-$_basever check
-}
-
 package() {
   make -C $_pkgname-$_basever DESTDIR="$pkgdir" install
   ln -s bash "$pkgdir/usr/$_target/bin/sh"
@@ -81,6 +77,7 @@ package() {
   # system-wide configuration files
   install -Dm644 system.bashrc "$pkgdir/usr/$_target/etc/bash.bashrc"
   install -Dm644 system.bash_logout "$pkgdir/usr/$_target/etc/bash.bash_logout"
+  rm "$pkgdir"/usr/$_target/share/info/dir || true
 }
 
 sha256sums=('a139c166df7ff4471c5e0733051642ee5556c1cc8a4a78f145583c5c81ab32fb'
