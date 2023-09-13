@@ -56,5 +56,5 @@ build() {
 
 package() {
   make -C $_pkgname-$_basever DESTDIR="$pkgdir" install
-  install -Dm644 inputrc "$pkgdir"/etc/inputrc
+  install -Dm644 inputrc "$pkgdir"/usr/$_target/etc/inputrc
 }
