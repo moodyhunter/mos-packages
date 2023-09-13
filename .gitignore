@@ -4,7 +4,7 @@ pkg/
 src/
 
 # subdirectories of packages
-packages/*/*/*
+packages/*/*/*/
 *.xz
 *.sig
 *.asc
