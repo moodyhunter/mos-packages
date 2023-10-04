@@ -18,14 +18,15 @@ fi
 _do_get_deps() {
     _package=$1
     _dep_type=$2
-    _package_dir=$(find $shell_dir/packages/*/ -type d -name "$_package")
+    _package_dir=$(find $shell_dir/packages/*/ -maxdepth 1 -type d -name "$_package")
     if [ -z "$_package_dir" ]; then
         echo "Package not found: $_package" >&2
         exit 1
     fi
 
-    if [ ! -f $_package_dir/pkg.json ]; then
-        return
+    if [ ! -f "$_package_dir/pkg.json" ]; then
+        echo "Package json not found: $_package_dir/pkg.json" >&2
+        exit 1
     fi
 
     _package_json=$(cat $_package_dir/pkg.json)
