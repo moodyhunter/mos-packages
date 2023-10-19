@@ -21,7 +21,7 @@ usage() {
 [ $# -eq 0 ] && usage && exit
 
 package=$1
-package_dir=$(find $shell_dir/packages/*/ -type d -name "$package")
+package_dir=$(find_package_dir "$package")
 if [ -z "$package_dir" ]; then
     echo "Package not found: $package" >&2
     exit 1

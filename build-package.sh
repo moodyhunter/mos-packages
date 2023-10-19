@@ -46,7 +46,7 @@ shell_dir=$(cd "$(dirname "$0")" && pwd) # absolutized and normalized
 cd $shell_dir
 
 package=$1
-package_dir=$(find $shell_dir/packages/*/ -type d -name "$package")
+package_dir=$(find_package_dir "$package")
 shift
 
 if [ -z "$package_dir" ]; then
@@ -56,14 +56,16 @@ fi
 
 extra_makepkg_args=(-s -c --noconfirm)
 
-while getopts "idp:h" arg; do
+while getopts "idj:p:h" arg; do
     case $arg in
     i) # Install package after build.
         echo "Will install '$package' after build."
         extra_makepkg_args+=(-i)
+        shift
         ;;
     d) # Debug this script.
         set -x
+        shift
         ;;
     h) # Display this help.
         usage
@@ -72,13 +74,19 @@ while getopts "idp:h" arg; do
     p) # Use specified PKGBUILD file.
         extra_makepkg_args+=(-p $OPTARG)
         echo "Will use '$OPTARG' as PKGBUILD file."
+        shift
+        ;;
+    j) # Use specified number of jobs.
+        MAKEFLAGS="-j$OPTARG"
+        echo "Will use '$OPTARG' as number of jobs."
+        shift
         ;;
     esac
 done
 
 extra_makepkg_args+=("$@")
 
-cd $package_dir
+cd "$package_dir"
 
 prepare_deps
 

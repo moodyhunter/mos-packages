@@ -15,10 +15,20 @@ if test ! $(which jq 2>/dev/null); then
     exit 1
 fi
 
+find_package_dir() {
+    _package=$1
+    _package_dir=$(find $shell_dir/packages/*/ -maxdepth 1 -type d -name "$_package")
+    if [ -z "$_package_dir" ]; then
+        echo "Package not found: $_package" >&2
+        exit 1
+    fi
+    echo $_package_dir
+}
+
 _do_get_deps() {
     _package=$1
     _dep_type=$2
-    _package_dir=$(find $shell_dir/packages/*/ -maxdepth 1 -type d -name "$_package")
+    _package_dir=$(find_package_dir "$_package")
     if [ -z "$_package_dir" ]; then
         echo "Package not found: $_package" >&2
         exit 1
