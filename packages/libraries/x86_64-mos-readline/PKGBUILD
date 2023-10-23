@@ -18,7 +18,7 @@ license=('GPL')
 backup=("usr/$_target/etc/inputrc")
 depends=($_target-mlibc $_target-ncurses 'libncursesw.so')
 provides=($_target-gcc 'libhistory.so' 'libreadline.so')
-options=('!emptydirs')
+options=('!emptydirs' !strip debug)
 source=(https://ftp.gnu.org/gnu/readline/readline-$_basever.tar.gz
         inputrc)
 sha256sums=('3feb7171f16a84ee82ca18a36d7b9be109a52c04f492a053331d7d1095007c35'

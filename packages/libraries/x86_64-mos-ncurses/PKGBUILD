@@ -18,6 +18,7 @@ makedepends=(autoconf-archive $_target-gcc)
 optdepends=('bash: for ncursesw6-config')
 provides=(libncurses++w.so libformw.so libmenuw.so libpanelw.so libncursesw.so)
 replaces=(alacritty-terminfo)
+options+=(!strip debug)
 source=(
   https://invisible-mirror.net/archives/$_pkgname/current/$_pkgname-${pkgver/_/-}.tgz
   $_pkgname-6.3-libs.patch
