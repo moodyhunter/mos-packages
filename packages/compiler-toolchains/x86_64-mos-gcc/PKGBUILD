@@ -18,7 +18,7 @@ source=(
     "$_target-gcc.patch"
 )
 sha256sums=('e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da'
-            'a644ea57a112eb35e4c953ff29a4124713bf245fa794f7db5dd8fa5a33bdbe5e')
+            '331844c1fb1c72e9bb8c92a9355b195e83b397d3260b7367fbcf490a028f4708')
 
 prepare() {
     # Patch gcc
@@ -46,7 +46,6 @@ build() {
         --disable-werror \
         --disable-nls \
         --disable-build-format-warnings \
-        --enable-languages=c,c++ \
         --enable-__cxa_atexit \
         --enable-linker-build-id \
         --enable-plugin \
