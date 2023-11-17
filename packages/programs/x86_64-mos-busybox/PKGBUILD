@@ -1,0 +1,42 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Maintainer: Eli Schwartz <eschwartz@archlinux.org>
+# Contributor: Jens Pranaitis <jens@jenux.homelinux.org>
+
+_prefix=/usr/x86_64-mos
+pkgname=x86_64-mos-busybox
+pkgver=1.36.1
+pkgrel=1
+pkgdesc="Utilities for rescue and embedded systems, ported to MOS"
+arch=("any")
+url="https://www.busybox.net"
+license=('GPL')
+makedepends=("x86_64-mos-ncurses" "x86_64-mos-gcc" "x86_64-mos-mlibc")
+source=("$url/downloads/busybox-$pkgver.tar.bz2"
+        "0001-port-to-MOS.patch"
+        'config')
+sha256sums=('b8cc24c9574d809e7279c3be349795c5d5ceb6fdf19ca709f80cde50e47de314'
+            'bb71276ec70c689271857057ed47956142a502d450adbb21ccc8e3b1f09c9a36'
+            'a4f9d91adf9989901733597a2e7fcdaeb548297f332d1f218420f978c53e78df')
+b2sums=('e515825cb3ab1c520e16b9c2512e9fc72947366a72a0466bff59b507fdffbc78fc9d16b44a26116175fc7a429d849ad944b1bc379d36c6d3a0eb20969997336e'
+        '6d0d76eab96005ad6ffc96be42e6a125b73312abe9277c25cdeea51a993b56b0f3f19eb7895e946773b73dcaf32016d5c24dfd65cfcb9c0ccf4ee23fa0324811'
+        'cd67085ad8000eda2303846669057d701e51ff0e3ec96a81d297ed423f97cabeec26413f0cf4613fd327121b9e0f11cc5fcb3d2fcc3ac3fea0ece5493f6b8f13')
+
+prepare() {
+  cd "$srcdir/busybox-$pkgver"
+  patch -Np1 < $srcdir/0001-port-to-MOS.patch
+}
+
+build() {
+  cd "$srcdir/busybox-$pkgver"
+
+  cp "$srcdir"/config .config
+  # reproducible build
+  export KCONFIG_NOTIMESTAMP=1
+  make CROSS_COMPILE=x86_64-mos-
+}
+
+package() {
+  cd "$srcdir/busybox-$pkgver"
+
+  install -Dm0755 busybox "$pkgdir"/$_prefix/bin/busybox
+}
