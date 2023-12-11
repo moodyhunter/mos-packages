@@ -1,0 +1,12 @@
+{
+    "$schema": "../../../pkg.schema.json",
+    "deps": [
+        "x86_64-mos-mlibc",
+        "x86_64-mos-zlib",
+        "x86_64-mos-abseil-cpp"
+    ],
+    "makedeps": [
+        "x86_64-mos-gcc",
+        "x86_64-mos-gtest"
+    ]
+}

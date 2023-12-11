@@ -1,0 +1,50 @@
+# Maintainer: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+# Contributor: Aleksandar Trifunović <akstrfn at gmail dot com>
+
+_target=x86_64-mos
+
+_pkgname=abseil-cpp
+pkgname=$_target-abseil-cpp
+pkgver=20230802.1
+pkgrel=1
+pkgdesc="Collection of C++ library code designed to augment the C++ standard library"
+arch=('x86_64')
+url='https://abseil.io'
+license=('Apache')
+depends=("$_target-mlibc")
+makedepends=('cmake' "$_target-gcc" "mos-api-headers-x86_64-git")
+source=("https://github.com/abseil/abseil-cpp/archive/$pkgver/$_pkgname-$pkgver.tar.gz"
+         scoped-mock-log.patch
+         mos-abseil-cpp.patch
+         $_target.cmake)
+sha256sums=('987ce98f02eefbaf930d6e38ab16aa05737234d7afbab2d5c4ea7adbe50c28ed'
+            'a6cbc612a2b96fcbd52d081e03e8581107ceb4827edb19d96510a31c568e1396'
+            'e709de097bf1c76b9925372e2f81c680a71b16bf3e43d205e7ac091ef55dabba'
+            '0a6d81d25bad72be8e43641d06f941d1e1c8e9b7d6edf314b4cede5e71126215')
+
+prepare() {
+  cd "$srcdir/$_pkgname-$pkgver"
+  # patch -p1 -i ../scoped-mock-log.patch # Install target needed by protobuf
+  patch -p1 -i ../mos-abseil-cpp.patch
+}
+
+build() {
+  cd "$srcdir/$_pkgname-$pkgver"
+  cmake -Bbuild \
+    -DCMAKE_TOOLCHAIN_FILE=../$_target.cmake \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DCMAKE_CXX_FLAGS="${CXXFLAGS} -DNDEBUG" \
+    -DCMAKE_INSTALL_PREFIX=/usr/$_target \
+    -DCMAKE_CXX_STANDARD=17 \
+    -DBUILD_SHARED_LIBS=ON \
+    -DABSL_BUILD_TEST_HELPERS=ON \
+    -DABSL_USE_EXTERNAL_GOOGLETEST=ON \
+    -DABSL_FIND_GOOGLETEST=ON
+  cd build
+  cmake --build .
+}
+
+package() {
+  cd "$srcdir/$_pkgname-$pkgver/build"
+  DESTDIR="$pkgdir" cmake --install .
+}
