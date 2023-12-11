@@ -54,6 +54,6 @@ get_makedeps() {
 
 fetch_package() {
     _package=$1
-    pacman -Q $_package >/dev/null 2>&1 && return # skip if already installed
-    $shell_dir/fetch-package.sh $_package
+    pacman -Q $_package >/dev/null 2>&1 && echo " -> installed" && return
+    echo " -> fetching..." && $shell_dir/fetch-package.sh $_package
 }

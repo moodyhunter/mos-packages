@@ -16,12 +16,12 @@ prepare_deps() {
     echo "==> Preparing dependencies..."
 
     for dep in $(get_deps $package); do
-        echo "-> Dependency '$dep' required by '$package'"
+        echo -n "-> Dependency '$dep' required by '$package'"
         fetch_package $dep
     done
 
     for makedep in $(get_makedeps $package); do
-        echo "-> Make dependency '$makedep' required by '$package'"
+        echo -n "-> Make dependency '$makedep' required by '$package'"
         fetch_package $makedep
     done
 }
