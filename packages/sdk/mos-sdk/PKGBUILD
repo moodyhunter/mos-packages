@@ -1,0 +1,18 @@
+pkgname=mos-sdk
+pkgver=1
+pkgrel=1
+pkgdesc="Various compiling toolchains for the MOS operating system"
+arch=('any')
+license=(GPL)
+depends=()
+makedepends=()
+source=(Platform-MOS.cmake)
+sha256sums=('0bfa915cfacd62c398c6b554f4c71de754f46ac628d688997b2753395f01076a')
+
+build() {
+    true
+}
+
+package() {
+    install -Dm644 Platform-MOS.cmake "$pkgdir/usr/share/cmake/Modules/Platform/MOS.cmake"
+}
