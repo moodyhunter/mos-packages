@@ -33,7 +33,7 @@ prepare_deps
 package_full="$package$ext"
 mkdir -p $shell_dir/downloads/
 echo "==> Downloading package '$package_full'..."
-curl -sf -L -o $shell_dir/downloads/$package_full "$base_url/$package_full" || failed=1
+curl --progress-bar -f -L -o $shell_dir/downloads/$package_full "$base_url/$package_full" || failed=1
 
 if [ "$failed" ]; then
     echo "Package not found: $package"
