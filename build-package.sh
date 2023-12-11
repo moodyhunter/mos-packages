@@ -28,15 +28,19 @@ prepare_deps() {
 
 finalize() {
     echo "==> Finalizing..."
+    mkdir -p $shell_dir/output/
     package_output=$(makepkg --packagelist)
     package_output_num=$(echo "$package_output" | wc -l)
     if [ "$package_output_num" -gt 1 ]; then
-        echo "  -> Multiple packages found. This is not supported yet."
-        exit 1
+        for pkg in $package_output; do
+            # strip the version number
+            _filename=$(basename $pkg | sed -e 's/-[0-9].*//g')
+            _tail=$(basename $pkg | sed -e 's/.*-//g')
+            mv -v $pkg $shell_dir/output/$_filename-$_tail
+        done
+    else
+        cp -v $package_output $shell_dir/output/$package.pkg.tar.zst
     fi
-
-    mkdir -p $shell_dir/output/
-    cp -v $package_output $shell_dir/output/$package.pkg.tar.zst
 }
 
 shell_dir=$(cd "$(dirname "$0")" && pwd) # absolutized and normalized
