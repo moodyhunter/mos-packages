@@ -17,11 +17,14 @@ options=(
   debug
 )
 source=(https://github.com/madler/zlib/releases/download/v$pkgver/$pkgbase-$pkgver.tar.xz
-        zlib-1.3-CVE-2023-45853.patch::https://github.com/madler/zlib/commit/73331a6a0481067628f065ffe87bb1d8f787d10c.patch)
+        zlib-1.3-CVE-2023-45853.patch::https://github.com/madler/zlib/commit/73331a6a0481067628f065ffe87bb1d8f787d10c.patch
+        zlib-soname.patch)
 sha512sums=('3868ac4da5842dd36c9dad794930675b9082ce15cbd099ddb79c0f6bd20a24aa8f33a123f378f26fe0ae02d91f31f2994dccaac565cedeaffed7b315e6ded2a2'
-            '77de58fec1875b72ba47e2c21ff5cafd3251924baf047b4eb520fdecc63e9414c34d9224dae86982161d7e4f867120c6a7f4c5165adf6b090205513865e82e09')
+            '77de58fec1875b72ba47e2c21ff5cafd3251924baf047b4eb520fdecc63e9414c34d9224dae86982161d7e4f867120c6a7f4c5165adf6b090205513865e82e09'
+            '5274b9acae5d6f10b2ae75b28030232adc8b936562ba7f20d8f71705943b7330c16decb36d7f95ce15deb7deee4e0606695bd2505983a1847931c2f2ee6e1d1d')
 b2sums=('5fe0f32339267348a313f23a21e9588bdb180b7415be303c85f5f169444d019e5f176ef7322f6e64297c360acc2a6041c50e2f66d1860e5c392d8970990f176a'
-        'bba55b9074c6ac863b5dc65c3a087a2f5b9190e69106d9b2009ec3bd89e20a940091cb10464b3014c46c3c2e5248d578169164dfb9096b8ebcea08de4feee442')
+        'bba55b9074c6ac863b5dc65c3a087a2f5b9190e69106d9b2009ec3bd89e20a940091cb10464b3014c46c3c2e5248d578169164dfb9096b8ebcea08de4feee442'
+        'c3a20aa32bfaf1326f11c907b7b0d87a0f7b6d15f1677f9e64b02f53178677faeccfad19643eac9aa6bcd5f1bf12b004c0a92d234c99667e153452a979038e5f')
 validpgpkeys=('5ED46A6721D365587791E2AA783FCD8E58BCAFBA')  # Mark Adler <madler@alumni.caltech.edu>
 
 prepare() {
@@ -30,6 +33,9 @@ prepare() {
   cp Makefile Makefile.orig
   cp ../README.contrib readme.txt
   autoreconf -fiv
+  cd $srcdir/$pkgbase-$pkgver/
+  pwd
+  patch -s -Np1 < "${srcdir}/zlib-soname.patch"
 }
 
 build() {
