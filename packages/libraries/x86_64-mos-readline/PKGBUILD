@@ -17,7 +17,8 @@ url='https://tiswww.case.edu/php/chet/readline/rltop.html'
 license=('GPL')
 backup=("usr/$_target/etc/inputrc")
 depends=($_target-mlibc $_target-ncurses 'libncursesw.so')
-provides=($_target-gcc 'libhistory.so' 'libreadline.so')
+makedepends=($_target-gcc)
+provides=('libhistory.so' 'libreadline.so')
 options=('!emptydirs' !strip debug)
 source=(https://ftp.gnu.org/gnu/readline/readline-$_basever.tar.gz
         inputrc)
