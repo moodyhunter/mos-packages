@@ -5,6 +5,7 @@
         "x86_64-mos-bash"
     ],
     "makedeps": [
-        "x86_64-mos-gcc"
+        "x86_64-mos-gcc",
+        "mos-sdk"
     ]
 }

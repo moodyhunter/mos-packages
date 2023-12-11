@@ -5,6 +5,7 @@
     ],
     "makedeps": [
         "x86_64-mos-gcc",
-        "mos-api-headers-x86_64-git"
+        "mos-api-headers-x86_64-git",
+        "mos-sdk"
     ]
 }

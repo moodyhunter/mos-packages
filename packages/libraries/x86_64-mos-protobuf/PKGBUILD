@@ -30,6 +30,7 @@ makedepends=(
   'python-setuptools'
   'python-wheel'
   "protobuf" # host protobuf
+  'mos-sdk' # for cmake MOS system specific files
 )
 source=(https://github.com/protocolbuffers/protobuf/archive/v$pkgver/$_pkgname-$pkgver.tar.gz
         https://github.com/protocolbuffers/protobuf/commit/2e62ef1e.patch

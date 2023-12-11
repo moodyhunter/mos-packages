@@ -7,6 +7,7 @@
     ],
     "makedeps": [
         "x86_64-mos-gcc",
-        "x86_64-mos-gtest"
+        "x86_64-mos-gtest",
+        "mos-sdk"
     ]
 }

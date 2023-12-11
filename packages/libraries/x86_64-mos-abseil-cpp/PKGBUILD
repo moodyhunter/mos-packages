@@ -12,7 +12,7 @@ arch=('x86_64')
 url='https://abseil.io'
 license=('Apache')
 depends=("$_target-mlibc")
-makedepends=('cmake' "$_target-gcc" "mos-api-headers-x86_64-git")
+makedepends=('cmake' "$_target-gcc" "mos-api-headers-x86_64-git" 'mos-sdk')
 source=("https://github.com/abseil/abseil-cpp/archive/$pkgver/$_pkgname-$pkgver.tar.gz"
          scoped-mock-log.patch
          mos-abseil-cpp.patch
