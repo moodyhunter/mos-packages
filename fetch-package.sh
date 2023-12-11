@@ -8,7 +8,7 @@ prepare_deps() {
     echo "==> Preparing dependencies for '$package'..."
 
     for dep in $(get_deps $package); do
-        echo "-> Dependency '$dep' required by '$package'"
+        echo -n "-> Dependency '$dep' required by '$package'"
         fetch_package $dep
     done
 }
