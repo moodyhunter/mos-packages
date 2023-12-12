@@ -1,9 +1,11 @@
+# Maintainer: Moody <mooodyhunter@outlook.com>
+
 _target=x86_64-mos
 _mos_arch=x86_64
 _pkgbase=$_target-mlibc
 
 pkgname=$_pkgbase-git
-pkgver=3497.d0d2ee3d
+pkgver=3486.c87b5e98
 pkgrel=1
 pkgdesc="mlibc for the $_target toolchain"
 arch=('any')
@@ -28,6 +30,7 @@ prepare() {
         --prefix=$pkgdir/usr/$_target \
         --cross-file=ci/mos-x86_64.cross-file \
         -Ddefault_library=both
+    sed -i 's/__STDC_HOSTED__/0/g' ./subprojects/frigg/include/frg/logging.hpp
 }
 
 build() {
