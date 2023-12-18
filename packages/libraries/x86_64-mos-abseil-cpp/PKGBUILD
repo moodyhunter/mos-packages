@@ -2,6 +2,7 @@
 # Contributor: Aleksandar Trifunović <akstrfn at gmail dot com>
 
 _target=x86_64-mos
+_prefix=/opt/$_target
 
 _pkgname=abseil-cpp
 pkgname=$_target-abseil-cpp
@@ -20,7 +21,7 @@ source=("https://github.com/abseil/abseil-cpp/archive/$pkgver/$_pkgname-$pkgver.
 sha256sums=('987ce98f02eefbaf930d6e38ab16aa05737234d7afbab2d5c4ea7adbe50c28ed'
             'a6cbc612a2b96fcbd52d081e03e8581107ceb4827edb19d96510a31c568e1396'
             'e709de097bf1c76b9925372e2f81c680a71b16bf3e43d205e7ac091ef55dabba'
-            '0a6d81d25bad72be8e43641d06f941d1e1c8e9b7d6edf314b4cede5e71126215')
+            'd4ef294a1c197789d7e4affa9a61e6d8827a9060c8bfe3065d70ac9f35aa4af0')
 
 prepare() {
   cd "$srcdir/$_pkgname-$pkgver"
@@ -34,7 +35,7 @@ build() {
     -DCMAKE_TOOLCHAIN_FILE=../$_target.cmake \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS} -DNDEBUG" \
-    -DCMAKE_INSTALL_PREFIX=/usr/$_target \
+    -DCMAKE_INSTALL_PREFIX=$_prefix \
     -DCMAKE_CXX_STANDARD=17 \
     -DBUILD_SHARED_LIBS=ON \
     -DABSL_BUILD_TEST_HELPERS=ON \

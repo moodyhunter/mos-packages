@@ -2,20 +2,20 @@
 
 _arch=x86_64
 _target=x86_64-mos
-_sysroot=/usr/${_target}
+_sysroot=/opt/${_target}
 _pkgbase=mos-api-headers-${_arch}
 
 pkgname=${_pkgbase}-git
-pkgver=1579.4a0d77aa
+pkgver=1606.a5c4f3105f31
 pkgrel=1
 pkgdesc="MOS API headers for ${_arch}"
 arch=('any')
 url="https://github.com/moodyhunter/MOS"
 license=('GPL3')
-provides=(${_pkgbase})
-conflicts=(${_pkgbase})
+provides=($_pkgbase)
+conflicts=($_pkgbase)
 groups=(mos-toolchain)
-makedepends=(git cmake python)
+makedepends=(git cmake python mos-sdk)
 source=("mos::git+https://github.com/moodyhunter/MOS.git")
 sha512sums=('SKIP')
 
@@ -34,8 +34,8 @@ build() {
     mkdir -p build && cd build
     cmake .. \
         -DMOS_ARCH=${_arch} \
-        -D__MOS_HAS_NO_COMPILER=ON \
-        -DCMAKE_INSTALL_PREFIX=${pkgdir}/usr/$_target
+        -D__MOS_HAS_NO_COMPILER=OFF \
+        -DCMAKE_INSTALL_PREFIX=${pkgdir}$_sysroot
 
     cmake --build . --target mos_syscall_decl
 }

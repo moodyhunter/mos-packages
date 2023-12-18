@@ -4,6 +4,7 @@
 # Contributor: judd <jvinet@zeroflux.org>
 
 _target=x86_64-mos
+_prefix=/opt/$_target
 
 _pkgname=readline
 pkgname=$_target-readline
@@ -15,7 +16,7 @@ pkgdesc='GNU readline library'
 arch=('x86_64')
 url='https://tiswww.case.edu/php/chet/readline/rltop.html'
 license=('GPL')
-backup=("usr/$_target/etc/inputrc")
+backup=("opt/$_target/etc/inputrc")
 depends=($_target-mlibc $_target-ncurses 'libncursesw.so')
 makedepends=($_target-gcc)
 provides=('libhistory.so' 'libreadline.so')
@@ -51,12 +52,12 @@ build() {
   # build with -fPIC for x86_64 (FS#15634)
   [[ $CARCH == "x86_64" ]] && CFLAGS="$CFLAGS -fPIC"
 
-  ./configure --prefix=/usr/$_target --host=$_target
+  ./configure --prefix=$_prefix --host=$_target
   make SHLIB_LIBS=-lncurses
 }
 
 package() {
   make -C $_pkgname-$_basever DESTDIR="$pkgdir" install
-  install -Dm644 inputrc "$pkgdir"/usr/$_target/etc/inputrc
-  rm "$pkgdir"/usr/$_target/share/info/dir || true
+  install -Dm644 inputrc "$pkgdir"$_prefix/etc/inputrc
+  rm "$pkgdir"$_prefix/share/info/dir || true
 }

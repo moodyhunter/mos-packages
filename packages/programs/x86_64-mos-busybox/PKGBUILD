@@ -2,7 +2,9 @@
 # Maintainer: Eli Schwartz <eschwartz@archlinux.org>
 # Contributor: Jens Pranaitis <jens@jenux.homelinux.org>
 
-_prefix=/usr/x86_64-mos
+_target=x86_64-mos
+_prefix=/opt/$_target
+
 pkgname=x86_64-mos-busybox
 pkgver=1.36.1
 pkgrel=1
@@ -10,7 +12,7 @@ pkgdesc="Utilities for rescue and embedded systems, ported to MOS"
 arch=("any")
 url="https://www.busybox.net"
 license=('GPL')
-makedepends=("x86_64-mos-ncurses" "x86_64-mos-gcc" "x86_64-mos-mlibc")
+makedepends=("$_target-ncurses" "$_target-gcc" "$_target-mlibc")
 source=("$url/downloads/busybox-$pkgver.tar.bz2"
         "0001-port-to-MOS.patch"
         'config')
@@ -32,7 +34,7 @@ build() {
   cp "$srcdir"/config .config
   # reproducible build
   export KCONFIG_NOTIMESTAMP=1
-  make CROSS_COMPILE=x86_64-mos-
+  make CROSS_COMPILE=$_target-
 }
 
 package() {

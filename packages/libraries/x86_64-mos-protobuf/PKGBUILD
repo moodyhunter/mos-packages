@@ -8,6 +8,8 @@
 # Contributor: Daniel J Griffiths <ghost1227@archlinux.us>
 
 _target=x86_64-mos
+_prefix=/opt/$_target
+
 pkgbase='protobuf'
 _pkgname='protobuf'
 pkgname="$_target-protobuf"
@@ -40,7 +42,7 @@ source=(https://github.com/protocolbuffers/protobuf/archive/v$pkgver/$_pkgname-$
 sha512sums=('d2fad2188118ced2cd951bdb472d72cc9e9b2158c88eeca652c76332a884b5b5b4b58628f7777272fa693140753823584ea9c7924f1655b1d5a363f59bdf7a4c'
             'f42d9bd702abe2c7fc4dcb07d050376287ac60b0b7e2fde0d7a9e9df24a620866bee5fd7de2e3b216095376de47e1fe7443cca74c9a9e85c1a0bc42e8973a280'
             'f0813a415cff5639e4709400f15b0c5565294e7907ae164e620b76258734c643115d8e5170bf0e4aee264c347fb7e01ac4be60d19be2a91c0ce9c561dad8c8e9'
-            '4fc7c3e85d18ce4482f74e1405990815b3c5e4e5e5f704f2acde646b261f162602a504c3d80c741440b48364f8e1364d65a0fe88c59c5046df2375e82a47cb97'
+            '52808686bfce03fc61102a41e1d3ae48f85f909a46dbfbb9061631f72fb2f953f6adf27339ba2815731d320d9edca0046cc288ac2b915201c9f84ab21d60af6f'
             'a297e74ee4f807b3fad7da7d0de6dd9647963521be66cd2a2370343f5bd191cbb38759157ac0cdb161a5893a30a10520a5098e88a292c800859af33db5cf7a41')
 
 prepare() {
@@ -55,7 +57,7 @@ build() {
     -B build
     -D CMAKE_TOOLCHAIN_FILE="$srcdir"/$_target.cmake
     -D CMAKE_BUILD_TYPE=None
-    -D CMAKE_INSTALL_PREFIX=/usr/$_target
+    -D CMAKE_INSTALL_PREFIX=$_prefix
     -D protobuf_BUILD_SHARED_LIBS=ON
     -D protobuf_USE_EXTERNAL_GTEST=ON
     -D protobuf_ABSL_PROVIDER=package
@@ -79,9 +81,9 @@ package() {
   DESTDIR="$pkgdir" cmake --install build
 
   cd $pkgbase-$pkgver
-  install -vDm 644 LICENSE -t "$pkgdir/usr/$_target/share/licenses/$pkgname"
+  install -vDm 644 LICENSE -t "$pkgdir$_prefix/share/licenses/$pkgname"
   install -vDm 644 editors/protobuf-mode.el \
-    -t "$pkgdir/usr/$_target/share/emacs/site-lisp/"
+    -t "$pkgdir$_prefix/share/emacs/site-lisp/"
   install -vDm 644 editors/proto.vim \
-    -t "${pkgdir}/usr/$_target/share/vim/vimfiles/syntax"
+    -t "${pkgdir}$_prefix/share/vim/vimfiles/syntax"
 }

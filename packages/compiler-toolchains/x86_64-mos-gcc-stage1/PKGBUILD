@@ -1,5 +1,5 @@
 _target=x86_64-mos
-_sysroot=/usr/$_target
+_sysroot=/opt/$_target
 
 pkgname=$_target-gcc-stage1
 pkgver=13.2.0

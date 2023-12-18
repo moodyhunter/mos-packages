@@ -7,6 +7,7 @@
 # Contributor: acxz <akashpatel2008 at yahoo dot com>
 
 _target=x86_64-mos
+_prefix=/opt/$_target
 _pkgname=gtest
 pkgname=$_target-gtest
 pkgver=1.14.0
@@ -24,7 +25,7 @@ source=(${_srcname}.tar.gz::https://github.com/google/googletest/archive/v${pkgv
         $_target.cmake)
 sha512sums=('765c326ccc1b87a01027385e69238266e356361cd4ee3e18e3c9d137a5d11fa5d657c164d02dd1be8fe693c8e10f2b580588dbfa57d27f070e2750f50d3e662c'
             '8d426a1759a9931db5f8431d83d163fd1bc986be27f85c24222d69a18224451c5a745a29f783e55c83af1882bd0bbc2504f91668c38d6622810bb65888897799'
-            '4fc7c3e85d18ce4482f74e1405990815b3c5e4e5e5f704f2acde646b261f162602a504c3d80c741440b48364f8e1364d65a0fe88c59c5046df2375e82a47cb97')
+            '52808686bfce03fc61102a41e1d3ae48f85f909a46dbfbb9061631f72fb2f953f6adf27339ba2815731d320d9edca0046cc288ac2b915201c9f84ab21d60af6f')
 
 prepare() {
   cd ${_srcname}
@@ -35,7 +36,7 @@ prepare() {
 build() {
  cmake -H${_srcname} -Bbuild \
     -DCMAKE_TOOLCHAIN_FILE=../${_target}.cmake \
-    -DCMAKE_INSTALL_PREFIX=/usr/${_target} \
+    -DCMAKE_INSTALL_PREFIX=$_prefix \
     -DBUILD_SHARED_LIBS=ON \
     -Dgtest_build_tests=ON
   cmake --build build
@@ -48,23 +49,23 @@ package() {
   find "${pkgdir}" -name '*.pump' -printf 'Removing %P\n' -delete
 
   cd ${_srcname}
-  install -Dm 644 LICENSE -t "${pkgdir}/usr/${_target}/share/licenses/${_pkgname}"
-  install -Dm 644 README.md CONTRIBUTORS -t "${pkgdir}/usr/${_target}/share/doc/${_pkgname}"
+  install -Dm 644 LICENSE -t "${pkgdir}/$_prefix/share/licenses/${_pkgname}"
+  install -Dm 644 README.md CONTRIBUTORS -t "${pkgdir}/$_prefix/share/doc/${_pkgname}"
 
   cd googletest
-  install -Dm 644 cmake/* -t "${pkgdir}/usr/${_target}/src/googletest/cmake"
-  install -Dm 644 src/* -t "${pkgdir}/usr/${_target}/src/googletest/src"
-  install -Dm 644 CMakeLists.txt -t "${pkgdir}/usr/${_target}/src/googletest"
+  install -Dm 644 cmake/* -t "${pkgdir}/$_prefix/src/googletest/cmake"
+  install -Dm 644 src/* -t "${pkgdir}/$_prefix/src/googletest/src"
+  install -Dm 644 CMakeLists.txt -t "${pkgdir}/$_prefix/src/googletest"
 
   cd ../googlemock
-  install -Dm 644 cmake/* -t "${pkgdir}/usr/${_target}/src/gmock/cmake"
-  install -Dm 644 src/* -t "${pkgdir}/usr/${_target}/src/gmock/src"
-  install -Dm 644 CMakeLists.txt -t "${pkgdir}/usr/${_target}/src/gmock"
+  install -Dm 644 cmake/* -t "${pkgdir}/$_prefix/src/gmock/cmake"
+  install -Dm 644 src/* -t "${pkgdir}/$_prefix/src/gmock/src"
+  install -Dm 644 CMakeLists.txt -t "${pkgdir}/$_prefix/src/gmock"
 
-  sed -i 's|src/||' "${pkgdir}/usr/${_target}/src/gmock/src/gmock-all.cc"
+  sed -i 's|src/||' "${pkgdir}/$_prefix/src/gmock/src/gmock-all.cc"
 
-  python -m compileall -d /usr/${_target}/share/gmock "${pkgdir}/usr/${_target}/share/gmock"
-  python -O -m compileall -d /usr/${_target}/share/gmock "${pkgdir}/usr/${_target}/share/gmock"
+  python -m compileall -d /$_prefix/share/gmock "${pkgdir}/$_prefix/share/gmock"
+  python -O -m compileall -d /$_prefix/share/gmock "${pkgdir}/$_prefix/share/gmock"
 }
 
 # vim: ts=2 sw=2 et:

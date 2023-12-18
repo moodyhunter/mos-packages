@@ -3,6 +3,8 @@
 # Contributor: Pierre Schmitz <pierre@archlinux.de>
 
 _target=x86_64-mos
+_prefix=/opt/$_target
+
 pkgbase=zlib
 pkgname=($_target-zlib $_target-minizip)
 epoch=1
@@ -42,11 +44,11 @@ build() {
   cd $pkgbase-$pkgver
 
   CFLAGS+=" -ffat-lto-objects"
-  CHOST=$_target ./configure --prefix=/usr/$_target
+  CHOST=$_target ./configure --prefix=/$_prefix
   make
 
   cd contrib/minizip
-  CHOST=$_target ./configure --prefix=/usr/$_target --enable-static=no
+  CHOST=$_target ./configure --prefix=/$_prefix --enable-static=no
   make
 }
 
@@ -55,7 +57,7 @@ package_x86_64-mos-zlib() {
   provides=(libz.so)
 
   make install DESTDIR="$pkgdir" -C $pkgbase-$pkgver
-  install -D -m644 $pkgbase-$pkgver/LICENSE -t "$pkgdir/usr/$_target/share/licenses/zlib/"
+  install -D -m644 $pkgbase-$pkgver/LICENSE -t "$pkgdir/$_prefix/share/licenses/zlib/"
 }
 
 package_x86_64-mos-minizip() {
@@ -66,10 +68,10 @@ package_x86_64-mos-minizip() {
   )
 
   make install DESTDIR="$pkgdir" -C $pkgbase-$pkgver/contrib/minizip
-  install -D -m644 $pkgbase-$pkgver/LICENSE -t "$pkgdir/usr/$_target/share/licenses/minizip/"
+  install -D -m644 $pkgbase-$pkgver/LICENSE -t "$pkgdir/$_prefix/share/licenses/minizip/"
 
   # https://github.com/madler/zlib/pull/229
-  rm "$pkgdir/usr/$_target/include/minizip/crypt.h"
+  rm "$pkgdir/$_prefix/include/minizip/crypt.h"
 }
 
 # vim: ts=2 sw=2 et:

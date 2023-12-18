@@ -1,5 +1,5 @@
 _target=x86_64-mos
-_sysroot=/usr/$_target
+_sysroot=/opt/$_target
 
 pkgname=$_target-gcc
 pkgver=13.2.0
@@ -56,19 +56,11 @@ build() {
         --enable-shared \
         --enable-threads=posix
 
-    # Build stage 1
-    make #gcc all-target-libgcc
+    make
 }
 
 package() {
     cd "$_target-$pkgname-$pkgver-build"
-
-    # # Install stage 2
-    # make install-gcc DESTDIR=$pkgdir
-    # make install-target-libgcc DESTDIR=$pkgdir
-    # Remove conflicting files
-    # rm -rf $pkgdir/usr/share/info
-    # rm -rf $pkgdir/usr/share/man/man7
 
     # https://github.com/archlinux/svntogit-community/blob/packages/aarch64-linux-gnu-gcc/trunk/PKGBUILD
     make DESTDIR="$pkgdir" install-gcc install-target-{libgcc,libstdc++-v3,libgomp,libgfortran,libquadmath,libatomic}
@@ -86,4 +78,6 @@ package() {
     rm -r "$pkgdir"/usr/share/man/man7
     rm -r "$pkgdir"/usr/share/info
     rm -r "$pkgdir"/usr/share/gcc-$pkgver
+
+    install -Dm 755 ${pkgdir}/usr/x86_64-mos/lib/libstdc++.so ${pkgdir}/${_sysroot}/lib/libstdc++.so
 }

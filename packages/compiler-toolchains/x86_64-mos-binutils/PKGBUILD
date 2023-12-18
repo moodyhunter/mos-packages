@@ -14,7 +14,7 @@ provides=($pkgname)
 groups=($_target-toolchain)
 options=(!emptydirs !docs)
 source=($_target-binutils.patch
-    https://mirrors.kernel.org/gnu/binutils/binutils-$pkgver.tar.xz)
+    https://ftp.gnu.org/gnu/binutils/binutils-$pkgver.tar.xz)
 sha256sums=('fe8f3af6536affe59585ea3dab26e392541a1bf10f126131f8512a8fcdc52964'
             'ae9a5789e23459e59606e6714723f2d3ffc31c03174191ef0d015bdf06007450')
 
@@ -31,7 +31,8 @@ build() {
     $srcdir/$_basedir/configure \
         --target=$_target \
         --prefix="/usr/" \
-        --with-sysroot="/usr/$_target" \
+        --with-sysroot="/opt/$_target" \
+        --with-build-sysroot=/opt/$_target \
         --disable-nls \
         --with-pic \
         --enable-deterministic-archives \

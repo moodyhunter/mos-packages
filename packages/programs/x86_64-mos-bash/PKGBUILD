@@ -5,6 +5,7 @@
 # Contributor: Aaron Griffin <aaron@archlinux.org>
 
 _target=x86_64-mos
+_prefix=/opt/$_target
 _pkgname=bash
 
 pkgname=$_target-bash
@@ -17,8 +18,8 @@ arch=(x86_64)
 license=(GPL)
 url='https://www.gnu.org/software/bash/bash.html'
 backup=(etc/bash.bash{rc,_logout} etc/skel/.bash{rc,_profile,_logout})
-depends=(x86_64-mos-readline x86_64-mos-mlibc x86_64-mos-ncurses)
-makedepends=(x86_64-mos-gcc)
+depends=($_target-readline $_target-mlibc $_target-ncurses)
+makedepends=($_target-gcc)
 options+=(!strip debug)
 optdepends=('bash-completion: for tab completion')
 provides=('sh')
@@ -53,15 +54,15 @@ prepare() {
 build() {
   cd $_pkgname-$_basever
 
-  _bashconfig=(-DDEFAULT_PATH_VALUE=\'\"/usr/local/sbin:/usr/local/bin:/usr/bin\"\'
-               -DSTANDARD_UTILS_PATH=\'\"/usr/bin\"\'
+  _bashconfig=(-DDEFAULT_PATH_VALUE=\'\"/initrd/programs:/initrd/bin:/bin\"\'
+               -DSTANDARD_UTILS_PATH=\'\"/bin\"\'
                -DSYS_BASHRC=\'\"/etc/bash.bashrc\"\'
                -DSYS_BASH_LOGOUT=\'\"/etc/bash.bash_logout\"\'
                -DNON_INTERACTIVE_LOGIN_SHELLS)
   export CFLAGS="${CFLAGS} ${_bashconfig[@]}"
 
   ./configure \
-    --prefix=/usr/$_target \
+    --prefix=$_prefix \
     --with-curses \
     --host=$_target \
     --enable-readline \
@@ -72,13 +73,13 @@ build() {
 
 package() {
   make -C $_pkgname-$_basever DESTDIR="$pkgdir" install
-  ln -s bash "$pkgdir/usr/$_target/bin/sh"
-  ln -s bash "$pkgdir/usr/$_target/bin/rbash"
+  ln -s bash "$pkgdir$_prefix/bin/sh"
+  ln -s bash "$pkgdir$_prefix/bin/rbash"
 
   # system-wide configuration files
-  install -Dm644 system.bashrc "$pkgdir/usr/$_target/etc/bash.bashrc"
-  install -Dm644 system.bash_logout "$pkgdir/usr/$_target/etc/bash.bash_logout"
-  rm "$pkgdir"/usr/$_target/share/info/dir || true
+  install -Dm644 system.bashrc "$pkgdir$_prefix/etc/bash.bashrc"
+  install -Dm644 system.bash_logout "$pkgdir$_prefix/etc/bash.bash_logout"
+  rm "$pkgdir"$_prefix/share/info/dir || true
 }
 
 sha256sums=('a139c166df7ff4471c5e0733051642ee5556c1cc8a4a78f145583c5c81ab32fb'
