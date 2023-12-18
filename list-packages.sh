@@ -7,24 +7,24 @@ shell_dir=$(cd "$(dirname "$0")" && pwd) # absolutized and normalized
 usage() {
     pattern=") #"
     echo "Usage:"
-    echo "  $0 <package> [options]"
+    echo "  $0 [options] [package]"
     echo "Options:"
     grep " .$pattern" $0 | sed -e "s/$pattern/:/g"
 }
 
-while getopts "vhp:" arg; do
+while getopts "vhq" arg; do
     case $arg in
     v) # Verbose
         verbose=1
-        echo "Will use verbose mode."
         shift
         ;;
     h) # Help
         usage
         exit 0
         ;;
-    p) # show specific package info
-        package=$OPTARG
+    q) # quiet
+        verbose=0
+        quiet=1
         shift
         ;;
     *)
@@ -34,11 +34,21 @@ while getopts "vhp:" arg; do
     esac
 done
 
+package_count=$#
+if [ $package_count -gt 1 ]; then
+    echo "Too many arguments"
+    usage
+    exit 1
+fi
+
+package=$@
+
 if [ -z "$package" ]; then
     categories=$(find $shell_dir/packages/*/ -maxdepth 0 -type d -exec basename {} \;)
 
     for category in $categories; do
-        echo "==> $category"
+        [ "$quiet" != "1" ] && echo "==> $category"
+
         packages=$(find $shell_dir/packages/$category/*/ -maxdepth 0 -type d -exec basename {} \;)
 
         if [ -z "$packages" ]; then
@@ -47,7 +57,11 @@ if [ -z "$package" ]; then
         fi
 
         for package in $packages; do
-            echo "- $package"
+            if [ "$quiet" != "1" ]; then
+                echo "- $package"
+            else
+                echo "$package"
+            fi
 
             if [ "$verbose" == "1" ]; then
                 deps=$(get_deps $package)
