@@ -1,0 +1,10 @@
+{
+    "$schema": "../../../pkg.schema.json",
+    "deps": [
+        "x86_64-mos-mlibc",
+        "x86_64-mos-mpfr"
+    ],
+    "makedeps": [
+        "x86_64-mos-gcc"
+    ]
+}

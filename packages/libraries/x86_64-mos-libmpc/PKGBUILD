@@ -1,0 +1,37 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Allan McRae <allan@archlinux.org>
+
+_target=x86_64-mos
+_pkgname=libmpc
+pkgname=$_target-$_pkgname
+pkgver=1.3.1
+pkgrel=1
+pkgdesc='Library for the arithmetic of complex numbers with arbitrarily high precision'
+arch=(x86_64)
+url='http://www.multiprecision.org/'
+license=(LGPL)
+depends=($_target-mpfr)
+source=(https://ftp.gnu.org/gnu/mpc/mpc-${pkgver/_/-}.tar.gz
+        config.sub.patch)
+sha256sums=('ab642492f5cf882b74aa0cb730cd410a81edcdbec895183ce930e706c1c759b8'
+            '8d95c348a019abad1323a5bfa6801584f3ead0b795853add7142166e134c9302')
+validpgpkeys=('AD17A21EF8AED8F1CC02DBD9F7D5C9BF765C61E3')  # Andreas Enge
+
+prepare() {
+  cd mpc-$pkgver
+  patch -Np1 -s < ../config.sub.patch
+}
+
+build() {
+  cd mpc-$pkgver
+  ./configure --prefix=/opt/${_target} \
+    --host=$_target \
+    --target=$_target
+  make
+}
+
+package() {
+  cd mpc-$pkgver
+  make DESTDIR="$pkgdir" install
+  rm -rf "$pkgdir"/opt/$_target/share/info/
+}
