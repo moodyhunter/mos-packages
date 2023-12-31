@@ -18,7 +18,7 @@ source=(
     "$_target-gcc.patch"
 )
 sha256sums=('e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da'
-            '331844c1fb1c72e9bb8c92a9355b195e83b397d3260b7367fbcf490a028f4708')
+    '94e2394f85605b981103d9c003c705bd41af2a3692010f09c510bf7956c84dbc')
 
 prepare() {
     # Patch gcc
@@ -79,5 +79,7 @@ package() {
     rm -r "$pkgdir"/usr/share/info
     rm -r "$pkgdir"/usr/share/gcc-$pkgver
 
-    install -Dm 755 ${pkgdir}/usr/x86_64-mos/lib/libstdc++.so ${pkgdir}/${_sysroot}/lib/libstdc++.so
+    for so in libgcc_s.so libgcc_s.so.1 libstdc++.so; do
+        install -Dm 755 ${pkgdir}/usr/x86_64-mos/lib/$so ${pkgdir}/${_sysroot}/lib/$so
+    done
 }
