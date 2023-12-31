@@ -18,7 +18,7 @@ source=(
     "$_target-gcc.patch"
 )
 sha256sums=('e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da'
-    '94e2394f85605b981103d9c003c705bd41af2a3692010f09c510bf7956c84dbc')
+            '94e2394f85605b981103d9c003c705bd41af2a3692010f09c510bf7956c84dbc')
 
 prepare() {
     # Patch gcc
@@ -50,6 +50,8 @@ build() {
         --enable-linker-build-id \
         --enable-plugin \
         --enable-lto \
+        --with-gnu-ld \
+        --with-gnu-as \
         --with-sysroot="${_sysroot}" \
         --with-native-system-header-dir="/include" \
         --with-build-sysroot="${_sysroot}" \
