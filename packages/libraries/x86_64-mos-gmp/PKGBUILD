@@ -1,0 +1,44 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Allan McRae <allan@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+_target=x86_64-mos
+pkgname=$_target-gmp
+_pkgname=gmp
+pkgver=6.3.0
+pkgrel=1
+pkgdesc='A free library for arbitrary precision arithmetic'
+arch=(x86_64)
+url='https://gmplib.org/'
+depends=(sh $_target-mlibc)
+makedepends=($_target-gcc)
+license=(LGPL3 GPL)
+source=(https://gmplib.org/download/gmp/gmp-$pkgver.tar.lz
+        config.sub.patch)
+sha256sums=('be5c908a7a836c3a9bd9d62aa58563c5e9e7fef94c43a7f42dbc35bb6d02733c'
+            '11b7289b3968fa28d5c030ff54fb6dcfa95648ced631fe9049a04fe2148955e1')
+validpgpkeys=('343C2FF0FBEE5EC2EDBEF399F3599FF828C67298')   # Niels Möller
+
+prepare() {
+  cd $_pkgname-$pkgver
+  patch -Np1 -s < ../config.sub.patch
+}
+
+build() {
+  cd $_pkgname-$pkgver
+
+  ./configure \
+    --build=${CHOST} \
+    --host=$_target \
+    --target=$_target \
+    --prefix=/opt/${_target} \
+    --enable-cxx \
+    --enable-fat \
+    --enable-shared
+  make
+}
+
+package() {
+  cd $_pkgname-$pkgver
+  make DESTDIR="${pkgdir}" install
+}
