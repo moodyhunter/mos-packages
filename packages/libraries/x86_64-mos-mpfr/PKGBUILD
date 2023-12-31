@@ -1,0 +1,59 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Allan McRae <allan@archlinux.org>
+# Contributor: damir <damir@archlinux.org>
+_target=x86_64-mos
+_pkgname=mpfr
+pkgname=$_target-mpfr
+_pkgver=4.2.1
+_patchver=0
+if (( _patchver == 0 )); then
+  pkgver=$_pkgver
+else
+  pkgver=$_pkgver.p$_patchver
+fi
+pkgrel=1
+pkgdesc='Multiple-precision floating-point library'
+arch=(x86_64)
+url='https://www.mpfr.org/'
+license=(
+  GPL-3.0-or-later
+  LGPL-3.0-or-later
+)
+depends=(
+  glibc
+  $_target-gmp
+)
+provides=(libmpfr.so)
+# NOTE: download potentially existing patches from upstream:
+# `curl patches.diff -o https://www.mpfr.org/mpfr-${_pkgver}/allpatches`
+source=(https://ftp.gnu.org/gnu/$_pkgname/$_pkgname-$_pkgver.tar.xz
+        config.sub.patch)
+sha512sums=('bc68c0d755d5446403644833ecbb07e37360beca45f474297b5d5c40926df1efc3e2067eecffdf253f946288bcca39ca89b0613f545d46a9e767d1d4cf358475'
+            '8aa1355afcd96046b5b488485ce3f66a9443141b37ff267dc5ade5e19735ea076f8987f98959dda61cd6097c0bd1616acb9922c617af855f1d10c66952f5226e')
+b2sums=('ad69f53bc910294647523e7613b18a683f1d0f3dd994168ab2a46b66d0371ffa9b8e7cb59495f898470aea69d343e83fc722f11babe4af7b3a12665a1e65860c'
+        '285cfb828a9a65448075854353272071dce65d04c69c4062a3dbf50e945a21796d555d1b1b68793d68246eb5bd6dc8e39921a83721c54c8d9a92536419f92a3d')
+validpgpkeys=('07F3DBBECC1A39605078094D980C197698C3739D'
+              'A534BE3F83E241D918280AEB5831D11A0D4DB02A') # Vincent Lefevre <vincent@vinc17.net>
+
+prepare() {
+  cd $_pkgname-${_pkgver}
+  autoreconf -fiv
+  patch -Np1 -i ../config.sub.patch
+}
+
+build() {
+  cd $_pkgname-${_pkgver}
+  ./configure --prefix=/opt/${_target} \
+    --enable-thread-safe \
+    --enable-shared \
+    --host=$_target \
+    --target=$_target
+  make
+}
+
+package() {
+  cd $_pkgname-${_pkgver}
+  make DESTDIR="$pkgdir" install
+  rm -rf "${pkgdir}/opt/${_target}/share/info" # skip info files
+}
