@@ -197,5 +197,6 @@ new file mode 100644
 index 00000000..59e7df71
 --- /dev/null
 +++ b/ld/emulparams/elf_x86_64_mos.sh
-@@ -0,0 +1 @@
+@@ -0,0 +2 @@
 +source_sh ${srcdir}/emulparams/elf_x86_64.sh
++ELF_INTERPRETER_NAME=\"/lib/ld.so\"

@@ -15,7 +15,7 @@ groups=($_target-toolchain)
 options=(!emptydirs !docs)
 source=($_target-binutils.patch
     https://ftp.gnu.org/gnu/binutils/binutils-$pkgver.tar.xz)
-sha256sums=('fe8f3af6536affe59585ea3dab26e392541a1bf10f126131f8512a8fcdc52964'
+sha256sums=('089201e9f4786223ad7de7f07cbfb16cbbc2dba89831b25ef0f240bedd4dc2ae'
             'ae9a5789e23459e59606e6714723f2d3ffc31c03174191ef0d015bdf06007450')
 
 prepare() {
