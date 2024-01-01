@@ -18,7 +18,7 @@ source=(
     "$_target-gcc.patch"
 )
 sha256sums=('e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da'
-            '4162f40d9eda57a64807023ebe9d6d236d7f60c65fabcc8e60c15b90c5b70a8b')
+            '86884d90ce1e17bfe48eaae14c87133b6a0aeafbc036c15d59525b9c602e7def')
 
 prepare() {
     # Patch gcc
