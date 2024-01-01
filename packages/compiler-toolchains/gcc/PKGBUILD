@@ -1,0 +1,78 @@
+_target=x86_64-mos
+_sysroot=/opt/$_target
+
+pkgname=$_target-gcc-hosted
+pkgver=13.2.0
+pkgrel=3
+pkgdesc="GNU gcc for the $_target toolchain"
+arch=('x86_64')
+url="https://www.gnu.org/software/gcc"
+license=('GPL')
+provides=($pkgname)
+groups=($_target-toolchain)
+makedepends=($_target-gmp $_target-mpfr $_target-gcc $_target-mlibc)
+depends=(xz libmpc $_target-binutils)
+options+=(!lto !debug staticlibs)
+source=(
+    "http://ftpmirror.gnu.org/gcc/gcc-$pkgver/gcc-$pkgver.tar.xz"
+    "$_target-gcc.patch"
+)
+sha256sums=('e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da'
+            '86884d90ce1e17bfe48eaae14c87133b6a0aeafbc036c15d59525b9c602e7def')
+
+prepare() {
+    # Patch gcc
+    cd "gcc-$pkgver"
+    patch -Np1 <"$srcdir/$_target-gcc.patch"
+}
+
+build() {
+    # Create temporary build dir
+    mkdir -p "$_target-$pkgname-$pkgver-build"
+    cd "$_target-$pkgname-$pkgver-build"
+
+    # Credits @allanmcrae
+    # https://github.com/allanmcrae/toolchain/blob/f18604d70c5933c31b51a320978711e4e6791cf1/gcc/PKGBUILD
+    # TODO: properly deal with the build issues resulting from this
+    CFLAGS=${CFLAGS/-Werror=format-security/}
+    CXXFLAGS=${CXXFLAGS/-Werror=format-security/}
+
+    # Configure, we are building in seperate directory to cleanly seperate the binaries from the source
+    ../gcc-$pkgver/configure \
+        --target=$_target \
+        --host=$_target \
+        --prefix="/opt/$_target" \
+        --libdir="/opt/$_target/lib" \
+        --libexecdir="/opt/$_target/lib" \
+        --disable-werror \
+        --disable-nls \
+        --disable-build-format-warnings \
+        --enable-__cxa_atexit \
+        --enable-linker-build-id \
+        --enable-lto \
+        --with-gnu-ld \
+        --with-gnu-as \
+        --with-native-system-header-dir="/include" \
+        --with-build-sysroot="${_sysroot}" \
+        --enable-shared \
+        --enable-threads=posix
+
+    make
+}
+
+package() {
+    cd "$_target-$pkgname-$pkgver-build"
+
+    # https://github.com/archlinux/svntogit-community/blob/packages/aarch64-linux-gnu-gcc/trunk/PKGBUILD
+    make DESTDIR="$pkgdir" install-gcc install-target-{libgcc,libstdc++-v3,libgomp,libgfortran,libquadmath,libatomic}
+    # strip target binaries
+    find "$pkgdir"/opt/$_target/lib/gcc/$_target/ "$pkgdir"/opt/$_target/lib \
+        -type f -and \( -name \*.a -or -name \*.o \) \
+        -exec $_target-objcopy -R .comment -R .note -R .debug_info -R .debug_aranges \
+        -R .debug_pubnames -R .debug_pubtypes -R .debug_abbrev -R .debug_line \
+        -R .debug_str -R .debug_ranges -R .debug_loc '{}' \;
+
+    # strip host binaries
+    find "$pkgdir"/opt/$_target/bin/ "$pkgdir"/opt/$_target/lib/gcc/$_target/ -type f -and \( -executable \) -exec strip '{}' \;
+    rm "$pkgdir"/opt/$_target/share/info/dir
+}
