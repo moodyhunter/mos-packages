@@ -6,7 +6,7 @@ _sysroot=/opt/${_target}
 _pkgbase=mos-api-headers-${_arch}
 
 pkgname=${_pkgbase}-git
-pkgver=1666.ce08ae02a9a6
+pkgver=1679.660c1ac84250
 pkgrel=1
 pkgdesc="MOS API headers for ${_arch}"
 arch=('any')
@@ -15,7 +15,7 @@ license=('GPL3')
 provides=($_pkgbase)
 conflicts=($_pkgbase)
 groups=(mos-toolchain)
-makedepends=(git cmake python mos-sdk)
+makedepends=(git cmake python mos-sdk nasm)
 source=("mos::git+https://github.com/moodyhunter/MOS.git")
 sha512sums=('SKIP')
 
