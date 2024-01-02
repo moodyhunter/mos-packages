@@ -49,11 +49,11 @@ index 671c7e3b018c..d2f0974a4051 100644
  	;;
 +i[34567]86-*-mos*)
 +    tm_file="${tm_file} i386/unix.h i386/att.h elfos.h glibc-stdint.h i386/i386elf.h mos.h"
-+    tmake_file="${tmake_file} t-mos t-slibgcc"
++    tmake_file="${tmake_file} t-slibgcc"
 +    ;;
 +x86_64-*-mos*)
 +    tm_file="${tm_file} i386/unix.h i386/att.h elfos.h glibc-stdint.h i386/i386elf.h i386/x86-64.h mos.h"
-+    tmake_file="${tmake_file} t-mos t-slibgcc"
++    tmake_file="${tmake_file} t-slibgcc"
 +    ;;
  i[34567]86-*-darwin1[89]* | i[34567]86-*-darwin2*)
  	echo "Error: 32bit target is not supported after Darwin17" 1>&2
@@ -116,25 +116,6 @@ diff --no-dereference -urN gcc-11.4.0/gcc/config/mos.opt mos-gcc/gcc/config/mos.
 +rdynamic
 +Target RejectNegative
 +Place all symbols in the dynamic symbol table, even if building an executable.
-diff --no-dereference -urN gcc-11.4.0/gcc/config/t-mos mos-gcc/gcc/config/t-mos
---- gcc-11.4.0/gcc/config/t-mos	1970-01-01 01:00:00.000000000 +0100
-+++ mos-gcc/gcc/config/t-mos	2023-11-10 08:36:04.563508162 +0000
-@@ -0,0 +1,15 @@
-+MULTILIB_OPTIONS = m64 m32
-+MULTILIB_DIRNAMES = 64 32
-+MULTILIB_OSDIRNAMES = ../lib ../lib32
-+
-+LIBGCC = stmp-multilib
-+INSTALL_LIBGCC = install-multilib
-+
-+EXTRA_MULTILIB_PARTS=crtbegin.o crtend.o crtbeginS.o crtendS.o crtbeginT.o crtprec32.o crtprec64.o crtprec80.o 
-+
-+# Compile crtbeginS.o and crtendS.o with pic.
-+CRTSTUFF_T_CFLAGS += -fPIC
-+CRTSTUFF_T_CFLAGS_S = $(CRTSTUFF_T_CFLAGS) -fPIC
-+
-+# Compile libgcc2.a with pic.
-+TARGET_LIBGCC2_CFLAGS = -fPIC
 diff --git a/gcc/configure b/gcc/configure
 index cdc7358a56b2..edcc7fc20fd6 100755
 --- a/gcc/configure
