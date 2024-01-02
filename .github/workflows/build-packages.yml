@@ -55,3 +55,10 @@ jobs:
           tag: artifact
           overwrite: true
           file_glob: true
+
+      - name: notify
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: Successfully built ${{ github.event.inputs.package }}.
