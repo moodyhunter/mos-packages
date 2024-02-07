@@ -1,0 +1,40 @@
+diff --git a/Configurations/10-main.conf b/Configurations/10-main.conf
+index 2a047ca..bf61818 100644
+--- a/Configurations/10-main.conf
++++ b/Configurations/10-main.conf
+@@ -1002,6 +1002,35 @@ my %targets = (
+         ranlib           => "true",
+     },
+ 
++    "mos-generic64" => {
++        inherit_from     => [ "BASE_unix" ],
++        CFLAGS           => picker(default   => "-Wall",
++                         debug       => "-O0 -g",
++                         release     => "-O3"),
++        CXXFLAGS         => picker(default   => "-Wall",
++                         debug       => "-O0 -g",
++                         release     => "-O3"),
++        cxxflags         => add("-std=c++11"),
++        lib_cppflags     => combine("-DOPENSSL_USE_NODELETE", "-DL_ENDIAN"),
++        bn_ops           => "SIXTY_FOUR_BIT_LONG RC4_CHAR",
++        thread_scheme    => "pthreads",
++        dso_scheme       => "dlfcn",
++        shared_target    => "linux-shared",
++        shared_cflag     => "-fPIC",
++        shared_ldflag    => sub { $disabled{pinshared} ? () : "-Wl,-znodelete" },
++        shared_extension => ".so.\$(SHLIB_VERSION_NUMBER)",
++    },
++
++    "mos-x86_64" => {
++        inherit_from     => [ "mos-generic64" ],
++        perlasm_scheme   => "elf",
++
++        # Configure doesn't want to play nice and passes "--cross-compile-suffix"
++        # on to the GCC invocation
++        CC               => "x86_64-mos-gcc",
++        CXX              => "x86_64-mos-g++",
++    },
++
+ #### *BSD
+     "BSD-generic32" => {
+         # As for thread cflag. Idea is to maintain "collective" set of
