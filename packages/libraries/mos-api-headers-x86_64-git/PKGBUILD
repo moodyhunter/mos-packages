@@ -34,7 +34,7 @@ build() {
     mkdir -p build && cd build
     cmake .. \
         -DMOS_ARCH=${_arch} \
-        -D__MOS_HAS_NO_COMPILER=OFF \
+        -D__MOS_HAS_NO_COMPILER=ON \
         -DCMAKE_INSTALL_PREFIX=${pkgdir}$_sysroot
 
     cmake --build . --target mos_syscall_decl
