@@ -33,6 +33,10 @@ finalize() {
     package_output_num=$(echo "$package_output" | wc -l)
     if [ "$package_output_num" -gt 1 ]; then
         for pkg in $package_output; do
+            if ! [[ -f $pkg ]]; then
+                echo " -> Package file '$pkg' not found."
+                continue
+            fi
             # strip the version number
             _filename=$(basename $pkg | sed -e 's/-[0-9].*//g')
             _tail=$(basename $pkg | sed -e 's/.*-//g')
