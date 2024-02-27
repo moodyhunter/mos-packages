@@ -39,8 +39,7 @@ finalize() {
             fi
             # strip the version number
             _filename=$(basename $pkg | sed -e 's/-[0-9].*//g')
-            _tail=$(basename $pkg | sed -e 's/.*-//g')
-            mv -v $pkg $shell_dir/output/$_filename-$_tail
+            mv -v $pkg $shell_dir/output/$_filename.pkg.tar.zst
         done
     else
         cp -v $package_output $shell_dir/output/$package.pkg.tar.zst
