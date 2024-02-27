@@ -17,15 +17,13 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    container: archlinux:latest
+    runs-on: mos-toolchain-builder
     name: ${{ fromJSON('["Bootstrap", "Build"]')[github.event.inputs.full_bootstrap == 'false'] }} ${{ github.event.inputs.package }}
     steps:
       - name: Update Package Cache
         run: |
-          pacman -Syu --noconfirm
-          pacman -S --noconfirm git base-devel jq
-          sed -i '/E_ROOT/d' /usr/bin/makepkg
+          sudo pacman -Syu --noconfirm
+          sudo pacman -S --noconfirm git base-devel jq
 
       - uses: actions/checkout@v2
         with:
@@ -41,9 +39,6 @@ jobs:
 
       - name: Commit PKGBUILD changes
         run: |
-          git config --global --add safe.directory /__w/mos-packages/mos-packages
-          git config user.name "$(git log -n 1 --pretty=format:%an)"
-          git config user.email "$(git log -n 1 --pretty=format:%ae)"
           git add **/PKGBUILD
           git commit -m "[Update] PKGBUILD for ${{ github.event.inputs.package }}" || true
           git push
