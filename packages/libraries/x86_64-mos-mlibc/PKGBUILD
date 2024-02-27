@@ -5,14 +5,14 @@ _mos_arch=x86_64
 _pkgbase=$_target-mlibc
 
 pkgname=$_pkgbase-git
-pkgver=3549.930aaec3
+pkgver=3688.56f02b21
 pkgrel=1
 pkgdesc="mlibc for the $_target toolchain"
 arch=('any')
 url="https://github.com/moodyhunter/mlibc-mos"
 license=('MIT')
 provides=($_pkgbase)
-conflicts=($_pkgbase)
+conflicts=($_pkgbase $_target-mlibc-headers)
 groups=($_target-toolchain)
 makedepends=(git gcc meson mos-api-headers-${_mos_arch} $_target-gcc)
 source=("mlibc::git+https://github.com/moodyhunter/mlibc-mos.git")

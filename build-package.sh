@@ -49,21 +49,12 @@ shell_dir=$(cd "$(dirname "$0")" && pwd) # absolutized and normalized
 
 cd $shell_dir
 
-package=$1
-package_dir=$(find_package_dir "$package")
-shift
-
-if [ -z "$package_dir" ]; then
-    echo "Package '$package' not found."
-    exit 1
-fi
-
 extra_makepkg_args=(-s -c --noconfirm)
 
 while getopts "idj:p:h" arg; do
     case $arg in
     i) # Install package after build.
-        echo "Will install '$package' after build."
+        echo "Will install the package after build."
         extra_makepkg_args+=(-i)
         shift
         ;;
@@ -87,6 +78,15 @@ while getopts "idj:p:h" arg; do
         ;;
     esac
 done
+
+package=$1
+package_dir=$(find_package_dir "$package")
+shift
+
+if [ -z "$package_dir" ]; then
+    echo "Package '$package' not found."
+    exit 1
+fi
 
 extra_makepkg_args+=("$@")
 
