@@ -17,7 +17,7 @@ on:
 
 jobs:
   build:
-    runs-on: mos-toolchain-builder
+    runs-on: self-hosted
     name: ${{ fromJSON('["Bootstrap", "Build"]')[github.event.inputs.full_bootstrap == 'false'] }} ${{ github.event.inputs.package }}
     steps:
       - name: Update Package Cache
