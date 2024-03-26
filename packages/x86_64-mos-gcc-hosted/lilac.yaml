@@ -18,3 +18,4 @@ post_build: git_pkgbuild_commit
 update_on:
   - source: alpm
     alpm: gcc
+    strip_release: true

@@ -17,3 +17,4 @@ post_build: git_pkgbuild_commit
 update_on:
   - source: alpm
     alpm: mpfr
+    strip_release: true

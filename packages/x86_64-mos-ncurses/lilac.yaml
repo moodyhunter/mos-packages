@@ -16,3 +16,4 @@ post_build: git_pkgbuild_commit
 update_on:
   - source: alpm
     alpm: ncurses
+    strip_release: true
