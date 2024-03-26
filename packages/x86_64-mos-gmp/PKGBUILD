@@ -14,14 +14,17 @@ depends=(sh $_target-mlibc)
 makedepends=($_target-gcc)
 license=(LGPL3 GPL)
 source=(https://gmplib.org/download/gmp/gmp-$pkgver.tar.lz
-        config.sub.patch)
+        config.sub.patch
+        configure.patch)
 sha256sums=('be5c908a7a836c3a9bd9d62aa58563c5e9e7fef94c43a7f42dbc35bb6d02733c'
-            '11b7289b3968fa28d5c030ff54fb6dcfa95648ced631fe9049a04fe2148955e1')
+            '11b7289b3968fa28d5c030ff54fb6dcfa95648ced631fe9049a04fe2148955e1'
+            '17a611fbc01ff1b18561ed5a96ebd3af07b329a52a74b647ee59c3d549a0c5a0')
 validpgpkeys=('343C2FF0FBEE5EC2EDBEF399F3599FF828C67298')   # Niels Möller
 
 prepare() {
   cd $_pkgname-$pkgver
   patch -Np1 -s < ../config.sub.patch
+  patch -Np1 -s < ../configure.patch
 }
 
 build() {
@@ -30,11 +33,8 @@ build() {
   ./configure \
     --build=${CHOST} \
     --host=$_target \
-    --target=$_target \
     --prefix=/opt/${_target} \
-    --enable-cxx \
-    --enable-fat \
-    --enable-shared
+    --enable-fat
   make
 }
 
