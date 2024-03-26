@@ -21,6 +21,7 @@ package() {
 
     cat <<EOF >>"$pkgdir"/usr/share/devtools/pacman.conf.d/mos.conf
 [mos]
+SigLevel = Optional TrustAll
 Server = https://mospkg.mooody.me/$arch
 EOF
 }

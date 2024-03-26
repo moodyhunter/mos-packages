@@ -16,3 +16,4 @@ post_build: git_pkgbuild_commit
 update_on:
   - source: archpkg
     archpkg: gmp
+    strip_release: true
