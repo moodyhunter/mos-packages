@@ -2,12 +2,13 @@ diff --git a/include/platform.h b/include/platform.h
 index ea0512f36506..0302878b6e3e 100644
 --- a/include/platform.h
 +++ b/include/platform.h
-@@ -432,6 +432,10 @@ typedef unsigned smalluint;
+@@ -432,6 +432,11 @@ typedef unsigned smalluint;
  #define HAVE_DEV_FD 1
  #define DEV_FD_PREFIX "/dev/fd/"
  
 +#ifdef __mos__
 +#undef HAVE_MNTENT_H
++#undef HAVE_SYS_STATFS_H
 +#endif
 +
  #if defined(__UCLIBC__)
