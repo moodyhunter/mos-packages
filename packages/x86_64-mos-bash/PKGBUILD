@@ -66,8 +66,9 @@ build() {
     --with-curses \
     --host=$_target \
     --enable-readline \
-    --without-bash-malloc
-    #--with-installed-readline
+    --disable-nls \
+    --without-bash-malloc \
+    --with-installed-readline
   make
 }
 
