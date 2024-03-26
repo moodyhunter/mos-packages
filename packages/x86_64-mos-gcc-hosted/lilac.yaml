@@ -12,6 +12,7 @@ repo_makedepends:
   - x86_64-mos-mlibc
   - x86_64-mos-gmp
   - x86_64-mos-mpfr
+  - x86_64-mos-libmpc
 
 post_build: git_pkgbuild_commit
 
