@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../pkg.schema.json",
+    "$schema": "../../pkg.schema.json",
     "makedeps": [
         "x86_64-mos-binutils",
         "x86_64-mos-gcc",

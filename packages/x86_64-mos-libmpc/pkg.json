@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../pkg.schema.json",
+    "$schema": "../../pkg.schema.json",
     "deps": [
         "x86_64-mos-mlibc",
         "x86_64-mos-mpfr"

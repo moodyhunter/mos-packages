@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../pkg.schema.json",
+    "$schema": "../../pkg.schema.json",
     "note": [ "When bootstraping:",
         "- Firstly use deps=[x86_64-mos-gcc-stage1] to build mlibc,",
         "- Remove the deps,",
