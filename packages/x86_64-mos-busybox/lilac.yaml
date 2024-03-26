@@ -15,6 +15,6 @@ repo_makedepends:
 post_build: git_pkgbuild_commit
 
 update_on:
-  - source: archpkg
-    archpkg: busybox
+  - source: alpm
+    alpm: busybox
     strip_release: true

@@ -37,8 +37,8 @@ build_prefix: mos-x86_64{deps_prefix}{deps_str}{makedeps_prefix}{makedeps_str}
 post_build: git_pkgbuild_commit
 
 update_on:
-  - source: archpkg
-    archpkg: {pkgname}
+  - source: alpm
+    alpm: {pkgname}
 """
 
 

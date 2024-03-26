@@ -18,5 +18,5 @@ repo_makedepends:
 post_build: git_pkgbuild_commit
 
 update_on:
-  - source: archpkg
-    archpkg: protobuf
+  - source: alpm
+    alpm: protobuf
