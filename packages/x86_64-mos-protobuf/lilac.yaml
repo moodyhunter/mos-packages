@@ -1,0 +1,22 @@
+# converted by pkg.json-to-lilac.py for protobuf
+
+maintainers:
+  - github: moodyhunter
+
+build_prefix: mos-x86_64
+
+repo_depends:
+  - x86_64-mos-mlibc
+  - x86_64-mos-zlib
+  - x86_64-mos-abseil-cpp
+
+repo_makedepends:
+  - x86_64-mos-gcc
+  - x86_64-mos-gtest
+  - mos-sdk
+
+post_build: git_pkgbuild_commit
+
+update_on:
+  - source: archpkg
+    archpkg: protobuf

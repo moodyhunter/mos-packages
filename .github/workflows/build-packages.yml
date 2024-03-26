@@ -23,7 +23,7 @@ jobs:
       - name: Update Package Cache
         run: |
           sudo pacman -Syu --noconfirm
-          sudo pacman -S --noconfirm git base-devel jq
+          sudo pacman -S --noconfirm git base-devel yq
 
       - uses: actions/checkout@v2
         with:

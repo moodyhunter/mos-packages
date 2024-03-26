@@ -20,7 +20,7 @@ if [ -z "$package_dir" ]; then
     exit 1
 fi
 
-# first read the package's pkg.json, if it exists
+# first read the package's lilac.yaml, if it exists
 for dep in $(get_deps $package); do
     echo "-> Found dependency '$dep' required by '$package'"
     $shell_dir/bootstrap-package.sh $dep -i -f

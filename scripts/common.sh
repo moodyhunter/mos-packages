@@ -9,9 +9,9 @@ if [ "$(whoami)" = "root" ]; then
     sudo=""
 fi
 
-# check if jq is installed
-if test ! $(which jq 2>/dev/null); then
-    echo "jq is required to parse json" >&2
+# check if yq is installed
+if test ! $(which yq 2>/dev/null); then
+    echo "yq is required to parse yaml" >&2
     exit 1
 fi
 
@@ -75,27 +75,21 @@ _do_get_deps() {
     _package=$1
     _dep_type=$2
     _package_dir=$(find_package_dir "$_package")
-    if [ -z "$_package_dir" ]; then
-        try_find_package "$_package" >&2
+
+    if [ ! -f "$_package_dir/lilac.yaml" ]; then
+        echo "Package yaml not found: $_package_dir/lilac.yaml" >&2
         exit 1
     fi
 
-    if [ ! -f "$_package_dir/pkg.json" ]; then
-        echo "Package json not found: $_package_dir/pkg.json" >&2
-        exit 1
-    fi
-
-    _package_json=$(cat $_package_dir/pkg.json)
-    _package_deps=$(echo $_package_json | jq -r ".$_dep_type[]" 2>/dev/null || true)
-    echo $_package_deps
+    yq -r ".$_dep_type[]" $_package_dir/lilac.yaml 2>/dev/null || true
 }
 
 get_deps() {
-    _do_get_deps $1 "deps"
+    _do_get_deps $1 "repo_depends"
 }
 
 get_makedeps() {
-    _do_get_deps $1 "makedeps"
+    _do_get_deps $1 "repo_makedepends"
 }
 
 fetch_package() {
