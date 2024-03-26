@@ -44,45 +44,40 @@ fi
 package=$@
 
 if [ -z "$package" ]; then
-    categories=$(find $shell_dir/packages/*/ -maxdepth 0 -type d -exec basename {} \;)
 
-    for category in $categories; do
-        [ "$quiet" != "1" ] && echo "==> $category"
+    packages=$(find $shell_dir/packages/*/ -maxdepth 0 -type d -exec basename {} \;)
 
-        packages=$(find $shell_dir/packages/$category/*/ -maxdepth 0 -type d -exec basename {} \;)
+    if [ -z "$packages" ]; then
+        echo "No packages found?"
+        continue
+    fi
 
-        if [ -z "$packages" ]; then
-            echo "No packages found in $category"
-            continue
+    for package in $packages; do
+        if [ "$quiet" != "1" ]; then
+            echo "- $package"
+        else
+            echo "$package"
         fi
 
-        for package in $packages; do
-            if [ "$quiet" != "1" ]; then
-                echo "- $package"
-            else
-                echo "$package"
+        if [ "$verbose" == "1" ]; then
+            deps=$(get_deps $package)
+            makedeps=$(get_makedeps $package)
+
+            if [ ! -z "$deps" ]; then
+                echo "  depends:"
+                for dep in $deps; do
+                    echo "    $dep"
+                done
             fi
 
-            if [ "$verbose" == "1" ]; then
-                deps=$(get_deps $package)
-                makedeps=$(get_makedeps $package)
-
-                if [ ! -z "$deps" ]; then
-                    echo "  depends:"
-                    for dep in $deps; do
-                        echo "    $dep"
-                    done
-                fi
-
-                if [ ! -z "$makedeps" ]; then
-                    echo "  makedepends:"
-                    for makedep in $makedeps; do
-                        echo "    $makedep"
-                    done
-                fi
-                echo ""
+            if [ ! -z "$makedeps" ]; then
+                echo "  makedepends:"
+                for makedep in $makedeps; do
+                    echo "    $makedep"
+                done
             fi
-        done
+            echo ""
+        fi
     done
 else
     pkgname=$(try_find_package $package)

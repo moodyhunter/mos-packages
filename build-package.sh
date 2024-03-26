@@ -87,7 +87,7 @@ package_dir=$(find_package_dir "$package")
 shift
 
 if [ -z "$package_dir" ]; then
-    echo "Package '$package' not found."
+    try_find_package "$package"
     exit 1
 fi
 
