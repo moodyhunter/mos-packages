@@ -17,5 +17,4 @@ post_build: git_pkgbuild_commit
 update_on:
   - source: vcs
     vcs: git+https://github.com/moodyhunter/mlibc-mos.git
-  - source: alpm
-    alpm: mos-api-headers-x86_64-git
+  - alias: mos-api-headers-x86_64-git
