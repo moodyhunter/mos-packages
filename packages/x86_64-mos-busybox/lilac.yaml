@@ -18,3 +18,7 @@ update_on:
   - source: alpm
     alpm: busybox
     strip_release: true
+
+update_on_build:
+  - pkgbase: x86_64-mos-mlibc
+  - pkgbase: x86_64-mos-ncurses

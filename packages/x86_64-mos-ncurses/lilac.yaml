@@ -17,3 +17,6 @@ update_on:
   - source: alpm
     alpm: ncurses
     strip_release: true
+
+update_on_build:
+  - pkgbase: x86_64-mos-mlibc

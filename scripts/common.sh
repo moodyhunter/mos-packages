@@ -74,6 +74,7 @@ find_package_dir() {
 _do_get_deps() {
     _package=$1
     _dep_type=$2
+    _sub_type=$3
     _package_dir=$(find_package_dir "$_package")
 
     if [ ! -f "$_package_dir/lilac.yaml" ]; then
@@ -81,7 +82,7 @@ _do_get_deps() {
         exit 1
     fi
 
-    yq -r ".$_dep_type[]" $_package_dir/lilac.yaml 2>/dev/null || true
+    yq -r ".$_dep_type[]$_sub_type" $_package_dir/lilac.yaml 2>/dev/null || true
 }
 
 get_deps() {
@@ -90,6 +91,10 @@ get_deps() {
 
 get_makedeps() {
     _do_get_deps $1 "repo_makedepends"
+}
+
+get_rebuiltby() {
+    _do_get_deps $1 "update_on_build" ".pkgbase"
 }
 
 fetch_package() {

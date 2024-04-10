@@ -94,6 +94,7 @@ else
 
     deps=$(get_deps $pkgname)
     makedeps=$(get_makedeps $pkgname)
+    rebuiltby=$(get_rebuiltby $pkgname)
 
     echo "$pkgname"
     echo "  pkgdir: $pkgdir"
@@ -108,6 +109,13 @@ else
         echo "  makedepends:"
         for makedep in $makedeps; do
             echo "    $makedep"
+        done
+    fi
+
+    if [ ! -z "$rebuiltby" ]; then
+        echo "  rebuilt by:"
+        for rebuilt in $rebuiltby; do
+            echo "    $rebuilt"
         done
     fi
 fi
