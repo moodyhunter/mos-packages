@@ -26,3 +26,4 @@ update_on_build:
   - pkgbase: x86_64-mos-gmp
   - pkgbase: x86_64-mos-mpfr
   - pkgbase: x86_64-mos-libmpc
+  - pkgbase: x86_64-mos-binutils-hosted

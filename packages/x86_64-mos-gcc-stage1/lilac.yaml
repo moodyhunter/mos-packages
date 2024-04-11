@@ -17,3 +17,6 @@ update_on:
   - source: alpm
     alpm: gcc
     strip_release: true
+
+# this is a bootstrap package
+managed: false
