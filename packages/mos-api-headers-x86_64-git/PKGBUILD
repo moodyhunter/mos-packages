@@ -19,11 +19,6 @@ makedepends=(git cmake python mos-sdk nasm)
 source=("mos::git+https://github.com/moodyhunter/MOS.git")
 sha512sums=('SKIP')
 
-pkgver() {
-    cd mos
-    printf "%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-}
-
 prepare() {
     cd mos
     git submodule update --init --recursive
