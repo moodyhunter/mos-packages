@@ -8,6 +8,7 @@ build_prefix: mos-x86_64
 repo_depends:
   - x86_64-elf-gcc
 
+pre_build_script: update_pkgver_and_pkgrel(_G.newver, updpkgsums=True)
 post_build: git_pkgbuild_commit
 
 update_on:
