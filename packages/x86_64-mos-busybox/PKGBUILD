@@ -7,7 +7,7 @@ _prefix=/opt/$_target
 
 pkgname=x86_64-mos-busybox
 pkgver=1.36.1
-pkgrel=14
+pkgrel=15
 pkgdesc="Utilities for rescue and embedded systems, ported to MOS"
 arch=("any")
 url="https://www.busybox.net"
