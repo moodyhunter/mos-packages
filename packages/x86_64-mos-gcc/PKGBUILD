@@ -80,4 +80,8 @@ package() {
     rm -r "$pkgdir"/usr/share/man/man7
     rm -r "$pkgdir"/usr/share/info
     rm -r "$pkgdir"/usr/share/gcc-$pkgver
+
+    for so in libgcc_s.so libgcc_s.so.1 libstdc++.so; do
+        install -Dm 755 ${pkgdir}/usr/x86_64-mos/lib/$so ${pkgdir}/${_sysroot}/lib/$so
+    done
 }
