@@ -11,7 +11,7 @@ repo_depends:
 repo_makedepends:
   - x86_64-mos-gcc
 
-pre_build_script: update_pkgver_and_pkgrel(_G.newver, updpkgsums=True)
+pre_build_script: update_pkgver_and_pkgrel(_G.newver.split(":")[1], updpkgsums=True)
 post_build: git_pkgbuild_commit
 
 update_on:
