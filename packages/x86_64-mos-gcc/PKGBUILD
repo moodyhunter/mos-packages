@@ -37,7 +37,7 @@ build() {
     CFLAGS=${CFLAGS/-Werror=format-security/}
     CXXFLAGS=${CXXFLAGS/-Werror=format-security/}
 
-    # Configure, we are building in seperate directory to cleanly seperate the binaries from the source
+    # Configure, we are building in separate directory to cleanly separate the binaries from the source
     ../gcc-$pkgver/configure \
         --target=$_target \
         --prefix="/usr" \
