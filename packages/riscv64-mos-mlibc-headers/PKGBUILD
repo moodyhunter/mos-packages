@@ -1,0 +1,39 @@
+_target=riscv64-mos
+_mos_arch=riscv64
+_pkgbase=$_target-mlibc-headers
+
+pkgname=$_pkgbase
+pkgver=3830.54aeed44
+pkgrel=1
+pkgdesc="mlibc for the $_target toolchain - header-only"
+arch=('any')
+url="https://github.com/moodyhunter/mlibc-mos"
+license=('MIT')
+conflicts=($_target-mlibc)
+groups=($_target-toolchain)
+makedepends=(git gcc meson mos-api-headers-${_mos_arch})
+source=("mlibc::git+https://github.com/moodyhunter/mlibc-mos.git")
+sha512sums=('SKIP')
+options+=(staticlibs)
+
+pkgver() {
+    cd mlibc
+    printf "%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+    cd mlibc
+    meson setup build \
+        --prefix=$pkgdir/opt/$_target \
+        --cross-file=ci/mos-$_mos_arch.cross-file \
+        -Dheaders_only=true
+}
+
+build() {
+    true
+}
+
+package() {
+    cd mlibc/build
+    ninja install
+}

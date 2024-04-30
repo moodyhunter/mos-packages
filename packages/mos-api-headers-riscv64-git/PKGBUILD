@@ -1,0 +1,42 @@
+# Maintainer: Moody <mooodyhunter@outlook.com>
+
+_arch=riscv64
+_target=riscv64-mos
+_sysroot=/opt/${_target}
+_pkgbase=mos-api-headers-${_arch}
+
+pkgname=${_pkgbase}-git
+epoch=1
+pkgver=1
+pkgrel=5
+pkgdesc="MOS API headers for ${_arch}"
+arch=('any')
+url="https://github.com/moodyhunter/MOS"
+license=('GPL3')
+provides=($_pkgbase)
+conflicts=($_pkgbase)
+groups=(mos-toolchain)
+makedepends=(git cmake python mos-sdk nasm)
+source=("mos::git+https://github.com/moodyhunter/MOS.git")
+sha512sums=('SKIP')
+
+prepare() {
+    cd mos
+    git submodule update --init --recursive
+}
+
+build() {
+    cd mos
+    mkdir -p build && cd build
+    cmake .. \
+        -DMOS_ARCH=${_arch} \
+        -D__MOS_HAS_NO_COMPILER=ON \
+        -DCMAKE_INSTALL_PREFIX=${pkgdir}$_sysroot
+
+    cmake --build . --target mos_syscall_decl
+}
+
+package() {
+    cd mos/build
+    cmake --install . --component mos-api-headers
+}
