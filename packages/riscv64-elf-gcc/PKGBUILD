@@ -17,62 +17,37 @@ conflicts=(${pkgname%-bootstrap})
 source=(https://ftp.gnu.org/gnu/gcc/gcc-$pkgver/gcc-$pkgver.tar.xz)
 sha512sums=('4b9e3639eef6e623747a22c37a904b4750c93b6da77cf3958d5047e9b5ebddb7eebe091cc16ca0a227c0ecbd2bf3b984b221130f269a97ee4cc18f9cf6c444de')
 
-_basedir=gcc-$pkgver
-
-prepare() {
-  cd $_basedir
-
-  echo $pkgver > gcc/BASE-VER
-
-  # Do not run fixincludes
-  sed -i 's@\./fixinc\.sh@-c true@' gcc/Makefile.in
-
-  # hack! - some configure tests for header files using "$CPP $CPPFLAGS"
-  sed -i "/ac_cpp=/s/\$CPPFLAGS/\$CPPFLAGS -O2/" "$srcdir"/$_basedir/{libiberty,gcc}/configure
-
-  rm -rf "$srcdir"/gcc-build
-  mkdir -p "$srcdir"/gcc-build
-}
-
 build() {
-  cd gcc-build
+  mkdir -p "$_target-$pkgname-$pkgver-build"
+  cd "$_target-$pkgname-$pkgver-build"
 
-  # using -pipe causes spurious test-suite failures
-  # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=48565
-  CFLAGS=${CFLAGS/-pipe/}
-  CXXFLAGS=${CXXFLAGS/-pipe/}
+  # Credits @allanmcrae
+  # https://github.com/allanmcrae/toolchain/blob/f18604d70c5933c31b51a320978711e4e6791cf1/gcc/PKGBUILD
+  # TODO: properly deal with the build issues resulting from this
+  CFLAGS=${CFLAGS/-Werror=format-security/}
+  CXXFLAGS=${CXXFLAGS/-Werror=format-security/}
 
-  "$srcdir"/$_basedir/configure \
-      --target=$_target \
-      --prefix=/usr \
-      --libdir=/usr/lib \
-      --libexecdir=/usr/lib \
-      --program-prefix=$_target- \
-      --without-headers \
-      --disable-shared \
-      --disable-threads \
-      --with-system-zlib \
-      --enable-tls \
-      --enable-languages=c \
-      --disable-libatomic \
-      --disable-libmudflap \
-      --disable-libssp \
-      --disable-libquadmath \
-      --disable-libgomp \
-      --disable-nls \
-      --enable-multilib \
-      --disable-bootstrap \
-      --enable-checking=release
+  ../gcc-$pkgver/configure \
+    --target=$_target \
+    --prefix="/usr" \
+    --libexecdir="/usr/lib" \
+    --disable-nls \
+    --disable-werror \
+    --disable-multilib \
+    --without-headers \
+    --enable-libgcc \
+    --enable-languages=c,c++ \
+    --disable-build-format-warnings # https://bugs.archlinux.org/task/70701
 
-  make inhibit-libc=true all-gcc
-  make inhibit-libc=true all-target-libgcc
+  make all-gcc
+  make all-target-libgcc
 }
 
 package() {
-  cd gcc-build
+  cd "$_target-$pkgname-$pkgver-build"
 
-  make DESTDIR="$pkgdir" inhibit-libc=true install-gcc
-  make DESTDIR="$pkgdir" inhibit-libc=true install-target-libgcc
+  make DESTDIR="$pkgdir" install-gcc
+  make DESTDIR="$pkgdir" install-target-libgcc
 
   # Remove conflicting files
   rm -rf $pkgdir/usr/share/info
