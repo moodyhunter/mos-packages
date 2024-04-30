@@ -11,45 +11,44 @@ url='http://gcc.gnu.org/'
 license=(GPL LGPL FDL)
 depends=($_target-binutils libmpc zlib)
 makedepends=(gmp mpfr)
-options=(!emptydirs !strip)
-provides=(${pkgname%-bootstrap})
-conflicts=(${pkgname%-bootstrap})
+options=(!emptydirs !strip !lto)
+groups=($_target-toolchain)
 source=(https://ftp.gnu.org/gnu/gcc/gcc-$pkgver/gcc-$pkgver.tar.xz)
 sha512sums=('d99e4826a70db04504467e349e9fbaedaa5870766cda7c5cab50cdebedc4be755ebca5b789e1232a34a20be1a0b60097de9280efe47bdb71c73251e30b0862a2')
 
 build() {
-  mkdir -p "$_target-$pkgname-$pkgver-build"
-  cd "$_target-$pkgname-$pkgver-build"
+    mkdir -p "$_target-$pkgname-$pkgver-build"
+    cd "$_target-$pkgname-$pkgver-build"
 
-  # Credits @allanmcrae
-  # https://github.com/allanmcrae/toolchain/blob/f18604d70c5933c31b51a320978711e4e6791cf1/gcc/PKGBUILD
-  # TODO: properly deal with the build issues resulting from this
-  CFLAGS=${CFLAGS/-Werror=format-security/}
-  CXXFLAGS=${CXXFLAGS/-Werror=format-security/}
+    # Credits @allanmcrae
+    # https://github.com/allanmcrae/toolchain/blob/f18604d70c5933c31b51a320978711e4e6791cf1/gcc/PKGBUILD
+    # TODO: properly deal with the build issues resulting from this
+    CFLAGS=${CFLAGS/-Werror=format-security/}
+    CXXFLAGS=${CXXFLAGS/-Werror=format-security/}
 
-  ../gcc-$pkgver/configure \
-    --target=$_target \
-    --prefix="/usr" \
-    --libexecdir="/usr/lib" \
-    --disable-nls \
-    --disable-werror \
-    --disable-multilib \
-    --without-headers \
-    --enable-libgcc \
-    --enable-languages=c,c++ \
-    --disable-build-format-warnings # https://bugs.archlinux.org/task/70701
+    ../gcc-$pkgver/configure \
+        --target=$_target \
+        --prefix="/usr" \
+        --libexecdir="/usr/lib" \
+        --disable-nls \
+        --disable-werror \
+        --disable-multilib \
+        --without-headers \
+        --enable-libgcc \
+        --enable-languages=c,c++ \
+        --disable-build-format-warnings # https://bugs.archlinux.org/task/70701
 
-  make all-gcc
-  make all-target-libgcc
+    make all-gcc
+    make all-target-libgcc
 }
 
 package() {
-  cd "$_target-$pkgname-$pkgver-build"
+    cd "$_target-$pkgname-$pkgver-build"
 
-  make DESTDIR="$pkgdir" install-gcc
-  make DESTDIR="$pkgdir" install-target-libgcc
+    make DESTDIR="$pkgdir" install-gcc
+    make DESTDIR="$pkgdir" install-target-libgcc
 
-  # Remove conflicting files
-  rm -rf $pkgdir/usr/share/info
-  rm -rf $pkgdir/usr/share/man/man7
+    # Remove conflicting files
+    rm -rf $pkgdir/usr/share/info
+    rm -rf $pkgdir/usr/share/man/man7
 }

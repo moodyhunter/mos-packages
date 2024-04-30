@@ -13,36 +13,37 @@ license=(GPL3)
 depends=(xz ncurses expat python guile gdb-common mpfr libelf source-highlight)
 makedepends=(boost)
 options=(!emptydirs)
+groups=($_target-toolchain)
 source=(https://ftp.gnu.org/gnu/gdb/gdb-$pkgver.tar.xz)
 sha512sums=('7e07941f1fe661288cc571b4964012ceabc1760624fce20320db2f470c01439b2386f859b5288da13204b758e2e3b22a74c68c012178db93b9529b06f1e22ede')
 
 build() {
-  cd gdb-$pkgver
+    cd gdb-$pkgver
 
-  mkdir -p build && cd build
-  ../configure \
-    --target=$_target \
-    --prefix=/usr \
-    --enable-languages=c,c++ \
-    --enable-multilib \
-    --enable-interwork \
-    --with-system-readline \
-    --disable-nls \
-    --enable-source-highlight \
-    --with-python=/usr/bin/python \
-    --with-system-gdbinit=/etc/gdb/gdbinit
+    mkdir -p build && cd build
+    ../configure \
+        --target=$_target \
+        --prefix=/usr \
+        --enable-languages=c,c++ \
+        --enable-multilib \
+        --enable-interwork \
+        --with-system-readline \
+        --disable-nls \
+        --enable-source-highlight \
+        --with-python=/usr/bin/python \
+        --with-system-gdbinit=/etc/gdb/gdbinit
 
-  make
+    make
 }
 
 package() {
-  cd gdb-$pkgver/build
+    cd gdb-$pkgver/build
 
-  make -C gdb DESTDIR="$pkgdir" install
+    make -C gdb DESTDIR="$pkgdir" install
 
-  # Following files conflict with 'gdb'/'gdb-common' packages
-  rm -r "$pkgdir"/usr/include/gdb/
-  rm -r "$pkgdir"/usr/share/gdb/
-  rm -r "$pkgdir"/usr/share/info/
-  rm -r "$pkgdir"/usr/share/man/man5/
+    # Following files conflict with 'gdb'/'gdb-common' packages
+    rm -r "$pkgdir"/usr/include/gdb/
+    rm -r "$pkgdir"/usr/share/gdb/
+    rm -r "$pkgdir"/usr/share/info/
+    rm -r "$pkgdir"/usr/share/man/man5/
 }
