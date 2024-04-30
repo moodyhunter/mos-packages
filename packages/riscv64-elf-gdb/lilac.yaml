@@ -1,0 +1,24 @@
+# converted by pkg.json-to-lilac.py for riscv64-elf-gdb
+
+maintainers:
+  - github: moodyhunter
+
+build_prefix: mos-x86_64
+
+repo_depends:
+  - riscv64-elf-gcc
+
+pre_build_script: update_pkgver_and_pkgrel(_G.newver, updpkgsums=True)
+post_build: git_pkgbuild_commit
+
+update_on:
+  - source: alpm
+    alpm: gdb
+    strip_release: true
+  - source: alpm
+    alpm: python
+    strip_release: true
+
+update_on_build:
+  - pkgbase: riscv64-elf-gcc
+  - pkgbase: riscv64-elf-binutils
