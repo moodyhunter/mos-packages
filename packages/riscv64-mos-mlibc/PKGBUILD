@@ -1,0 +1,43 @@
+# Maintainer: Moody <mooodyhunter@outlook.com>
+
+_target=riscv64-mos
+_mos_arch=riscv64
+_pkgbase=$_target-mlibc
+
+pkgname=$_pkgbase
+pkgver=3832.355ae19c
+pkgrel=1
+pkgdesc="mlibc for the $_target toolchain"
+arch=('any')
+url="https://github.com/moodyhunter/mlibc-mos"
+license=('MIT')
+conflicts=($_target-mlibc-headers)
+groups=($_target-toolchain)
+makedepends=(git gcc meson mos-api-headers-${_mos_arch} $_target-gcc)
+source=("mlibc::git+https://github.com/moodyhunter/mlibc-mos.git")
+sha512sums=('SKIP')
+options+=(staticlibs)
+
+pkgver() {
+    cd mlibc
+    printf "%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+    cd mlibc
+    meson setup build \
+        --prefix=$pkgdir/opt/$_target \
+        --cross-file=ci/mos-$_mos_arch.cross-file \
+        -Ddefault_library=both
+    sed -i 's/__STDC_HOSTED__/0/g' ./subprojects/frigg/include/frg/logging.hpp
+}
+
+build() {
+    cd mlibc/build
+    ninja
+}
+
+package() {
+    cd mlibc/build
+    ninja install
+}

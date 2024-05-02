@@ -1,0 +1,22 @@
+# converted by pkg.json-to-lilac.py for mlibc
+
+maintainers:
+  - github: moodyhunter
+
+build_prefix: mos-x86_64
+
+repo_depends:
+  - mos-api-headers-riscv64-git
+
+# hell no circular dependency
+# repo_makedepends:
+# - riscv64-mos-gcc
+
+post_build: git_pkgbuild_commit
+
+update_on:
+  - source: vcs
+    vcs: git+https://github.com/moodyhunter/mlibc-mos.git
+
+update_on_build:
+  - pkgbase: mos-api-headers-riscv64-git
