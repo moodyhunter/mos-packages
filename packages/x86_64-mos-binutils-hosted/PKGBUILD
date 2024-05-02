@@ -13,9 +13,9 @@ depends=(zlib libelf)
 provides=($pkgname)
 groups=($_target-toolchain)
 options=(!emptydirs !docs)
-source=($_target-binutils.patch
+source=(mos-binutils.patch
     https://ftp.gnu.org/gnu/binutils/binutils-$pkgver.tar.xz)
-sha256sums=('c76e492654102af22ff89249d5ff55ba1070bcf332690f76df40908e53f64a8d'
+sha256sums=('43227e8992480d2229a36ec3887e1f8c6885db8efc3791a8d70d9e91fa6c8448'
             'f6e4d41fd5fc778b06b7891457b3620da5ecea1006c6a4a41ae998109f85a800')
 
 prepare() {

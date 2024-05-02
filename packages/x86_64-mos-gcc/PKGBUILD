@@ -15,10 +15,10 @@ depends=(xz libmpc $_target-binutils)
 options+=(!lto !debug staticlibs)
 source=(
     "http://ftpmirror.gnu.org/gcc/gcc-$pkgver/gcc-$pkgver.tar.xz"
-    "$_target-gcc.patch"
+    "mos-gcc.patch"
 )
 sha256sums=('e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da'
-            'b41994a7710d06350fd983222b86dcffe7840f9cffd8036f39ba509f1ee192f1')
+            '09189b21c275cabc06c10e5d1044a693f66f6890974f68d971ce92c751d98a32')
 
 prepare() {
     # Patch gcc

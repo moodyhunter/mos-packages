@@ -63,11 +63,12 @@ index 12b2c3c4..941ecaf1 100644
  	eelf_i386_sol2.c \
  	eelf_i386_vxworks.c \
  	eelf_iamcu.c \
-@@ -457,6 +458,7 @@ ALL_64_EMULATION_SOURCES = \
+@@ -457,6 +458,8 @@ ALL_64_EMULATION_SOURCES = \
  	eelf_x86_64_cloudabi.c \
  	eelf_x86_64_fbsd.c \
  	eelf_x86_64_haiku.c \
 +	eelf_x86_64_mos.c \
++	eelf_riscv64_mos.c \
  	eelf_x86_64_sol2.c \
  	ehppa64linux.c \
  	ei386pep.c \
@@ -91,11 +92,12 @@ index 3d5685d6..1cb14cb1 100644
  	eelf_i386_sol2.c \
  	eelf_i386_vxworks.c \
  	eelf_iamcu.c \
-@@ -957,6 +959,7 @@ ALL_64_EMULATION_SOURCES = \
+@@ -957,6 +959,8 @@ ALL_64_EMULATION_SOURCES = \
  	eelf_x86_64_cloudabi.c \
  	eelf_x86_64_fbsd.c \
  	eelf_x86_64_haiku.c \
 +	eelf_x86_64_mos.c \
++	eelf_riscv64_mos.c \
  	eelf_x86_64_sol2.c \
  	ehppa64linux.c \
  	ei386pep.c \
@@ -107,11 +109,12 @@ index 3d5685d6..1cb14cb1 100644
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386_sol2.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_i386_vxworks.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_iamcu.Po@am__quote@
-@@ -1465,6 +1469,7 @@ distclean-compile:
+@@ -1465,6 +1469,8 @@ distclean-compile:
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_cloudabi.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_fbsd.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_haiku.Po@am__quote@
 +@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_mos.Po@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_riscv64_mos.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eelf_x86_64_sol2.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eh8300elf.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eh8300elf_linux.Po@am__quote@
@@ -130,13 +133,17 @@ index de04a44b..25292fc9 100644
  i[3-7]86-*-redox*)	targ_emul=elf_i386
  			targ_extra_emuls=elf_x86_64
  			;;
-@@ -1058,6 +1062,10 @@ x86_64-*-mingw*)	targ_emul=i386pep ;
+@@ -1058,6 +1062,14 @@ x86_64-*-mingw*)	targ_emul=i386pep ;
  			targ_extra_emuls=i386pe
  			targ_extra_ofiles="deffilep.o pdb.o pep-dll.o pe-dll.o"
  			;;
 +x86_64-*-mos*)
 +			targ_emul=elf_x86_64_mos
 +			targ_extra_emuls="elf_i386_mos elf_x86_64 elf_i386"
++			;;
++riscv64-*-mos*)
++			targ_emul=elf_riscv64_mos
++			targ_extra_emuls="elf64lriscv_lp64 elf_riscv64 elf64lriscv_lp64"
 +			;;
  x86_64-*-gnu*)		targ_emul=elf_x86_64
  			targ_extra_emuls="elf32_x86_64 elf_iamcu elf_i386"
@@ -167,4 +174,12 @@ index 00000000..59e7df71
 +++ b/ld/emulparams/elf_x86_64_mos.sh
 @@ -0,0 +2 @@
 +source_sh ${srcdir}/emulparams/elf_x86_64.sh
++ELF_INTERPRETER_NAME=\"/lib/ld.so\"
+diff --git a/ld/emulparams/elf_riscv64_mos.sh b/ld/emulparams/elf_riscv64_mos.sh
+new file mode 100644
+index 00000000..59e7df71
+--- /dev/null
++++ b/ld/emulparams/elf_riscv64_mos.sh
+@@ -0,0 +2 @@
++source_sh ${srcdir}/emulparams/elf64lriscv_lp64.sh
 +ELF_INTERPRETER_NAME=\"/lib/ld.so\"

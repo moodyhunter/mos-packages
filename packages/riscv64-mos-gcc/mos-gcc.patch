@@ -42,7 +42,7 @@ index 671c7e3b018c..d2f0974a4051 100644
  *-*-darwin*)
    tmake_file="t-darwin "
    tm_file="${tm_file} darwin.h"
-@@ -1836,6 +1843,12 @@ hppa*64*-*-hpux11*)
+@@ -1836,6 +1843,15 @@ hppa*64*-*-hpux11*)
  		;;
  	esac
  	;;
@@ -51,6 +51,9 @@ index 671c7e3b018c..d2f0974a4051 100644
 +    ;;
 +x86_64-*-mos*)
 +    tm_file="${tm_file} i386/unix.h i386/att.h elfos.h glibc-stdint.h i386/i386elf.h i386/x86-64.h mos.h"
++    ;;
++riscv64-*-mos*)
++    tm_file="${tm_file} riscv/elf.h elfos.h glibc-stdint.h mos.h"
 +    ;;
  i[34567]86-*-darwin1[89]* | i[34567]86-*-darwin2*)
  	echo "Error: 32bit target is not supported after Darwin17" 1>&2
@@ -69,7 +72,7 @@ index 000000000000..1283390dabb6
 +#define STANDARD_STARTFILE_PREFIX "/lib/ /initrd/lib/ /data/lib/"
 +
 +/* Default arguments you want when running your
-+   i686-mos-gcc/x86_64-mos-gcc toolchain */
++   *-mos-gcc toolchain */
 +#undef LIB_SPEC
 +#define LIB_SPEC "-lc" /* link against C standard library */
 +
@@ -170,17 +173,21 @@ diff --git a/libgcc/config.host b/libgcc/config.host
 index b9975de90235..a3ea1a05cf67 100644
 --- a/libgcc/config.host
 +++ b/libgcc/config.host
-@@ -670,6 +670,14 @@ hppa*-*-openbsd*)
+@@ -670,6 +670,18 @@ hppa*-*-openbsd*)
  hppa*-*-netbsd*)
  	tmake_file="$tmake_file pa/t-netbsd"
  	;;
 +i[34567]86-*-mos*)
 +	extra_parts="$extra_parts crti.o crtbegin.o crtbeginS.o crtbeginT.o crtend.o crtendS.o crtn.o"
-+	tmake_file="$tmake_file i386/t-crtstuff t-crtstuff-pic t-libgcc-pic"
++	tmake_file="$tmake_file i386/t-crtstuff t-crtstuff-pic t-libgcc-pic t-slibgcc t-slibgcc-libgcc"
 +	;;
 +x86_64-*-mos*)
 +	extra_parts="$extra_parts crti.o crtbegin.o crtbeginS.o crtbeginT.o crtend.o crtendS.o crtn.o"
-+	tmake_file="$tmake_file i386/t-crtstuff t-crtstuff-pic t-libgcc-pic"
++	tmake_file="$tmake_file i386/t-crtstuff t-crtstuff-pic t-libgcc-pic t-slibgcc t-slibgcc-libgcc"
++	;;
++riscv64-*-mos*)
++	extra_parts="$extra_parts crti.o crtbegin.o crtbeginS.o crtbeginT.o crtend.o crtendS.o crtn.o"
++	tmake_file="$tmake_file riscv/t-riscv riscv/t-crtstuff riscv/t-softfp${host_address} t-softfp riscv/t-elf riscv/t-elf${host_address} t-crtstuff-pic t-libgcc-pic t-slibgcc t-slibgcc-libgcc"
 +	;;
  i[34567]86-*-darwin*)
  	tmake_file="$tmake_file i386/t-crtpc t-crtfm i386/t-msabi"
