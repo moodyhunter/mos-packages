@@ -1,0 +1,70 @@
+_target=riscv64-mos
+_sysroot=/opt/$_target
+
+pkgname=$_target-gcc-stage1
+pkgver=13.2.0
+pkgrel=5
+pkgdesc="GNU gcc for the $_target toolchain"
+arch=('x86_64')
+url="https://www.gnu.org/software/gcc"
+license=('GPL')
+makedepends=(gmp mpfr gcc)
+depends=(xz libmpc $_target-binutils)
+options+=(!lto !debug staticlibs)
+source=(
+    "http://ftpmirror.gnu.org/gcc/gcc-$pkgver/gcc-$pkgver.tar.xz"
+    "$_target-gcc.patch"
+)
+sha256sums=('e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da'
+            '09189b21c275cabc06c10e5d1044a693f66f6890974f68d971ce92c751d98a32')
+
+prepare() {
+    # Patch gcc
+    cd "gcc-$pkgver"
+    patch -Np1 <"$srcdir/$_target-gcc.patch"
+}
+
+build() {
+    # Create temporary build dir
+    mkdir -p "$_target-$pkgname-$pkgver-build"
+    cd "$_target-$pkgname-$pkgver-build"
+
+    # Credits @allanmcrae
+    # https://github.com/allanmcrae/toolchain/blob/f18604d70c5933c31b51a320978711e4e6791cf1/gcc/PKGBUILD
+    # TODO: properly deal with the build issues resulting from this
+    CFLAGS=${CFLAGS/-Werror=format-security/}
+    CXXFLAGS=${CXXFLAGS/-Werror=format-security/}
+
+    # Configure, we are building in separate directory to cleanly separate the binaries from the source
+    ../gcc-$pkgver/configure \
+        --target=$_target \
+        --prefix="/usr" \
+        --libdir="/usr/lib" \
+        --libexecdir="/usr/lib" \
+        --disable-werror \
+        --disable-nls \
+        --disable-build-format-warnings \
+        --enable-languages=c,c++ \
+        --enable-__cxa_atexit \
+        --enable-linker-build-id \
+        --enable-plugin \
+        --enable-lto \
+        --with-sysroot="${_sysroot}" \
+        --with-native-system-header-dir="/include" \
+        --with-build-sysroot="${_sysroot}" \
+        --disable-shared
+
+    # Build stage 1
+    make gcc all-target-libgcc
+}
+
+package() {
+    cd "$_target-$pkgname-$pkgver-build"
+
+    # Install stage 2
+    make install-gcc DESTDIR=$pkgdir
+    make install-target-libgcc DESTDIR=$pkgdir
+    # Remove conflicting files
+    rm -rf $pkgdir/usr/share/info
+    rm -rf $pkgdir/usr/share/man/man7
+}
