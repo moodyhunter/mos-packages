@@ -1,0 +1,76 @@
+_target=riscv64-mos
+_pkgname=binutils
+
+pkgname=$_target-$_pkgname
+pkgver=2.42
+_basedir=$_pkgname-$pkgver
+pkgrel=1
+pkgdesc="A set of programs to assemble and manipulate binary and object files for the $_target target"
+arch=('x86_64')
+url='http://www.gnu.org/software/binutils/'
+license=(GPL)
+depends=(zlib libelf)
+provides=($pkgname)
+groups=($_target-toolchain)
+options=(!emptydirs !docs)
+source=($_target-binutils.patch
+    https://ftp.gnu.org/gnu/binutils/binutils-$pkgver.tar.xz)
+sha256sums=('43227e8992480d2229a36ec3887e1f8c6885db8efc3791a8d70d9e91fa6c8448'
+            'f6e4d41fd5fc778b06b7891457b3620da5ecea1006c6a4a41ae998109f85a800')
+
+prepare() {
+    cd $srcdir/$_basedir
+    sed -i '/ac_cpp=/s/$CPPFLAGS/$CPPFLAGS -O2/' libiberty/configure
+    patch -Np1 <$srcdir/$_target-binutils.patch
+    mkdir $srcdir/$_pkgname-build
+}
+
+build() {
+    cd $srcdir/$_pkgname-build
+
+    $srcdir/$_basedir/configure \
+        --target=$_target \
+        --prefix="/usr/" \
+        --with-sysroot="/opt/$_target" \
+        --with-build-sysroot=/opt/$_target \
+        --disable-nls \
+        --with-pic \
+        --enable-deterministic-archives \
+        --disable-werror \
+        --enable-gold \
+        --enable-ld=default \
+        --enable-thread \
+        --enable-shared \
+        --enable-multilib \
+        --enable-plugins \
+        --with-gnu-as \
+        --with-gnu-ld \
+        --host=${CHOST} \
+        --build=${CHOST} \
+        --enable-new-dtags
+
+    make
+}
+
+check() {
+    cd $srcdir/$_pkgname-build
+    # do not abort on errors - manually check log files
+    make -k check
+}
+
+package() {
+    cd $srcdir/$_pkgname-build
+    make DESTDIR="$pkgdir" install
+
+    # Remove file conflicting with host binutils and manpages for MS Windows tools
+    rm "$pkgdir"/usr/share/man/man1/$_target-{dlltool,windres,windmc}*
+    rm "$pkgdir"/usr/lib/bfd-plugins/libdep.so
+    rm "$pkgdir"/usr/lib/libctf*
+    rm "$pkgdir"/usr/lib/libsframe*
+    rm -r "$pkgdir"/usr/include
+    rm "$pkgdir"/usr/etc/gprofng.rc || true
+    rm -r "$pkgdir"/usr/lib/gprofng/ || true
+
+    # Remove info documents that conflict with host version
+    rm -r "$pkgdir"/usr/share/info
+}

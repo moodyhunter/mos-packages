@@ -1,0 +1,14 @@
+# converted by pkg.json-to-lilac.py for binutils
+
+maintainers:
+  - github: moodyhunter
+
+build_prefix: mos-x86_64
+
+pre_build_script: update_pkgver_and_pkgrel(_G.newver, updpkgsums=True)
+post_build: git_pkgbuild_commit
+
+update_on:
+  - source: alpm
+    alpm: binutils
+    strip_release: true
