@@ -1,0 +1,244 @@
+#!/usr/bin/python
+
+import argparse
+import os
+import re
+import sys
+import difflib
+
+from termcolor import colored, cprint
+
+from pkg_helper import PACKAGES, Package, initialise, try_find_package, sanitise_triple, CONFIG
+from pkg_helper.porting import Action, ActionType
+
+
+def do_search(hint: str, target: str = None):
+    result = try_find_package(hint, target)
+    if isinstance(result, list):
+        if len(result) == 0:
+            cprint(f"No package found for hint: {hint}", "red", attrs=["bold"])
+        else:
+            print(f"Multiple packages found:")
+            for r in result:
+                cprint(f'  {r}', "green", attrs=["bold"])
+    else:
+        cprint(result, "green", attrs=["bold"])
+
+
+def do_info(name: str, target: str = None):
+    target = sanitise_triple(target)
+
+    if name not in PACKAGES:
+        cprint(f"No package found for '{name}'", "red", attrs=["bold"])
+        sys.exit(1)
+
+    p = PACKAGES[name]
+    p.print_info(selected_target=target, has_deps=True, has_makedeps=True, has_rebuild=True)
+
+
+def do_list(target: str, has_deps=False, has_makedeps=False, has_rebuild=False):
+    target = sanitise_triple(target)
+
+    for _, p in PACKAGES.items():
+        if target and target not in p.triples:
+            continue  # skip if the target is specified but the package does not support the target
+        p.print_info(selected_target=target, has_deps=has_deps, has_makedeps=has_makedeps, has_rebuild=has_rebuild)
+
+
+def do_diff(p: Package, triple1: str, triple2: str):
+    triple1 = sanitise_triple(triple1)
+    triple2 = sanitise_triple(triple2)
+
+    ports1 = p.get_pkgbuild_path(triple1)
+    ports2 = p.get_pkgbuild_path(triple2)
+
+    print(f"diffing {ports1} and {ports2}")
+
+    differences = difflib.unified_diff(
+        open(ports1).readlines(),
+        open(ports2).readlines(),
+        fromfile=f"{p.basename}-{triple1}",
+        tofile=f"{p.basename}-{triple2}",
+    )
+
+    for line in differences:
+        # line = line.strip()
+
+        if line.startswith('@@'):
+            cprint(line, "yellow", attrs=["bold"], end="")
+        elif line.startswith('+'):
+            cprint(line, "green", attrs=["bold"], end="")
+        elif line.startswith('-'):
+            cprint(line, "red", attrs=["bold"], end="")
+        else:
+            print(line, end="")
+
+
+def do_port_package(p: Package, src_triple: str, dst_triple: str, verbose: bool = False, landing: bool = False, re_port: bool = False):
+    # landing means to actually write the changes
+    src_triple = sanitise_triple(src_triple)
+    dst_triple = sanitise_triple(dst_triple)
+
+    if src_triple not in p.triples:
+        cprint(f"Package {p.basename} does not support {src_triple}", "red", attrs=["bold"])
+        sys.exit(1)
+
+    if dst_triple in p.triples and not re_port:
+        cprint(f"Package {p.basename} already supports {dst_triple}", "red", attrs=["bold"])
+        sys.exit(1)
+
+    if dst_triple in p.triples and re_port:
+        cprint(f"Re-porting package {p.basename} from {src_triple} to {dst_triple}", "green", attrs=["bold"])
+
+    cprint(f"Porting package {p.basename} from {src_triple} to {dst_triple}", "green", attrs=["bold"])
+
+    src_packagedir = p.get_package_dir(src_triple)
+    dst_packagedir = p.get_package_dir(dst_triple, allow_nonsupport=True)
+
+    src_filelist = os.listdir(src_packagedir)
+
+    actions: list[Action] = []
+    actions.append(Action(ActionType.MAKE_DIR, "", "", dst_packagedir))
+
+    files_changed = False
+
+    for f in src_filelist:
+        ENDINGS = [(".pkg.tar.zst", "package"), (".log", "log"), (".pkg.tar.zst.sig", "signature"),]
+        should_skip = False
+        for ending, desc in ENDINGS:
+            if f.endswith(ending):
+                if verbose:
+                    cprint(f"- skipping '{f}' as it is a {desc}", "yellow", attrs=["bold"])
+                should_skip = True
+                break
+
+        if not os.path.isfile(os.path.join(src_packagedir, f)):
+            cprint(f"- skipping '{f}/' as it is not a file", "yellow")
+            should_skip = True
+
+        if should_skip:
+            continue
+
+        actions.append(Action(ActionType.COPY_FILE, os.path.join(src_packagedir, f), os.path.join(dst_packagedir, f)))
+
+        if src_triple not in f:
+            if verbose:
+                cprint(f"- no need to rename '{f}': file name doesn't contain {src_triple}", "yellow")
+            continue
+
+        # this file is a target-specific file, rename it
+        actions.append(Action(ActionType.RENAME_FILE, os.path.join(dst_packagedir, f), os.path.join(dst_packagedir, f.replace(src_triple, dst_triple))))
+
+        # also detect if it contains the triple in the content
+        with open(os.path.join(src_packagedir, f), "r") as file:
+            content = file.read()
+            if src_triple in content:
+                actions.append(Action(ActionType.PATCH_FILE, src_triple, dst_triple, f))
+                files_changed = True
+            elif verbose:
+                cprint(f" - no need to patch '{f}': file content doesn't contain {src_triple}", "yellow")
+
+    if files_changed:
+        actions.append(Action(ActionType.UPDPKGSUMS, "", ""))
+
+    deps = p.get_depends(src_triple, full_name=True)
+    makedeps = p.get_makedepends(src_triple, full_name=True)
+    rebuild = p.get_rebuild(src_triple, full_name=True)
+
+    for deps, action in zip([deps, makedeps, rebuild], [ActionType.MODIFY_DEPS, ActionType.MODIFY_MAKEDEPS, ActionType. MODIFY_REBUILD]):
+        for dep in deps:
+            if src_triple in dep:
+                actions.append(Action(action, dep, dep.replace(src_triple, dst_triple), "lilac.yaml"))
+            elif verbose:
+                cprint(f"- no need to modify dependency '{dep}': it's architecture-independent", "yellow")
+
+    cprint("The following actions will be taken:", "green", attrs=["bold"])
+
+    actions.append(Action(ActionType.PATCH_FILE, src_triple, dst_triple, "PKGBUILD"))
+
+    for i, deps in enumerate(actions):
+        print(f" {i:3}: {colored(deps.action, "yellow", attrs=["bold"])}", end=" ")
+        if deps.src != "" and deps.dst != "":
+            print(f"{colored(deps.src, "red")} -> {colored(deps.dst, "green")}", end=" ")
+            if deps.file:
+                print(f"(in {colored(deps.file, "blue")})", end=" ")
+            print()
+        else:
+            print()
+
+
+def main():
+    global FULL_PACKAGE_NAMES
+    parser = argparse.ArgumentParser(
+        description='This script helps you to find the package in the MOS package repository',
+        exit_on_error=True,
+    )
+
+    subparser = parser.add_subparsers(dest='command', help='Subcommands')
+
+    base_subparser = argparse.ArgumentParser(add_help=False)
+    base_subparser.add_argument('-v', '--verbose', action='store_true', help='Show more information')
+    base_subparser.add_argument('-t', '--target', type=str, default=None, help='The target triple of the package')
+    base_subparser.add_argument('-f', '--full-names', action='store_true', help='Show full package names')
+
+    list_parser = subparser.add_parser('list', help='List all packages in the repository', parents=[base_subparser])
+    list_parser.add_argument('--deps', action='store_true', help='Show package dependencies')
+    list_parser.add_argument('--makedeps', action='store_true', help='Show package makedependencies')
+    list_parser.add_argument('--rebuild', action='store_true', help='Show packages which triggers the rebuild of this package')
+
+    search_parser = subparser.add_parser('search', help='Search for a package in the repository', parents=[base_subparser])
+    search_parser.add_argument('hint', type=str, help='The (partial) name of the package to search')
+
+    info_parser = subparser.add_parser('info', help='Show the information of a package', parents=[base_subparser])
+    info_parser.add_argument('name', type=str, help='The name of the package to show')
+
+    diffports_parser = subparser.add_parser('diff', help='Diff the ports of a package between two targets', parents=[base_subparser])
+    diffports_parser.add_argument('triple1', type=str, help='The first target triple')
+    diffports_parser.add_argument('triple2', type=str, help='The second target triple')
+    diffports_parser.add_argument('name', type=str, help='The name of the package to diff')
+
+    port_parser = subparser.add_parser('port', help='Port the package from one target to another')
+    port_parser.add_argument('triple1', type=str, help='The source target triple')
+    port_parser.add_argument('triple2', type=str, help='The destination target triple')
+    port_parser.add_argument('name', type=str, help='The name of the package to port')
+    port_parser.add_argument('-y', '--yes', action='store_true', help='Do not dry-run')
+    port_parser.add_argument('-r', '--re-port', action='store_true', help='Re-port the package')
+    port_parser.add_argument('-v', '--verbose', action='store_true', help='Show more information')
+
+    args = parser.parse_args()
+
+    if args.command is None:
+        parser.print_help()
+        sys.exit(1)
+
+    if args.command == "list":
+        if args.verbose:
+            args.deps = args.makedeps = args.rebuild = True  # show all if verbose
+
+        CONFIG.print_full_pkgname = args.full_names
+        do_list(args.target, args.deps, args.makedeps, args.rebuild)
+    elif args.command == "info":
+        CONFIG.print_full_pkgname = args.full_names
+        do_info(args.name, args.target)
+    elif args.command == "search":
+        do_search(args.hint, args.target)
+    elif args.command == "diff":
+        p = PACKAGES[args.name]
+        do_diff(p, args.triple1, args.triple2)
+    elif args.command == "port":
+        p = PACKAGES[args.name]
+        do_port_package(p, args.triple1, args.triple2, args.verbose, args.yes, args.re_port)
+
+
+if __name__ == "__main__":
+    os.chdir(os.path.dirname(os.path.realpath(__file__)))
+    initialise()
+
+    try:
+        main()
+    except ValueError as e:
+        cprint(f"Error: {e}", "red", attrs=["bold"])
+        sys.exit(1)
+    except KeyboardInterrupt:
+        cprint("Interrupted by user", "red", attrs=["bold"])
+        sys.exit(1)
