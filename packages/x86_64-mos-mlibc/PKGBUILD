@@ -6,7 +6,7 @@ _pkgbase=$_target-mlibc
 
 pkgname=$_pkgbase
 pkgver=3835.e5e44a36
-pkgrel=9
+pkgrel=10
 pkgdesc="mlibc for the $_target toolchain"
 arch=('any')
 url="https://github.com/moodyhunter/mlibc-mos"
