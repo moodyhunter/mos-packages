@@ -23,7 +23,7 @@ sha256sums=('e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da'
 prepare() {
     # Patch gcc
     cd "gcc-$pkgver"
-    patch -Np1 <"$srcdir/$_target-gcc.patch"
+    patch -Np1 <"$srcdir/mos-gcc.patch"
 }
 
 build() {
