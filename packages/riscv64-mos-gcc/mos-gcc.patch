@@ -63,7 +63,7 @@ new file mode 100644
 index 000000000000..1283390dabb6
 --- /dev/null
 +++ b/gcc/config/mos.h
-@@ -0,0 +1,36 @@
+@@ -0,0 +1,41 @@
 +/* Useful if you wish to make target-specific GCC changes. */
 +#undef TARGET_MOS
 +#define TARGET_MOS 1
@@ -88,6 +88,11 @@ index 000000000000..1283390dabb6
 +/* Enable dynamic linking by default. */
 +#undef LINK_SPEC
 +#define LINK_SPEC "%{shared:-shared} %{!shared: %{!static: %{rdynamic:-export-dynamic} -dynamic-linker /lib/ld.so} %{static:-static}}"
++
++/* Use --as-needed -lgcc_s for eh support.  */
++#ifdef HAVE_LD_AS_NEEDED
++#define USE_LD_AS_NEEDED 1
++#endif
 +
 +/* Additional predefined macros. */
 +#undef TARGET_OS_CPP_BUILTINS
