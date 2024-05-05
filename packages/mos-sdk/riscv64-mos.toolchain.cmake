@@ -1,5 +1,5 @@
 set(CMAKE_SYSROOT "/opt/riscv64-mos")
-set(CMAKE_PREFIX_PATH "/opt/riscv64-mos")
+# set(CMAKE_PREFIX_PATH "/opt/riscv64-mos")
 
 set(CMAKE_SYSTEM_NAME "MOS")
 set(CMAKE_SYSTEM_PROCESSOR "riscv64")
