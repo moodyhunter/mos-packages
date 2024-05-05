@@ -8,8 +8,8 @@ depends=()
 makedepends=()
 source=(Platform-MOS.cmake x86_64-mos.toolchain.cmake riscv64-mos.toolchain.cmake)
 sha256sums=('0bfa915cfacd62c398c6b554f4c71de754f46ac628d688997b2753395f01076a'
-            'd4ef294a1c197789d7e4affa9a61e6d8827a9060c8bfe3065d70ac9f35aa4af0'
-            'cf4fa125216a4cff50b889afd913c8469a18b8578f9d1f281cd2d3ec9b311a01')
+            '340c01734b3d2e76f876a88fbce2a82d86664241520ade6d22b38d850d1fdcf4'
+            'b09eaf75d8ed124f23a64009770414ee6d59b4e24adcee813c5b629658388853')
 
 build() {
     true
