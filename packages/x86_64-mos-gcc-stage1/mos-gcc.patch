@@ -42,18 +42,21 @@ index 671c7e3b018c..d2f0974a4051 100644
  *-*-darwin*)
    tmake_file="t-darwin "
    tm_file="${tm_file} darwin.h"
-@@ -1836,6 +1843,15 @@ hppa*64*-*-hpux11*)
+@@ -1836,6 +1836,18 @@ hppa*64*-*-hpux11*)
  		;;
  	esac
  	;;
 +i[34567]86-*-mos*)
 +    tm_file="${tm_file} i386/unix.h i386/att.h elfos.h glibc-stdint.h i386/i386elf.h mos.h"
++    tmake_file="${tmake_file} t-slibgcc"
 +    ;;
 +x86_64-*-mos*)
 +    tm_file="${tm_file} i386/unix.h i386/att.h elfos.h glibc-stdint.h i386/i386elf.h i386/x86-64.h mos.h"
++    tmake_file="${tmake_file} t-slibgcc"
 +    ;;
 +riscv64-*-mos*)
 +    tm_file="${tm_file} riscv/elf.h elfos.h glibc-stdint.h mos.h"
++    tmake_file="${tmake_file} t-slibgcc"
 +    ;;
  i[34567]86-*-darwin1[89]* | i[34567]86-*-darwin2*)
  	echo "Error: 32bit target is not supported after Darwin17" 1>&2
@@ -63,7 +66,7 @@ new file mode 100644
 index 000000000000..1283390dabb6
 --- /dev/null
 +++ b/gcc/config/mos.h
-@@ -0,0 +1,41 @@
+@@ -0,0 +1,44 @@
 +/* Useful if you wish to make target-specific GCC changes. */
 +#undef TARGET_MOS
 +#define TARGET_MOS 1
@@ -93,6 +96,9 @@ index 000000000000..1283390dabb6
 +#ifdef HAVE_LD_AS_NEEDED
 +#define USE_LD_AS_NEEDED 1
 +#endif
++
++#undef CPP_SPEC
++#define CPP_SPEC "%{posix:-D_POSIX_SOURCE} %{pthread:-D_REENTRANT}"
 +
 +/* Additional predefined macros. */
 +#undef TARGET_OS_CPP_BUILTINS

@@ -18,7 +18,7 @@ source=(
     "mos-gcc.patch"
 )
 sha256sums=('e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da'
-            'b789e0d8dec1ee0b270a3199cb3b859cf36136a372c4bde81d1f9c12fe73a3bd')
+            '16ba4d252d9e8d3629fadd61bbaa7964944d3ed8adae98db1e3d0803be74c678')
 
 prepare() {
     # Patch gcc
