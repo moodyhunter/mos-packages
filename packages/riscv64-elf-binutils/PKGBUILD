@@ -23,7 +23,8 @@ prepare() {
 build() {
     cd $srcdir/$_pkgname-build
 
-    ./configure --target=$_target \
+    $srcdir/$_basedir/configure \
+        --target=$_target \
         --prefix=/usr \
         --enable-multilib \
         --enable-interwork \
