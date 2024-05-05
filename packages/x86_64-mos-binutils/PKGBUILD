@@ -4,7 +4,7 @@ _pkgname=binutils
 pkgname=$_target-$_pkgname
 pkgver=2.42
 _basedir=$_pkgname-$pkgver
-pkgrel=10
+pkgrel=12
 pkgdesc="A set of programs to assemble and manipulate binary and object files for the $_target target"
 arch=('x86_64')
 url='http://www.gnu.org/software/binutils/'
@@ -13,7 +13,7 @@ depends=(zlib libelf)
 provides=($pkgname)
 groups=($_target-toolchain)
 options=(!emptydirs !docs)
-source=(mos-binutils.patch
+source=($_target-binutils.patch
     https://ftp.gnu.org/gnu/binutils/binutils-$pkgver.tar.xz)
 sha256sums=('43227e8992480d2229a36ec3887e1f8c6885db8efc3791a8d70d9e91fa6c8448'
             'f6e4d41fd5fc778b06b7891457b3620da5ecea1006c6a4a41ae998109f85a800')

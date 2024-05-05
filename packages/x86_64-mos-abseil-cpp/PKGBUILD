@@ -7,7 +7,7 @@ _prefix=/opt/$_target
 _pkgname=abseil-cpp
 pkgname=$_target-abseil-cpp
 pkgver=20240116.2
-pkgrel=1
+pkgrel=2
 pkgdesc="Collection of C++ library code designed to augment the C++ standard library"
 arch=('x86_64')
 url='https://abseil.io'
@@ -16,12 +16,10 @@ depends=("$_target-mlibc")
 makedepends=('cmake' "$_target-gcc" "mos-api-headers-x86_64-git" 'mos-sdk' "$_target-gtest")
 source=("https://github.com/abseil/abseil-cpp/archive/$pkgver/$_pkgname-$pkgver.tar.gz"
          scoped-mock-log.patch
-         mos-abseil-cpp.patch
-         $_target.cmake)
+         mos-abseil-cpp.patch)
 sha256sums=('733726b8c3a6d39a4120d7e45ea8b41a434cdacde401cba500f14236c49b39dc'
             'a6cbc612a2b96fcbd52d081e03e8581107ceb4827edb19d96510a31c568e1396'
-            '261db32193871fe966a0e3e8411df370cccc38a7a973629409d411d95077a3f0'
-            'd4ef294a1c197789d7e4affa9a61e6d8827a9060c8bfe3065d70ac9f35aa4af0')
+            '261db32193871fe966a0e3e8411df370cccc38a7a973629409d411d95077a3f0')
 
 prepare() {
   cd "$srcdir/$_pkgname-$pkgver"
@@ -32,7 +30,7 @@ prepare() {
 build() {
   cd "$srcdir/$_pkgname-$pkgver"
   cmake -Bbuild \
-    -DCMAKE_TOOLCHAIN_FILE=../$_target.cmake \
+    -DCMAKE_TOOLCHAIN_FILE=/opt/${_target}/toolchain.cmake \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_CXX_FLAGS="${CXXFLAGS} -DNDEBUG" \
     -DCMAKE_INSTALL_PREFIX=$_prefix \

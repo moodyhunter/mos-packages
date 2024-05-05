@@ -21,11 +21,9 @@ makedepends=('python' 'cmake' "$_target-gcc" 'sh' 'mos-sdk')
 optdepends=('python: gmock generator')
 _srcname=googletest-${pkgver}
 source=(${_srcname}.tar.gz::https://github.com/google/googletest/archive/v${pkgver}.tar.gz
-        gtest-version.patch
-        $_target.cmake)
+        gtest-version.patch)
 sha512sums=('765c326ccc1b87a01027385e69238266e356361cd4ee3e18e3c9d137a5d11fa5d657c164d02dd1be8fe693c8e10f2b580588dbfa57d27f070e2750f50d3e662c'
-            '8d426a1759a9931db5f8431d83d163fd1bc986be27f85c24222d69a18224451c5a745a29f783e55c83af1882bd0bbc2504f91668c38d6622810bb65888897799'
-            '52808686bfce03fc61102a41e1d3ae48f85f909a46dbfbb9061631f72fb2f953f6adf27339ba2815731d320d9edca0046cc288ac2b915201c9f84ab21d60af6f')
+            '8d426a1759a9931db5f8431d83d163fd1bc986be27f85c24222d69a18224451c5a745a29f783e55c83af1882bd0bbc2504f91668c38d6622810bb65888897799')
 
 prepare() {
   cd ${_srcname}
@@ -35,7 +33,7 @@ prepare() {
 
 build() {
  cmake -H${_srcname} -Bbuild \
-    -DCMAKE_TOOLCHAIN_FILE=../${_target}.cmake \
+    -DCMAKE_TOOLCHAIN_FILE=/opt/${_target}/toolchain.cmake \
     -DCMAKE_INSTALL_PREFIX=$_prefix \
     -DBUILD_SHARED_LIBS=ON \
     -Dgtest_build_tests=ON

@@ -21,7 +21,7 @@ sha256sums=('43227e8992480d2229a36ec3887e1f8c6885db8efc3791a8d70d9e91fa6c8448'
 prepare() {
     cd $srcdir/$_basedir
     sed -i '/ac_cpp=/s/$CPPFLAGS/$CPPFLAGS -O2/' libiberty/configure
-    patch -Np1 <$srcdir/$_target-binutils.patch
+    patch -Np1 <$srcdir/mos-binutils.patch
     mkdir $srcdir/$_pkgname-build
 }
 

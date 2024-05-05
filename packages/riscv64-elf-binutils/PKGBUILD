@@ -1,12 +1,12 @@
-# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
-# Contributor: Anatol Pomozov <anatol.pomozov@gmail.com>
-
 _target=riscv64-elf
-pkgname=$_target-binutils
+_pkgname=binutils
+
+pkgname=$_target-$_pkgname
 pkgver=2.42
+_basedir=$_pkgname-$pkgver
 pkgrel=2
-pkgdesc='A set of programs to assemble and manipulate binary and object files for the RISCV64 (bare-metal) target'
-arch=(x86_64)
+pkgdesc="A set of programs to assemble and manipulate binary and object files for the $_target target"
+arch=('x86_64')
 url='https://www.gnu.org/software/binutils/'
 license=(GPL)
 depends=(zlib)
@@ -15,13 +15,13 @@ source=("https://ftp.gnu.org/gnu/binutils/binutils-$pkgver.tar.bz2")
 sha512sums=('d2c6d264bbeaaaf2aad1fa3fc417c1841a5dd4a299fa47c47d15adb821c22dae733e58f19ebcfea3b0c5890ba56e4a5f92ab55128a572d585bcd5172b63f456c')
 
 prepare() {
-    cd binutils-$pkgver
-
-    sed -i '/ac_cpp=/s/\$CPPFLAGS/\$CPPFLAGS -O2/' libiberty/configure
+    cd $_basedir
+    sed -i '/ac_cpp=/s/$CPPFLAGS/$CPPFLAGS -O2/' libiberty/configure
+    mkdir $srcdir/$_pkgname-build
 }
 
 build() {
-    cd binutils-$pkgver
+    cd $srcdir/$_pkgname-build
 
     ./configure --target=$_target \
         --prefix=/usr \
@@ -39,22 +39,18 @@ build() {
 }
 
 check() {
-    cd binutils-$pkgver
-
-    # unset LDFLAGS as testsuite makes assumptions about which ones are active
+    cd $srcdir/$_pkgname-build
     # do not abort on errors - manually check log files
-    make LDFLAGS="" -k check || true
+    make -k check
 }
 
 package() {
-    cd binutils-$pkgver
-
+    cd $srcdir/$_pkgname-build
     make DESTDIR="$pkgdir" install
 
     # Remove file conflicting with host binutils and manpages for MS Windows tools
     rm "$pkgdir"/usr/share/man/man1/$_target-{dlltool,windres,windmc}*
     rm "$pkgdir"/usr/lib/bfd-plugins/libdep.so
 
-    # Remove info documents that conflict with host version
-    rm -r "$pkgdir"/usr/share/info
+    rm -r ${pkgdir}/usr/share/{info,man}
 }

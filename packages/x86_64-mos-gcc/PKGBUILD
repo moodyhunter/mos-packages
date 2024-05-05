@@ -3,7 +3,7 @@ _sysroot=/opt/$_target
 
 pkgname=$_target-gcc
 pkgver=13.2.0
-pkgrel=13
+pkgrel=16
 pkgdesc="GNU gcc for the $_target toolchain"
 arch=('x86_64')
 url="https://www.gnu.org/software/gcc"
@@ -23,7 +23,7 @@ sha256sums=('e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da'
 prepare() {
     # Patch gcc
     cd "gcc-$pkgver"
-    patch -Np1 <"$srcdir/$_target-gcc.patch"
+    patch -Np1 <"$srcdir/mos-gcc.patch"
 }
 
 build() {
@@ -82,6 +82,6 @@ package() {
     rm -r "$pkgdir"/usr/share/gcc-$pkgver
 
     for so in libgcc_s.so libgcc_s.so.1 libstdc++.so; do
-        install -Dm 755 ${pkgdir}/usr/x86_64-mos/lib/$so ${pkgdir}/${_sysroot}/lib/$so
+        install -Dm 755 ${pkgdir}/usr/$_target/lib/$so ${pkgdir}/${_sysroot}/lib/$so
     done
 }

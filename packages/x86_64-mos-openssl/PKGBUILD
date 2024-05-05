@@ -15,7 +15,7 @@ provides=('libcrypto.so' 'libssl.so')
 backup=('etc/ssl/openssl.cnf')
 source=("https://www.openssl.org/source/openssl-${pkgver}.tar.gz"
         'ca-dir.patch'
-		'10-main.conf.patch')
+		'10-x86_64-mos-main.conf.patch')
 sha256sums=('83c7329fe52c850677d75e5d0b0ca245309b97e8ecbcfdc1dfdc4ab9fac35b39'
             '0a32d9ca68e8d985ce0bfef6a4c20b46675e06178cc2d0bf6d91bd6865d648b7'
             'ab0cc43dfbf27c92ffdd933673d127c0a603ac46e910b3f673170c6f1bb02c83')
@@ -30,7 +30,7 @@ prepare() {
 	# set ca dir to /etc/ssl by default
 	patch -Np1 -i "$srcdir/ca-dir.patch"
 
-	patch -Np1 -i "$srcdir/10-main.conf.patch"
+	patch -Np1 -i "$srcdir/10-x86_64-mos-main.conf.patch"
 }
 
 build() {
