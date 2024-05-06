@@ -8,9 +8,8 @@ build_prefix: mos-x86_64
 repo_depends:
   - mos-api-headers-riscv64-git
 
-# hell no circular dependency
-# repo_makedepends:
-# - riscv64-mos-gcc
+repo_makedepends:
+  - riscv64-mos-gcc
 
 post_build: git_pkgbuild_commit
 
