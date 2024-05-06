@@ -56,7 +56,7 @@ index 671c7e3b018c..d2f0974a4051 100644
 +    ;;
 +riscv64-*-mos*)
 +    tm_file="${tm_file} riscv/elf.h elfos.h glibc-stdint.h mos.h"
-+    tmake_file="${tmake_file} t-slibgcc"
++    tmake_file="${tmake_file} t-slibgcc riscv/t-riscv"
 +    ;;
  i[34567]86-*-darwin1[89]* | i[34567]86-*-darwin2*)
  	echo "Error: 32bit target is not supported after Darwin17" 1>&2
@@ -198,7 +198,7 @@ index b9975de90235..a3ea1a05cf67 100644
 +	;;
 +riscv64-*-mos*)
 +	extra_parts="$extra_parts crti.o crtbegin.o crtbeginS.o crtbeginT.o crtend.o crtendS.o crtn.o"
-+	tmake_file="$tmake_file riscv/t-riscv riscv/t-crtstuff riscv/t-softfp${host_address} t-softfp riscv/t-elf riscv/t-elf${host_address} t-crtstuff-pic t-libgcc-pic t-slibgcc t-slibgcc-libgcc"
++	tmake_file="$tmake_file riscv/t-elf riscv/t-elf${host_address} riscv/t-softfp${host_address} t-softfp t-crtstuff-pic t-libgcc-pic t-slibgcc t-slibgcc-libgcc"
 +	;;
  i[34567]86-*-darwin*)
  	tmake_file="$tmake_file i386/t-crtpc t-crtfm i386/t-msabi"

@@ -36,6 +36,8 @@ build() {
         --without-headers \
         --enable-libgcc \
         --enable-languages=c,c++ \
+        --with-arch=rv64imafdc \
+        --with-abi=lp64d \
         --disable-build-format-warnings # https://bugs.archlinux.org/task/70701
 
     make all-gcc

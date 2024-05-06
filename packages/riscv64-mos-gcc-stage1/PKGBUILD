@@ -16,7 +16,7 @@ source=(
     "mos-gcc.patch"
 )
 sha256sums=('e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da'
-            '16ba4d252d9e8d3629fadd61bbaa7964944d3ed8adae98db1e3d0803be74c678')
+            '6dec99c9f8d7238b91ad0badf7b51925b607d1031f6c7aaed2093d884ac9b4e5')
 
 prepare() {
     # Patch gcc
@@ -52,7 +52,9 @@ build() {
         --with-sysroot="${_sysroot}" \
         --with-native-system-header-dir="/include" \
         --with-build-sysroot="${_sysroot}" \
-        --disable-shared
+        --disable-shared \
+        --with-arch=rv64imafdc \
+        --with-abi=lp64d
 
     # Build stage 1
     make gcc all-target-libgcc
