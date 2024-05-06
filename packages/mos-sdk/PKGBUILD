@@ -1,6 +1,6 @@
 pkgname=mos-sdk
 pkgver=1
-pkgrel=11
+pkgrel=12
 pkgdesc="Various compiling toolchains for the MOS operating system"
 arch=('any')
 license=(GPL)
