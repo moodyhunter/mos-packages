@@ -190,15 +190,15 @@ index b9975de90235..a3ea1a05cf67 100644
  	;;
 +i[34567]86-*-mos*)
 +	extra_parts="$extra_parts crti.o crtbegin.o crtbeginS.o crtbeginT.o crtend.o crtendS.o crtn.o"
-+	tmake_file="$tmake_file i386/t-crtstuff t-crtstuff-pic t-libgcc-pic t-slibgcc t-slibgcc-libgcc"
++	tmake_file="$tmake_file i386/t-crtstuff t-crtstuff-pic t-libgcc-pic t-slibgcc t-slibgcc-gld t-slibgcc-elf-ver t-slibgcc-libgcc"
 +	;;
 +x86_64-*-mos*)
 +	extra_parts="$extra_parts crti.o crtbegin.o crtbeginS.o crtbeginT.o crtend.o crtendS.o crtn.o"
-+	tmake_file="$tmake_file i386/t-crtstuff t-crtstuff-pic t-libgcc-pic t-slibgcc t-slibgcc-libgcc"
++	tmake_file="$tmake_file i386/t-crtstuff t-crtstuff-pic t-libgcc-pic t-slibgcc t-slibgcc-gld t-slibgcc-elf-ver t-slibgcc-libgcc"
 +	;;
 +riscv64-*-mos*)
 +	extra_parts="$extra_parts crti.o crtbegin.o crtbeginS.o crtbeginT.o crtend.o crtendS.o crtn.o"
-+	tmake_file="$tmake_file riscv/t-elf riscv/t-elf${host_address} riscv/t-softfp${host_address} t-softfp t-crtstuff-pic t-libgcc-pic t-slibgcc t-slibgcc-libgcc"
++	tmake_file="$tmake_file riscv/t-elf riscv/t-elf${host_address} riscv/t-softfp${host_address} t-softfp t-crtstuff-pic t-libgcc-pic t-slibgcc t-slibgcc-gld t-slibgcc-elf-ver t-slibgcc-libgcc"
 +	;;
  i[34567]86-*-darwin*)
  	tmake_file="$tmake_file i386/t-crtpc t-crtfm i386/t-msabi"
