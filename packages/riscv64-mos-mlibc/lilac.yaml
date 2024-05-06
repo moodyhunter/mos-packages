@@ -20,3 +20,4 @@ update_on:
 
 update_on_build:
   - pkgbase: mos-api-headers-riscv64-git
+  - pkgbase: riscv64-mos-gcc
