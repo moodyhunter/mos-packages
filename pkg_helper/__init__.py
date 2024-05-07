@@ -90,8 +90,11 @@ class Package:
     def get_friends_name(self, friend: "Package", triple: str, full_name=False):
         if CONFIG.print_full_pkgname or full_name:
             return friend._fullname
-        else:
-            return friend.basename if (triple in friend.triples) else f"{friend.basename} " + colored("(any)", "yellow")
+
+        if triple in friend.triples:
+            return friend.basename
+
+        return friend.basename + colored(f" ({', '.join(friend.triples)})", "red", attrs=["bold"])
 
     def get_friend_names(self, friends: list["Package"], triple: str, full_name=False):
         return [self.get_friends_name(friend, triple, full_name) for friend in friends]
