@@ -11,7 +11,7 @@ license=('GPL')
 provides=($pkgname)
 groups=($_target-toolchain)
 makedepends=($_target-gmp $_target-mpfr $_target-gcc $_target-mlibc)
-depends=(xz libmpc $_target-binutils)
+depends=(xz $_target-libmpc $_target-binutils)
 options+=(!lto !debug staticlibs)
 source=(
     "http://ftpmirror.gnu.org/gcc/gcc-$pkgver/gcc-$pkgver.tar.xz"
@@ -34,8 +34,10 @@ build() {
     # Credits @allanmcrae
     # https://github.com/allanmcrae/toolchain/blob/f18604d70c5933c31b51a320978711e4e6791cf1/gcc/PKGBUILD
     # TODO: properly deal with the build issues resulting from this
-    CFLAGS=${CFLAGS/-Werror=format-security/}
-    CXXFLAGS=${CXXFLAGS/-Werror=format-security/}
+
+    # the values in riscv CFLAGS confuse the build system, in either mos-x86_64 prefix or mos-riscv64 prefix
+    CFLAGS=""
+    CXXFLAGS=""
 
     # Configure, we are building in seperate directory to cleanly seperate the binaries from the source
     ../gcc-$pkgver/configure \
