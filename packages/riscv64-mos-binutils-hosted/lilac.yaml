@@ -1,0 +1,22 @@
+# converted by pkg.json-to-lilac.py for binutils-hosted
+
+maintainers:
+  - github: moodyhunter
+
+build_prefix: mos-riscv64
+
+repo_makedepends:
+  - riscv64-mos-binutils
+  - riscv64-mos-gcc
+  - riscv64-mos-mlibc
+
+pre_build_script: update_pkgver_and_pkgrel(_G.newver, updpkgsums=True)
+post_build: git_pkgbuild_commit
+
+update_on:
+  - source: alpm
+    alpm: binutils
+    strip_release: true
+
+update_on_build:
+  - pkgbase: riscv64-mos-mlibc

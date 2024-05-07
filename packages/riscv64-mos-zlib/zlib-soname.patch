@@ -1,0 +1,13 @@
+diff --git a/configure b/configure
+index cc867c944740..d7a1965a79ec 100755
+--- a/configure
++++ b/configure
+@@ -226,7 +226,7 @@ if test "$gcc" -eq 1 && ($cc -c $test.c) >> configure.log 2>&1; then
+     uname=`(uname -s || echo unknown) 2>/dev/null`
+   fi
+   case "$uname" in
+-  Linux* | linux* | *-linux* | GNU | GNU/* | solaris*)
++  Linux* | linux* | *-linux* | GNU | GNU/* | solaris* | *-mos)
+         case "$mname" in
+         *sparc*)
+             LDFLAGS="${LDFLAGS} -Wl,--no-warn-rwx-segments" ;;

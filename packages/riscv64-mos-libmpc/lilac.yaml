@@ -1,0 +1,24 @@
+# converted by pkg.json-to-lilac.py for libmpc
+
+maintainers:
+  - github: moodyhunter
+
+build_prefix: mos-riscv64
+
+repo_depends:
+  - riscv64-mos-mlibc
+  - riscv64-mos-mpfr
+
+repo_makedepends:
+  - riscv64-mos-gcc
+
+pre_build_script: update_pkgver_and_pkgrel(_G.newver, updpkgsums=True)
+post_build: git_pkgbuild_commit
+
+update_on:
+  - source: alpm
+    alpm: libmpc
+    strip_release: true
+
+update_on_build:
+  - pkgbase: riscv64-mos-mpfr

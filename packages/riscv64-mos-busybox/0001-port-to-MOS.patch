@@ -1,0 +1,31 @@
+diff --git a/include/platform.h b/include/platform.h
+index ea0512f36506..0302878b6e3e 100644
+--- a/include/platform.h
++++ b/include/platform.h
+@@ -432,6 +432,11 @@ typedef unsigned smalluint;
+ #define HAVE_DEV_FD 1
+ #define DEV_FD_PREFIX "/dev/fd/"
+ 
++#ifdef __mos__
++#undef HAVE_MNTENT_H
++#undef HAVE_SYS_STATFS_H
++#endif
++
+ #if defined(__UCLIBC__)
+ # if UCLIBC_VERSION < KERNEL_VERSION(0, 9, 32)
+ #  undef HAVE_STRVERSCMP
+diff --git a/shell/hush.c b/shell/hush.c
+index ca01e2b5bba0..5fe17f099446 100644
+--- a/shell/hush.c
++++ b/shell/hush.c
+@@ -379,6 +379,10 @@
+ # define NUM_SCRIPTS 0
+ #endif
+ 
++#ifdef __mos__
++typedef __sighandler sighandler_t;
++#endif
++
+ /* So far, all bash compat is controlled by one config option */
+ /* Separate defines document which part of code implements what */
+ #define BASH_PATTERN_SUBST ENABLE_HUSH_BASH_COMPAT
