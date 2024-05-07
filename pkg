@@ -1,19 +1,39 @@
 #!/usr/bin/python
 
 import argparse
-import os
-import re
-import sys
 import difflib
+import os
+import shutil
+import sys
 
-from termcolor import colored, cprint
+from termcolor import cprint
 
-from pkg_helper import PACKAGES, Package, initialise, try_find_package, sanitise_triple, CONFIG
-from pkg_helper.porting import Action, ActionType
+from pkg_helper import (CONFIG, PACKAGES, Package, PackageNotFoundError,
+                        SolidPackage, initialise, porting, sanitise_triple,
+                        try_find_package)
+
+SKIPPED_FILE_EXT = [
+    (".pkg.tar.zst", "package"),
+    (".log", "log"),
+    (".pkg.tar.zst.sig", "signature"),
+]
 
 
-def do_search(hint: str, target: str = None):
-    result = try_find_package(hint, target)
+def yes_or_no(question: str, default: str = "") -> bool:
+    while True:
+        cprint(question, "yellow", attrs=["bold"], end="")
+        yn = " [Y/n]" if default == "y" else " [y/N]" if default == "n" else " [y/n]"
+        answer = input(f" {yn} ").lower().strip() or default
+        if answer in ["y", "yes"]:
+            return True
+        elif answer in ["n", "no"]:
+            return False
+        else:
+            cprint("Please answer with 'y' or 'n'", "red", attrs=["bold"])
+
+
+def do_search(hint: str, target: str = ""):
+    result = try_find_package(hint, target=target)
     if isinstance(result, list):
         if len(result) == 0:
             cprint(f"No package found for hint: {hint}", "red", attrs=["bold"])
@@ -25,7 +45,7 @@ def do_search(hint: str, target: str = None):
         cprint(result, "green", attrs=["bold"])
 
 
-def do_info(name: str, target: str = None):
+def do_info(name: str, target: str = ""):
     target = sanitise_triple(target)
 
     if name not in PACKAGES:
@@ -44,13 +64,13 @@ def do_info(name: str, target: str = None):
 def do_list(target: str, has_deps=False, has_makedeps=False, has_rebuild=False):
     target = sanitise_triple(target)
 
-    for _, p in PACKAGES.items():
+    for _, p in sorted(PACKAGES.items()):
         if target and target not in p.triples:
             continue  # skip if the target is specified but the package does not support the target
         p.print_info(selected_target=target, has_deps=has_deps, has_makedeps=has_makedeps, has_rebuild=has_rebuild)
 
 
-def do_diff(p: Package, triple1: str, triple2: str):
+def do_diff_package(p: Package, triple1: str, triple2: str):
     triple1 = sanitise_triple(triple1)
     triple2 = sanitise_triple(triple2)
 
@@ -77,103 +97,108 @@ def do_diff(p: Package, triple1: str, triple2: str):
             print(line, end="")
 
 
-def do_port_package(p: Package, src_triple: str, dst_triple: str, verbose: bool = False, landing: bool = False, re_port: bool = False):
-    # landing means to actually write the changes
+def do_port_package(pkg: Package, src_triple: str, dst_triple: str, verbose: bool = False, landing: bool = False):
     src_triple = sanitise_triple(src_triple)
     dst_triple = sanitise_triple(dst_triple)
 
-    if src_triple not in p.triples:
-        cprint(f"Package {p.basename} does not support {src_triple}", "red", attrs=["bold"])
+    if dst_triple in pkg.triples:
+        cprint(f"Package {pkg.basename} already supports {dst_triple}", "red", attrs=["bold"])
         sys.exit(1)
 
-    if dst_triple in p.triples and not re_port:
-        cprint(f"Package {p.basename} already supports {dst_triple}", "red", attrs=["bold"])
-        sys.exit(1)
+    cprint(f"Porting package {pkg.basename} from {src_triple} to {dst_triple}", "green", attrs=["bold"])
 
-    if dst_triple in p.triples and re_port:
-        cprint(f"Re-porting package {p.basename} from {src_triple} to {dst_triple}", "green", attrs=["bold"])
+    src = SolidPackage(pkg, src_triple)
+    driver = porting.PortDriver(src, dst_triple)
+    dst = driver.context.dstpkg
 
-    cprint(f"Porting package {p.basename} from {src_triple} to {dst_triple}", "green", attrs=["bold"])
+    deplist = driver.check_package_deps()
+    if deplist.is_empty():
+        cprint(f'  dependency check for {pkg.basename} passed', 'green')
+    else:
+        cprint(f"Cannot port package {pkg.basename} to {dst_triple}: the following dependencies are not met", "red", attrs=["bold"])
 
-    src_packagedir = p.get_package_dir(src_triple)
-    dst_packagedir = p.get_package_dir(dst_triple, allow_nonsupport=True)
+        deplist_reasons = {dep.basename: ", ".join(
+            (["dep"] if dep in deplist.depends else []) +
+            (["makedep"] if dep in deplist.makedepends else []) +
+            (["rebuild"] if dep in deplist.rebuild else [])
+        ) for dep in set([dep for dep in deplist.depends + deplist.makedepends + deplist.rebuild])}
 
-    src_filelist = os.listdir(src_packagedir)
+        for dep, reason in sorted(deplist_reasons.items()):
+            cprint(f"  {dep} ({reason})", "red")
 
-    actions: list[Action] = []
-    actions.append(Action(ActionType.MAKE_DIR, "", "", dst_packagedir))
+        return False
+
+    src_filelist = os.listdir(src.pkgdir)
 
     files_changed = False
 
     for f in src_filelist:
-        ENDINGS = [(".pkg.tar.zst", "package"), (".log", "log"), (".pkg.tar.zst.sig", "signature"),]
         should_skip = False
-        for ending, desc in ENDINGS:
+        for ending, desc in SKIPPED_FILE_EXT:
             if f.endswith(ending):
                 if verbose:
-                    cprint(f"- skipping '{f}' as it is a {desc}", "yellow", attrs=["bold"])
+                    cprint(f"  skipping '{f}' as it is a {desc}", "yellow", attrs=["bold"])
                 should_skip = True
-                break
+                break  # skip the rest of the endings
 
-        if not os.path.isfile(os.path.join(src_packagedir, f)):
-            cprint(f"- skipping '{f}/' as it is not a file", "yellow")
+        if not os.path.isfile(os.path.join(src.pkgdir, f)):
+            if verbose:
+                cprint(f"  skipping '{f}/' as it is not a file", "yellow")
             should_skip = True
 
         if should_skip:
             continue
 
-        actions.append(Action(ActionType.COPY_FILE, os.path.join(src_packagedir, f), os.path.join(dst_packagedir, f)))
+        driver.add_step(porting.Action.COPY_FILE, os.path.join(src.pkgdir, f), os.path.join(dst.pkgdir, f))
 
         if src_triple not in f:
             if verbose:
-                cprint(f"- no need to rename '{f}': file name doesn't contain {src_triple}", "yellow")
+                cprint(f"  no need to rename '{f}': file name doesn't contain {src_triple}", "yellow")
             continue
 
-        # this file is a target-specific file, rename it
-        actions.append(Action(ActionType.RENAME_FILE, os.path.join(dst_packagedir, f), os.path.join(dst_packagedir, f.replace(src_triple, dst_triple))))
-
         # also detect if it contains the triple in the content
-        with open(os.path.join(src_packagedir, f), "r") as file:
+        with open(os.path.join(src.pkgdir, f), "r") as file:
             content = file.read()
             if src_triple in content:
-                actions.append(Action(ActionType.PATCH_FILE, src_triple, dst_triple, f))
-                files_changed = True
+                driver.add_step(porting.Action.PATCH_FILE, src_triple, dst_triple, os.path.join(dst.pkgdir, f))
+                files_changed |= True
             elif verbose:
-                cprint(f" - no need to patch '{f}': file content doesn't contain {src_triple}", "yellow")
+                cprint(f"  no need to patch '{f}': file content doesn't contain {src_triple}", "yellow")
 
+        # this file is a target-specific file, rename it
+        driver.add_step(porting.Action.RENAME_FILE, os.path.join(dst.pkgdir, f), os.path.join(dst.pkgdir, f.replace(src_triple, dst_triple)))
+
+    driver.add_step(porting.Action.PATCH_FILE, src_triple, dst_triple, os.path.join(dst.pkgdir, "PKGBUILD"))
     if files_changed:
-        actions.append(Action(ActionType.UPDPKGSUMS, "", ""))
+        driver.add_step(porting.Action.UPDPKGSUMS, "", "")
 
-    deps = p.get_depends(src_triple, full_name=True)
-    makedeps = p.get_makedepends(src_triple, full_name=True)
-    rebuild = p.get_rebuild(src_triple, full_name=True)
+    driver.add_step(porting.Action.PATCH_FILE, src_triple, dst_triple, os.path.join(dst.pkgdir, "lilac.yaml"))
 
-    for deps, action in zip([deps, makedeps, rebuild], [ActionType.MODIFY_DEPS, ActionType.MODIFY_MAKEDEPS, ActionType. MODIFY_REBUILD]):
-        for dep in deps:
-            if src_triple in dep:
-                actions.append(Action(action, dep, dep.replace(src_triple, dst_triple), "lilac.yaml"))
-            elif verbose:
-                cprint(f"- no need to modify dependency '{dep}': it's architecture-independent", "yellow")
+    src_arch = src_triple.split("-")[0]
+    dst_arch = dst_triple.split("-")[0]
+    driver.add_step(porting.Action.PATCH_FILE, f"build_prefix: mos-{src_arch}", f"build_prefix: mos-{dst_arch}", os.path.join(dst.pkgdir, "lilac.yaml"))
+    driver.print_steps()
 
-    cprint("The following actions will be taken:", "green", attrs=["bold"])
+    if landing:
+        result = driver.execute()
+        cprint(f"Porting {'succeeded' if result else 'failed'}", "green" if result else "red", attrs=["bold"])
 
-    actions.append(Action(ActionType.PATCH_FILE, src_triple, dst_triple, "PKGBUILD"))
-
-    for i, deps in enumerate(actions):
-        print(f" {i:3}: {colored(deps.action, "yellow", attrs=["bold"])}", end=" ")
-        if deps.src != "" and deps.dst != "":
-            print(f"{colored(deps.src, "red")} -> {colored(deps.dst, "green")}", end=" ")
-            if deps.file:
-                print(f"(in {colored(deps.file, "blue")})", end=" ")
-            print()
-        else:
-            print()
+        if not result:
+            answer = yes_or_no(f"Do you want to clear '{dst.pkgdir}'?", default='y')
+            if answer:
+                try:
+                    shutil.rmtree(dst.pkgdir)
+                except FileNotFoundError:
+                    pass
+                print(f"Directory '{dst.pkgdir}' removed")
+    else:
+        print("Dry-run, no changes made")
+        print("To actually port the package, use the -y option")
 
 
 def main():
-    global FULL_PACKAGE_NAMES
     parser = argparse.ArgumentParser(
-        description='This script helps you to find the package in the MOS package repository',
+        description='This script helps you to maintain packages in the MOS package repository',
         exit_on_error=True,
     )
 
@@ -192,7 +217,7 @@ def main():
     search_parser = subparser.add_parser('search', help='Search for a package in the repository', parents=[base_subparser])
     search_parser.add_argument('hint', type=str, help='The (partial) name of the package to search')
 
-    info_parser = subparser.add_parser('info', help='Show the information of a package', parents=[base_subparser])
+    info_parser = subparser.add_parser('info', help='Show the information of a package', parents=[base_subparser], aliases=['show'])
     info_parser.add_argument('name', type=str, help='The name of the package to show')
 
     diffports_parser = subparser.add_parser('diff', help='Diff the ports of a package between two targets', parents=[base_subparser])
@@ -205,7 +230,6 @@ def main():
     port_parser.add_argument('triple2', type=str, help='The destination target triple')
     port_parser.add_argument('name', type=str, help='The name of the package to port')
     port_parser.add_argument('-y', '--yes', action='store_true', help='Do not dry-run')
-    port_parser.add_argument('-r', '--re-port', action='store_true', help='Re-port the package')
     port_parser.add_argument('-v', '--verbose', action='store_true', help='Show more information')
 
     args = parser.parse_args()
@@ -214,31 +238,36 @@ def main():
         parser.print_help()
         sys.exit(1)
 
+    initialise()
     if args.command == "list":
         if args.verbose:
             args.deps = args.makedeps = args.rebuild = True  # show all if verbose
-
         CONFIG.print_full_pkgname = args.full_names
         do_list(args.target, args.deps, args.makedeps, args.rebuild)
-    elif args.command == "info":
+    elif args.command == "info" or args.command == "show":
         CONFIG.print_full_pkgname = args.full_names
         do_info(args.name, args.target)
     elif args.command == "search":
         do_search(args.hint, args.target)
     elif args.command == "diff":
         p = PACKAGES[args.name]
-        do_diff(p, args.triple1, args.triple2)
+        do_diff_package(p, args.triple1, args.triple2)
     elif args.command == "port":
         p = PACKAGES[args.name]
-        do_port_package(p, args.triple1, args.triple2, args.verbose, args.yes, args.re_port)
+        do_port_package(p, args.triple1, args.triple2, args.verbose, args.yes)
 
 
 if __name__ == "__main__":
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
-    initialise()
 
     try:
         main()
+    except KeyError as e:
+        cprint(f"KeyError: {e}, probably misspelled a package name?", "red", attrs=["bold"])
+        sys.exit(1)
+    except PackageNotFoundError as e:
+        cprint(f"Error: {e}", "red", attrs=["bold"])
+        sys.exit(1)
     except ValueError as e:
         cprint(f"Error: {e}", "red", attrs=["bold"])
         sys.exit(1)
