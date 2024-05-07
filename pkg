@@ -33,6 +33,11 @@ def do_info(name: str, target: str = None):
         sys.exit(1)
 
     p = PACKAGES[name]
+
+    if target and target not in p.triples:
+        cprint(f"Package {p.basename} does not support '{target}'", "red", attrs=["bold"])
+        sys.exit(1)
+
     p.print_info(selected_target=target, has_deps=True, has_makedeps=True, has_rebuild=True)
 
 
@@ -62,8 +67,6 @@ def do_diff(p: Package, triple1: str, triple2: str):
     )
 
     for line in differences:
-        # line = line.strip()
-
         if line.startswith('@@'):
             cprint(line, "yellow", attrs=["bold"], end="")
         elif line.startswith('+'):
