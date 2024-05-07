@@ -15,7 +15,7 @@ makedepends=($_target-gcc)
 source=("https://gitlab.com/OldManProgrammer/unix-tree/-/archive/${pkgver}/unix-tree-${pkgver}.tar.gz"
 	"0001-riscv64-mos-target.patch")
 sha512sums=('997d20c5508d3eba026e9d621a4da2b3b0bf111d272bb7d705a9a0819d430887061e234f0a00ac3102c43413ef716c1371ee0620b8460fbd523d4a3790940a29'
-            '73cd6a42120eef3742198bdaa5f1d7715bee6005b244c4b7771e2341554ea13b0c4de9840413468f21e98643905436908cc07bb1441c5aa0457401736506029d')
+            'b1f90c464874e4e05259803b83dfc53b98239487c89e0de7cd611c58a0f7a8eca44546e38a690d3d3e8ef4b2355bd836dfba89c4392b00a401ee30d15ca2bb3d')
 
 prepare() {
   cd "unix-tree-${pkgver}"

@@ -1,0 +1,15 @@
+diff --git a/Makefile b/Makefile
+index 858f961..296ca59 100644
+--- a/Makefile
++++ b/Makefile
+@@ -30,6 +30,9 @@ MANDIR=${PREFIX}/man
+ OBJS=tree.o list.o hash.o color.o file.o filter.o info.o unix.o xml.o json.o html.o strverscmp.o
+ 
+ # Uncomment options below for your particular OS:
++CC=riscv64-mos-gcc
++CFLAGS+=-O3 -std=c11 -pedantic -Wall -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
++LDFLAGS+=-s
+ 
+ # Linux defaults:
+ #CFLAGS+=-O3 -std=c11 -pedantic -Wall -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+
