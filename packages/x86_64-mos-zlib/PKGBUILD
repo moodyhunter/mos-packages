@@ -14,6 +14,8 @@ pkgdesc='Compression library implementing the deflate compression method found i
 arch=(any)
 license=(Zlib)
 url="https://www.zlib.net/"
+makedepends=($_target-gcc)
+depends=($_target-mlibc)
 options=(
   staticlibs  # needed by binutils testsuite
   debug
@@ -31,6 +33,7 @@ prepare() {
   cp Makefile Makefile.orig
   cp ../README.contrib readme.txt
   autoreconf -fiv
+  sed -i 's/| fiwix*/| fiwix* | mos*/' config.sub
   cd $srcdir/$pkgbase-$pkgver/
   pwd
   patch -s -Np1 < "${srcdir}/zlib-soname.patch"
@@ -44,12 +47,11 @@ build() {
   make
 
   cd contrib/minizip
-  CHOST=$_target ./configure --prefix=/$_prefix --enable-static=no
+  CHOST=$_target ./configure --host=$_target --prefix=/$_prefix --enable-static=no
   make
 }
 
 package_x86_64-mos-zlib() {
-  depends=("$_target-mlibc")
   provides=(libz.so)
 
   make install DESTDIR="$pkgdir" -C $pkgbase-$pkgver
@@ -58,10 +60,7 @@ package_x86_64-mos-zlib() {
 
 package_x86_64-mos-minizip() {
   pkgdesc='Mini zip and unzip based on zlib'
-  depends=(
-    "$_target-mlibc"
-    "$_target-zlib"
-  )
+  depends+=("$_target-zlib")
 
   make install DESTDIR="$pkgdir" -C $pkgbase-$pkgver/contrib/minizip
   install -D -m644 $pkgbase-$pkgver/LICENSE -t "$pkgdir/$_prefix/share/licenses/minizip/"
