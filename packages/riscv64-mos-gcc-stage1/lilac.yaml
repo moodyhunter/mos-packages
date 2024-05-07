@@ -6,10 +6,10 @@ maintainers:
 build_prefix: mos-x86_64
 
 repo_depends:
-  - x86_64-mos-binutils
+  - riscv64-mos-binutils
 
 repo_makedepends:
-  - x86_64-mos-mlibc-headers
+  - riscv64-mos-mlibc-headers
 
 post_build: git_pkgbuild_commit
 
