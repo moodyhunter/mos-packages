@@ -8,7 +8,7 @@ from time import sleep
 
 from termcolor import colored, cprint
 
-from pkg_helper import PACKAGES, Package, PackageNotFoundError, SolidPackage
+from pkg_helper import PACKAGES, DependencyList, Package, PackageNotFoundError, SolidPackage
 
 
 class ExecutionError(Exception):
@@ -24,18 +24,8 @@ class AlternativeWorkDir:
     def __enter__(self):
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb):  # type: ignore
         os.chdir(self.saved)
-
-
-class DependencyList:
-    def __init__(self, depends: list[SolidPackage], makedepends: list[SolidPackage], rebuild: list[SolidPackage]):
-        self.depends = depends
-        self.makedepends = makedepends
-        self.rebuild = rebuild
-
-    def is_empty(self):
-        return not self.depends and not self.makedepends and not self.rebuild
 
 
 class PortingExecutionContext:
@@ -69,7 +59,7 @@ class BaseAction(ABC):
         return hash((self.src, self.dst, self.file))
 
     @abstractmethod
-    def execute(self, ctx: PortingExecutionContext):
+    def execute(self, ctx: PortingExecutionContext) -> bool:
         raise NotImplementedError
 
 
@@ -78,7 +68,7 @@ class MakeDirAction(BaseAction):
         pkgdir = ctx.dstpkg.pkgdir
         try:
             os.mkdir(pkgdir)
-        except FileExistsError as e:
+        except FileExistsError:
             dircontent = os.listdir(pkgdir)
             if dircontent:
                 cprint(f"Directory '{pkgdir}' already exists and is not empty", "red")
@@ -153,12 +143,7 @@ class PortDriver:
         self.add_step(Action.MAKE_DIR, "", "", self.context.dstpkg.pkgdir)
 
     def add_step(self, action: Action, src: str, dst: str, file: str = ""):
-        actionclass = action.value
-        real_action = actionclass(src, dst, file)
-        if not isinstance(real_action, BaseAction):
-            raise ValueError(f"Action {action} is not a valid action")
-
-        self.actions.append(real_action)
+        self.actions.append(action.value(src, dst, file))
 
     def print_steps(self):
         cprint("The following actions will be taken:", "green", attrs=["bold"])
@@ -167,19 +152,15 @@ class PortDriver:
             self.print_single_step(action)
 
     def print_single_step(self, action: BaseAction):
-        i = self.actions.index(action)
-        print(f" {i+1:3}: {colored(action.__class__.__name__.removesuffix("Action"), "yellow", attrs=["bold"])}", end=" ")
-        b = False
+        print(f" {self.actions.index(action) + 1:3}: {colored(action.__class__.__name__.removesuffix("Action"), "yellow", attrs=["bold"])}", end=" ")
+
         if action.src != "" and action.dst != "":
             print(f"{colored(action.src, "red")} -> {colored(action.dst, "green")}", end=" ")
-            b = True
+
         if action.file:
             print(f"(in {colored(action.file, "blue")})", end=" ")
-            b = True
-        if b:
-            print()
-        else:
-            print()
+
+        print()
 
     def check_package_deps(self) -> DependencyList:
         """
@@ -208,9 +189,9 @@ class PortDriver:
             if not _do_check(dep.basepkg):
                 deplist.makedepends.append(dep)
 
-        for dep in self.context.srcpkg.rebuild:
+        for dep in self.context.srcpkg.rebuild_by:
             if not _do_check(dep.basepkg):
-                deplist.rebuild.append(dep)
+                deplist.rebuild_by.append(dep)
 
         return deplist
 

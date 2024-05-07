@@ -1,7 +1,5 @@
 import os
-from glob import glob
-from pathlib import Path
-from pprint import pprint
+from typing import Any
 
 import yaml
 from termcolor import colored, cprint
@@ -11,7 +9,7 @@ from termcolor._types import Color
 class UnsupportedTargetError(Exception):
     def __init__(self, package: "Package", target: str):
         self.package = package
-        super().__init__(f"Package {package.basename} does not support target {target}")
+        super().__init__(f"Package '{package.basename}' does not support target '{target}'")
 
 
 class InvalidTargetError(Exception):
@@ -26,13 +24,6 @@ class PackageNotFoundError(Exception):
         super().__init__(f"Package {package} not found.")
 
 
-class Config:
-    print_full_pkgname = False
-
-
-CONFIG = Config()
-
-
 def sanitise_triple(target: str) -> str:
     if target and target not in ALL_TARGET_TRIPLE and target in ALL_ARCH:
         cprint(f"'{target}' is not a valid target triple, assuming '{target}-mos'", "light_blue")
@@ -41,15 +32,15 @@ def sanitise_triple(target: str) -> str:
     return target
 
 
-def colored_list(l, color: Color | None):
-    return [colored(e, color, attrs=['bold']) for e in l] if l else ["-"]
+def colored_list(l: list[str], color: Color | None):
+    return [colored(e, color, attrs=['bold']) for e in l]
 
 
 class YamlStore:
     def __init__(self):
-        self.store = {}
+        self.store: dict[str, dict[str, Any]] = {}
 
-    def get(self, path: str):
+    def get(self, path: str) -> dict[str, Any]:
         if path not in self.store:
             self.store[path] = yaml.safe_load(open(path))
         return self.store[path]
@@ -82,20 +73,25 @@ def get_solid_package_by_fullname(fullname: str) -> "SolidPackage":
     raise PackageNotFoundError(fullname)
 
 
-def try_find_package(hint: str, *, target: str = "") -> str | list[str]:
-    # try to find the package with the exact name
-    package = os.path.join("packages", hint)
-    if package and os.path.isdir(package):
-        return Path(package).name
+class DependencyList:
+    def __init__(self, depends: list["SolidPackage"], makedepends: list["SolidPackage"], rebuild: list["SolidPackage"]):
+        self.depends = depends
+        self.makedepends = makedepends
+        self.rebuild_by = rebuild
 
-    # if still not found, try globbing
-    candidates = glob(f"packages/{target}*{hint}*/")
-    candidates = [Path(candidate).name for candidate in candidates]
-    return candidates[0] if len(candidates) == 1 else candidates
+    def is_empty(self):
+        return not self.depends and not self.makedepends and not self.rebuild_by
+
+    def to_dict(self, package: "SolidPackage", *, has_deps: bool = True, has_makedeps: bool = True, has_rebuild: bool = True, full_names: bool = False):
+        return {
+            "depends": package.basepkg.get_friend_names(self.depends, package.triple, full_names) if has_deps else [],
+            "makedepends": package.basepkg.get_friend_names(self.makedepends, package.triple, full_names) if has_makedeps else [],
+            "rebuild_by": package.basepkg.get_friend_names(self.rebuild_by, package.triple, full_names) if has_rebuild else [],
+        }
 
 
 class SolidPackage:
-    def __init__(self, package: "Package", target: str, *, allow_nonsupport=False):
+    def __init__(self, package: "Package", target: str, *, allow_nonsupport: bool = False):
         self.basepkg = package
         self.triple = target
         self._allow_nonsupport = allow_nonsupport
@@ -134,8 +130,46 @@ class SolidPackage:
         return self.basepkg.target_makedepends[self.triple]
 
     @property
-    def rebuild(self):
+    def rebuild_by(self):
         return self.basepkg.target_rebuild[self.triple]
+
+    @property
+    def pkgbuild_path(self):
+        return self.basepkg.get_pkgbuild_path(self.triple, allow_nonsupport=self._allow_nonsupport)
+
+    @property
+    def depends_list(self):
+        return DependencyList(self.depends, self.makedepends, self.rebuild_by)
+
+    def depends_dict(self, has_deps: bool = True, has_makedeps: bool = True, has_rebuild: bool = True, full_names: bool = False):
+        return self.depends_list.to_dict(self, has_deps=has_deps, has_makedeps=has_makedeps, has_rebuild=has_rebuild, full_names=full_names)
+
+    def print_info(self, *, has_deps: bool = False, has_makedeps: bool = False, has_rebuild: bool = False, full_names: bool = False):
+        dep_dict = self.depends_list.to_dict(self, full_names=full_names)
+
+        deps = dep_dict["depends"] if has_deps else []
+        makedeps = dep_dict["makedepends"] if has_makedeps else []
+        rebuild_by = dep_dict["rebuild_by"] if has_rebuild else []
+
+        if not (deps or makedeps or rebuild_by):
+            return
+
+        # only need to print the target triple header if:
+        # 1. the target is not 'any'
+        # 2. the package has multiple target triples
+        need_target_header = self.triple != 'any'
+
+        if need_target_header:
+            cprint(f"  {self.triple}", "blue", attrs=["bold"])
+
+        prefix = 4 if need_target_header else 2  # indent 4 spaces if target header is present
+
+        if deps:
+            print(f"{" " * prefix}deps: {", ".join(colored_list(deps, "light_cyan"))}")
+        if makedeps:
+            print(f"{" " * prefix}makedeps: {", ".join(colored_list(makedeps, "light_cyan"))}")
+        if rebuild_by:
+            print(f"{" " * prefix}rebuild: {", ".join(colored_list(rebuild_by, "light_cyan"))}")
 
 
 class Package:
@@ -153,7 +187,7 @@ class Package:
     def __repr__(self):
         return f'Package({self.basename} for {", ".join(self.triples)})'
 
-    def _do_resolve_all_depends(self):
+    def do_resolve_all_depends(self):
         for triple in self.triples:
             yaml_data = YAML_STORE.get(self.get_yaml_path(triple))
 
@@ -169,7 +203,7 @@ class Package:
         if triple not in self.triples:
             raise UnsupportedTargetError(self, triple)
 
-    def _do_get_filepath(self, filename: str, triple: str, allow_nonsupport=False):
+    def _do_get_filepath(self, filename: str, triple: str, allow_nonsupport: bool = False):
         if ANY_TARGET in self.triples:
             return f"packages/{self.basename}/{filename}"
 
@@ -181,85 +215,81 @@ class Package:
         return ANY_TARGET in self.triples
 
     def target_fullname(self, target: str):
-        if target == 'any':
+        if self.isany():
             return self.basename
         return f"{target}-{self.basename}"
 
-    def pkgdir(self, triple: str, allow_nonsupport=False):
+    def pkgdir(self, triple: str, allow_nonsupport: bool = False):
         return self._do_get_filepath("", triple, allow_nonsupport)
 
-    def get_yaml_path(self, triple: str, allow_nonsupport=False):
+    def get_yaml_path(self, triple: str, allow_nonsupport: bool = False):
         return self._do_get_filepath("lilac.yaml", triple, allow_nonsupport)
 
-    def get_pkgbuild_path(self, triple: str, allow_nonsupport=False):
+    def get_pkgbuild_path(self, triple: str, allow_nonsupport: bool = False):
         return self._do_get_filepath("PKGBUILD", triple, allow_nonsupport)
 
     def supports_target(self, triple: str):
         return triple in self.triples
 
-    def get_friends_name(self, friend: SolidPackage, triple: str, full_name=False, pretty=True):
-        if CONFIG.print_full_pkgname or full_name:
-            return friend.basepkg.target_fullname(triple)
+    def get_friend_names(self, friends: list[SolidPackage], triple: str, full_name: bool = False):
+        def do_get_name(friend: SolidPackage, triple: str, full_name: bool = False):
+            if full_name:
+                return friend.basepkg.target_fullname(triple)
 
-        if triple == friend.triple:
-            return friend.basepkg.basename
+            # not full name, first try to eliminate the same triple
+            if triple == friend.triple:
+                return friend.basepkg.basename
 
-        return friend.basepkg.basename + colored(f" ({friend.triple})", "red", attrs=["bold"])
+            # not full name, nor the same triple, print the triple (even if it's 'any')
+            return friend.basepkg.basename + colored(f" ({friend.triple})", "red", attrs=["bold"])
 
-    def get_friend_names(self, friends: list[SolidPackage], triple: str, full_name=False):
-        return [self.get_friends_name(friend, triple, full_name) for friend in friends]
+        return [do_get_name(friend, triple, full_name) for friend in friends]
 
-    def get_depends(self, triple: str) -> list[SolidPackage]:
-        return self.target_depends[triple] or []
+    def print_info(self, *, selected_target: str = "", has_deps: bool = False, has_makedeps: bool = False, has_rebuild: bool = False, full_names: bool = False):
+        filtered_triples = set(self.triples) & set([selected_target] if selected_target else ALL_TARGET_TRIPLE)
+        if not filtered_triples:
+            return
 
-    def get_makedepends(self, triple: str) -> list[SolidPackage]:
-        return self.target_makedepends[triple] or []
-
-    def get_rebuild(self, triple: str) -> list[SolidPackage]:
-        return self.target_rebuild[triple] or []
-
-    def print_info(self, *, selected_target=None, has_deps=False, has_makedeps=False, has_rebuild=False):
         cprint(self.basename, "green", attrs=["bold"], end=" ")
+        cprint(f"({', '.join(filtered_triples)})", "grey", attrs=["bold"])
 
-        if selected_target:
-            cprint(f"({selected_target})", "yellow", attrs=["bold"])
+        if not full_names:
+            depends_dict = {triple: SolidPackage(self, triple).depends_dict(has_deps, has_makedeps, has_rebuild) for triple in filtered_triples}
+
+            has_deps &= any(depends_dict[triple]["depends"] for triple in filtered_triples)
+            has_makedeps &= any(depends_dict[triple]["makedepends"] for triple in filtered_triples)
+            has_rebuild &= any(depends_dict[triple]["rebuild_by"] for triple in filtered_triples)
+
+            # collect triples with the same dependencies
+            pairs: list[tuple[list[str], dict[str, list[str]]]] = []  # [triples] -> {[depends, makedepends, rebuild_by]}
+            for triple, dep_dict in depends_dict.items():
+                for pair in pairs:
+                    if pair[1] == dep_dict:
+                        pair[0].append(triple)
+                        break
+                else:
+                    pairs.append(([triple], dep_dict))
+
+            if not (has_deps or has_makedeps or has_rebuild):
+                return  # absolutely nothing to print
+
+            for triples, depends_dict in pairs:
+                cprint(f"  {', '.join(triples) if len(triples) != len(filtered_triples) else '<all targets>'}", "blue", attrs=["bold"])
+
+                NONE = [colored("None", "light_red", attrs=["bold"])]
+
+                if has_deps:
+                    print(f"    deps: {", ".join(colored_list(depends_dict['depends'] or NONE, "light_cyan"))}")
+                if has_makedeps:
+                    print(f"    makedeps: {", ".join(colored_list(depends_dict['makedepends'] or NONE, "light_cyan"))}")
+                if has_rebuild:
+                    print(f"    rebuild: {", ".join(colored_list(depends_dict['rebuild_by'] or NONE, "light_cyan"))}")
+
         else:
-            cprint(f"({', '.join(self.triples)})", "yellow", attrs=["bold"])
-
-        for triple in self.triples:
-            if selected_target and triple != selected_target:
-                continue
-
-            deps = self.get_depends(triple) if has_deps else []
-            makedeps = self.get_makedepends(triple) if has_makedeps else []
-            rebuild_by = self.get_rebuild(triple) if has_rebuild else []
-
-            if not (deps or makedeps or rebuild_by):
-                continue
-
-            deps = self.get_friend_names(deps, triple)
-            makedeps = self.get_friend_names(makedeps, triple)
-            rebuild_by = self.get_friend_names(rebuild_by, triple)
-
-            # only need to print the target triple header if:
-            # 1. the target is not 'any'
-            # 2. the target is explicitly selected
-            # 3. the package has multiple target triples
-            need_target_header = triple != 'any' and selected_target is None and len(self.triples) > 1
-
-            if need_target_header:
-                cprint(f"  {triple}", "blue", attrs=["bold"])
-
-            prefix = 4 if need_target_header else 2  # indent 4 spaces if target header is present
-
-            if deps:
-                print(f"{" " * prefix}deps: {", ".join(colored_list(deps, "light_cyan"))}")
-
-            if makedeps:
-                print(f"{" " * prefix}makedeps: {", ".join(colored_list(makedeps, "light_cyan"))}")
-
-            if rebuild_by:
-                print(f"{" " * prefix}rebuild: {", ".join(colored_list(rebuild_by, "light_cyan"))}")
+            for triple in filtered_triples:
+                if selected_target and triple != selected_target:
+                    continue
+                SolidPackage(self, triple).print_info(has_deps=has_deps, has_makedeps=has_makedeps, has_rebuild=has_rebuild, full_names=full_names)
 
 
 ALL_ARCH = ["x86_64", "riscv64"]
@@ -273,9 +303,8 @@ YAML_STORE = YamlStore()
 
 def initialise():
     PACKAGES.clear()
-    CONFIG.print_full_pkgname = False
 
-    tmp_storage = {}
+    tmp_storage: dict[str, set[str]] = {}
     for pkgname in sorted(os.listdir("packages")):
         if not os.path.isdir(f"packages/{pkgname}"):
             continue
@@ -291,4 +320,4 @@ def initialise():
         PACKAGES[basename] = Package(basename, triples)
 
     for basename in PACKAGES:
-        PACKAGES[basename]._do_resolve_all_depends()
+        PACKAGES[basename].do_resolve_all_depends()
