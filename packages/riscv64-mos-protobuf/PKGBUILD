@@ -26,6 +26,7 @@ depends=(
 )
 makedepends=(
   'cmake'
+  "$_target-gcc"
   "$_target-gtest"
   'python-build'
   'python-installer'
@@ -67,10 +68,11 @@ build() {
   cmake "${cmake_options[@]}"
   cmake --build build --verbose
 
-  cd $pkgbase-$pkgver/python
-  LDFLAGS+=" -L${srcdir}/build" \
-  PROTOC="/usr/bin/protoc" \
-  python -m build --wheel --no-isolation
+  # riscv64: this fails in a cross-compilation environment, riscv64-mos-gcc isn't used
+  # cd $pkgbase-$pkgver/python
+  # LDFLAGS+=" -L${srcdir}/build" \
+  # PROTOC="/usr/bin/protoc" \
+  # python -m build --wheel --no-isolation
 }
 
 package() {
