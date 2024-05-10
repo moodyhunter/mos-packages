@@ -1,0 +1,22 @@
+_target=x86_64-mos
+pkgname=$_target-linux-api-headers
+pkgver=6.8
+pkgrel=1
+pkgdesc='Kernel headers sanitized for use in userspace'
+arch=('any')
+url='https://www.gnu.org/software/libc'
+license=(GPL-2.0-only)
+makedepends=(rsync)
+source=(https://www.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver}.tar.xz)
+sha256sums=('c969dea4e8bb6be991bbf7c010ba0e0a5643a3a8d8fb0a2aaa053406f1e965f3')
+
+build() {
+  cd linux-$pkgver
+
+  make mrproper
+}
+
+package() {
+  cd linux-$pkgver
+  make INSTALL_HDR_PATH="$pkgdir/opt/$_target-devel/" headers_install
+}
