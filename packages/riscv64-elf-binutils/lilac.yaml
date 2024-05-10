@@ -5,10 +5,9 @@ maintainers:
 
 build_prefix: mos-x86_64
 
-pre_build_script: update_pkgver_and_pkgrel(re.search(r'^\d+\.\d+', _G.newver).group(), updpkgsums=True)
+pre_build_script: update_pkgver_and_pkgrel(_G.newver, updpkgsums=True)
 post_build: git_pkgbuild_commit
 
 update_on:
-  - source: alpm
-    alpm: binutils
-    strip_release: true
+  - source: manual
+    manual: "2.42"
