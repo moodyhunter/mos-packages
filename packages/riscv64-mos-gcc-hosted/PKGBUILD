@@ -3,7 +3,7 @@ _sysroot=/opt/$_target
 
 pkgname=$_target-gcc-hosted
 pkgver=13.2.0
-pkgrel=17
+pkgrel=18
 pkgdesc="GNU gcc for the $_target toolchain"
 arch=(any)
 url="https://www.gnu.org/software/gcc"
