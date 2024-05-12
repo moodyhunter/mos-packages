@@ -1,8 +1,8 @@
 _target=x86_64-elf
 
 pkgname=$_target-gcc
-pkgver=13.2.0
-pkgrel=6
+pkgver=14.1.0
+pkgrel=1
 pkgdesc="GNU gcc for the $_target toolchain"
 arch=(x86_64)
 url="https://www.gnu.org/software/gcc"
@@ -13,7 +13,7 @@ makedepends=(gmp mpfr gcc)
 depends=(xz libmpc $_target-binutils)
 options+=(!lto)
 source=("http://ftpmirror.gnu.org/gcc/gcc-$pkgver/gcc-$pkgver.tar.xz")
-sha256sums=('e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da')
+sha256sums=('e283c654987afe3de9d8080bc0bd79534b5ca0d681a73a11ff2b5d3767426840')
 
 build() {
     # Create temporary build dir
