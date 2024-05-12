@@ -3,13 +3,14 @@
 maintainers:
   - github: moodyhunter
 
-build_prefix: mos-x86_64
+build_prefix: mos-riscv64
 
 repo_depends:
   - mos-api-headers-riscv64-git
 
 repo_makedepends:
   - riscv64-mos-gcc
+  - riscv64-mos-linux-api-headers
 
 post_build: git_pkgbuild_commit
 
@@ -20,3 +21,4 @@ update_on:
 update_on_build:
   - pkgbase: mos-api-headers-riscv64-git
   - pkgbase: riscv64-mos-gcc
+  - pkgbase: riscv64-mos-linux-api-headers
