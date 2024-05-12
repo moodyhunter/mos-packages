@@ -18,5 +18,3 @@ update_on:
   - source: alpm
     alpm: openssl
     strip_release: true
-
-managed: false # lack of madvise in mlibc
