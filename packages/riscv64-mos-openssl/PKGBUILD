@@ -1,6 +1,6 @@
 # Maintainer: Pierre Schmitz <pierre@archlinux.de>
-_target=x86_64-mos
-_target_1=mos-x86_64
+_target=riscv64-mos
+_target_1=mos-riscv64
 pkgname=$_target-openssl
 pkgver=3.2.1
 pkgrel=1
@@ -16,7 +16,7 @@ source=("https://www.openssl.org/source/openssl-${pkgver}.tar.gz"
 		10-$_target-main.conf.patch)
 sha256sums=('83c7329fe52c850677d75e5d0b0ca245309b97e8ecbcfdc1dfdc4ab9fac35b39'
             '0a32d9ca68e8d985ce0bfef6a4c20b46675e06178cc2d0bf6d91bd6865d648b7'
-            'ab0cc43dfbf27c92ffdd933673d127c0a603ac46e910b3f673170c6f1bb02c83')
+            '9650d2ea931b82653da8e4fcabd3dea251b118dded23db3750e92a9ed4ccf9e7')
 validpgpkeys=('8657ABB260F056B1E5190839D9C4D26D0E604491'
               '7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C'
               'A21FAB74B0088AA361152586B8EF1A6BA9DA2D5C'
