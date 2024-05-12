@@ -7,10 +7,10 @@ build_prefix: mos-riscv64
 
 repo_depends:
   - mos-api-headers-riscv64-git
+  - riscv64-mos-linux-api-headers
 
 repo_makedepends:
   - riscv64-mos-gcc
-  - riscv64-mos-linux-api-headers
 
 post_build: git_pkgbuild_commit
 

@@ -18,5 +18,6 @@ build() {
 
 package() {
   cd linux-$pkgver
-  make INSTALL_HDR_PATH="$pkgdir/opt/$_target-devel/" headers_install
+  make INSTALL_HDR_PATH="$pkgdir/opt/$_target/" headers_install
+  rm -v "$pkgdir/opt/$_target/include/linux/libc-compat.h" # use the one from mlibc
 }
