@@ -12,7 +12,7 @@ pkgver=1.1.0
 pkgrel=3
 pkgdesc='Generic-purpose lossless compression algorithm'
 url='https://github.com/google/brotli'
-arch=('riscv64')
+arch=('any')
 license=('MIT')
 makedepends=(
   mos-sdk
