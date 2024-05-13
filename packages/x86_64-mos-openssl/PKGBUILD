@@ -2,7 +2,7 @@
 _target=x86_64-mos
 _target_1=mos-x86_64
 pkgname=$_target-openssl
-pkgver=3.3.0
+pkgver=3.2.1
 pkgrel=1
 pkgdesc='The Open Source toolkit for Secure Sockets Layer and Transport Layer Security'
 arch=(any)
@@ -13,10 +13,10 @@ makedepends=('perl' "$_target-gcc")
 optdepends=("$_target-ca-certificates" "$_target-perl")
 source=("https://www.openssl.org/source/openssl-${pkgver}.tar.gz"
         'ca-dir.patch'
-		10-$_target-main.conf.patch)
-sha256sums=('53e66b043322a606abf0087e7699a0e033a37fa13feb9742df35c3a33b18fb02'
+		10-mos-main.conf.patch)
+sha256sums=('83c7329fe52c850677d75e5d0b0ca245309b97e8ecbcfdc1dfdc4ab9fac35b39'
             '0a32d9ca68e8d985ce0bfef6a4c20b46675e06178cc2d0bf6d91bd6865d648b7'
-            'ab0cc43dfbf27c92ffdd933673d127c0a603ac46e910b3f673170c6f1bb02c83')
+            '3b5f1dbb644d66125cafc6321129cd8cb0ac896ca9c9076d7a93607612d963c4')
 validpgpkeys=('8657ABB260F056B1E5190839D9C4D26D0E604491'
               '7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C'
               'A21FAB74B0088AA361152586B8EF1A6BA9DA2D5C'
@@ -28,14 +28,14 @@ prepare() {
 	# set ca dir to /etc/ssl by default
 	patch -Np1 -i "$srcdir/ca-dir.patch"
 
-	patch -Np1 -i "$srcdir/10-$_target-main.conf.patch"
+	patch -Np1 -i "$srcdir/10-mos-main.conf.patch"
 }
 
 build() {
 	cd "$srcdir/openssl-$pkgver"
 
 	./Configure --prefix=/opt/$_target --libdir=lib \
-		shared enable-ktls enable-ec_nistp_64_gcc_128 $_target_1
+		shared enable-ktls enable-ec_nistp_64_gcc_128 no-tests $_target_1
 
 	make depend
 	make

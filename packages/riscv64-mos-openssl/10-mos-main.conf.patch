@@ -2,7 +2,7 @@ diff --git a/Configurations/10-main.conf b/Configurations/10-main.conf
 index 2a047ca..bf61818 100644
 --- a/Configurations/10-main.conf
 +++ b/Configurations/10-main.conf
-@@ -1002,6 +1002,35 @@ my %targets = (
+@@ -1002,6 +1002,45 @@ my %targets = (
          ranlib           => "true",
      },
  
@@ -25,10 +25,20 @@ index 2a047ca..bf61818 100644
 +        shared_extension => ".so.\$(SHLIB_VERSION_NUMBER)",
 +    },
 +
++    "mos-x86_64" => {
++        inherit_from     => [ "mos-generic64" ],
++        perlasm_scheme   => "elf",
++        asm_arch         => 'x86_64',
++        # Configure doesn't want to play nice and passes "--cross-compile-suffix"
++        # on to the GCC invocation
++        CC               => "x86_64-mos-gcc",
++        CXX              => "x86_64-mos-g++",
++    },
++
 +    "mos-riscv64" => {
 +        inherit_from     => [ "mos-generic64" ],
 +        perlasm_scheme   => "elf",
-+
++        asm_arch         => 'riscv64',
 +        # Configure doesn't want to play nice and passes "--cross-compile-suffix"
 +        # on to the GCC invocation
 +        CC               => "riscv64-mos-gcc",
