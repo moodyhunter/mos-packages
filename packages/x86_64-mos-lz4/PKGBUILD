@@ -14,7 +14,7 @@ makedepends=('git' 'cmake' 'ninja' "$_target-gcc" 'mos-sdk')
 checkdepends=('diffutils')
 depends=("$_target-mlibc")
 source=("git+https://github.com/lz4/lz4.git#tag=v$pkgver")
-sha256sums=('SKIP')
+sha256sums=('0b6407091d387a35922956db45a011e0b6bf72d97c462ef10802e81e969089c8')
 
 build() {
   cmake -B build -S "$_pkgbase"/build/cmake \
