@@ -1,0 +1,33 @@
+# Maintainer: Sébastien Luttringer
+
+_target=x86_64-mos
+_pkgbase=lz4
+pkgname=$_target-lz4
+epoch=1
+pkgver=1.9.4
+pkgrel=3
+pkgdesc='Extremely fast compression algorithm'
+arch=('any')
+url='https://lz4.github.io/lz4/'
+license=('GPL2')
+makedepends=('git' 'cmake' 'ninja' "$_target-gcc" 'mos-sdk')
+checkdepends=('diffutils')
+depends=("$_target-mlibc")
+source=("git+https://github.com/lz4/lz4.git#tag=v$pkgver")
+sha256sums=('SKIP')
+
+build() {
+  cmake -B build -S "$_pkgbase"/build/cmake \
+    -G Ninja \
+    -DCMAKE_TOOLCHAIN_FILE=/opt/${_target}/toolchain.cmake \
+    -DCMAKE_BUILD_TYPE='None' \
+    -DCMAKE_INSTALL_PREFIX="/opt/$_target" \
+    -Wno-dev
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}
+
+# vim:set ts=2 sw=2 et:
