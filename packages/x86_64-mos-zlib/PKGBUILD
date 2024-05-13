@@ -34,6 +34,7 @@ prepare() {
   cp ../README.contrib readme.txt
   autoreconf -fiv
   sed -i 's/| fiwix*/| fiwix* | mos*/' config.sub
+  sed -i 's/defined(MINIZIP_FOPEN_NO_64)/defined(MINIZIP_FOPEN_NO_64) || defined(__mos__)/' ioapi.c # fopen64 is not a standard function
   cd $srcdir/$pkgbase-$pkgver/
   pwd
   patch -s -Np1 < "${srcdir}/zlib-soname.patch"
