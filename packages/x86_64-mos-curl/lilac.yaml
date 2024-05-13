@@ -1,0 +1,33 @@
+# created by 'pkg initpkg curl`
+
+maintainers:
+  - github: moodyhunter
+
+build_prefix: mos-x86_64
+
+repo_depends:
+  - x86_64-mos-mlibc
+  - x86_64-mos-brotli
+  - x86_64-mos-libnghttp2
+  - x86_64-mos-libnghttp3
+  - x86_64-mos-openssl
+  - x86_64-mos-zlib
+
+repo_makedepends:
+  - x86_64-mos-gcc
+
+pre_build_script: update_pkgver_and_pkgrel(_G.newver, updpkgsums=True)
+post_build: git_pkgbuild_commit
+
+update_on:
+  - source: alpm
+    alpm: curl
+    strip_release: true
+
+update_on_build:
+  - pkgbase: x86_64-mos-mlibc
+  - pkgbase: x86_64-mos-brotli
+  - pkgbase: x86_64-mos-libnghttp2
+  - pkgbase: x86_64-mos-libnghttp3
+  - pkgbase: x86_64-mos-openssl
+  - pkgbase: x86_64-mos-zlib

@@ -1,0 +1,130 @@
+# Maintainer: Dave Reisner <dreisner@archlinux.org>
+# Contributor: Angel Velasquez <angvp@archlinux.org>
+# Contributor: Eric Belanger <eric@archlinux.org>
+# Contributor: Lucien Immink <l.immink@student.fnt.hvu.nl>
+# Contributor: Daniel J Griffiths <ghost1227@archlinux.us>
+
+_target=x86_64-mos
+_pkgbase=curl
+pkgname=$_target-curl
+pkgver=8.7.1
+pkgrel=6
+pkgdesc='command line tool and library for transferring data with URLs'
+arch=('any')
+url='https://curl.se/'
+license=('MIT')
+depends=(
+  # "$_target-ca-certificates"
+  "$_target-brotli"
+  # "$_target-krb5"
+  # "$_target-libidn2"
+  "$_target-libnghttp2"
+  "$_target-libnghttp3"
+  # "$_target-libpsl"
+  # "$_target-libssh2"
+  "$_target-openssl"
+  "$_target-zlib"
+  # "$_target-zstd"
+)
+makedepends=('git' 'patchelf' "$_target-gcc")
+checkdepends=('valgrind')
+validpgpkeys=('27EDEAF22F3ABCEB50DB9A125CC908FDB71E12C2') # Daniel Stenberg
+source=("git+https://github.com/curl/curl.git#tag=curl-${pkgver//./_}"
+        '0001-bump-version-to-match-last-tag.patch'
+        'curl-8_7_1-h2-ngtcp2-write-error-handling.patch')
+sha512sums=('38b55dc916a64a1fd40a8af3e9a694ae918f8efb714430834491ebbe0ceeee4b58ba804afa15da966cbcf9cd7100ce373aed7b2101dff56f742996072caaf09a'
+            '51df4903eff9f1a15b1317ea4a8ee2b8537f347984f2524f42213b09344cd6109c621a4b81b37d2fcf2027387bb81cf0a744a48e96b86c4e268c43261ff86845'
+            '5af6c46ac6bfc39963d22450721f89770fd3ebbe198186c0a95ee3b16b8f89722d8d2d230ec21fdd9a52b949be5704c6980802e2052eec325085f60881f32c1f')
+
+_backports=(
+  # content_encoding: brotli and others, pass through 0-length writes
+  'b30d694a027eb771c02a3db0dee0ca03ccab7377'
+
+  # http: with chunked POST forced, disable length check on read callback
+  '721941aadf4adf4f6aeb3f4c0ab489bb89610c36'
+
+  # Fix CURLINFO_REQUEST_SIZE, add tests for transfer infos reported
+  '2793acbfc5e89fb130b1d4e045cb6cd7b6549412'
+)
+
+_reverts=(
+)
+
+prepare() {
+  cd "$_pkgbase"
+
+  local _c
+  for _c in "${_backports[@]}"; do
+    if [[ $_c == *..* ]]; then
+      git log --oneline --reverse "${_c}"
+    else
+      git log --oneline -1 "${_c}"
+    fi
+    git cherry-pick -n -m1 "${_c}"
+  done
+  for _c in "${_reverts[@]}"; do
+    git log --oneline -1 "${_c}"
+    git revert -n "${_c}"
+  done
+
+  patch -Np1 < ../0001-bump-version-to-match-last-tag.patch
+
+  # https://github.com/curl/curl/issues/13474 backported for 8.7.1
+  patch -Np1 < ../curl-8_7_1-h2-ngtcp2-write-error-handling.patch
+
+  # no '-DEV' in version, release date from tagged commit...
+  sed -i \
+    -e "/\WLIBCURL_VERSION\W/c #define LIBCURL_VERSION \"${pkgver}\"" \
+    -e "/\WLIBCURL_TIMESTAMP\W/c #define LIBCURL_TIMESTAMP \"$(git log -1 --format=%cs "curl-${pkgver//./_}")\"" \
+    include/curl/curlver.h
+
+  autoreconf -fi
+  sed -i 's/| minix/| minix* | mos/' config.sub
+}
+
+build() {
+  local _configure_options=(
+    --host="${_target}"
+    --prefix="/opt/$_target"
+    --mandir="/opt/$_target/share/man"
+    --disable-ldap
+    --disable-ldaps
+    --disable-manual
+    --enable-ipv6
+    --enable-threaded-resolver
+    --with-gssapi
+    # --with-libssh2
+    --with-random='/dev/urandom'
+    --with-ca-bundle='/etc/ssl/certs/ca-certificates.crt'
+  )
+
+  mkdir build-curl{,-compat,-gnutls}
+
+  # build curl
+  cd "${srcdir}"/build-curl
+
+  "${srcdir}/${_pkgbase}"/configure \
+    "${_configure_options[@]}" \
+    --enable-versioned-symbols \
+    --with-fish-functions-dir=/opt/$_target/share/fish/vendor_completions.d/ \
+    --with-openssl \
+    --with-openssl-quic \
+    --with-zsh-functions-dir=/opt/$_target/share/zsh/site-functions/
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+package() {
+  depends+=('openssl' 'libcrypto.so' 'libssl.so')
+  provides=('libcurl.so')
+
+  cd build-curl
+
+  make DESTDIR="${pkgdir}" install
+  make DESTDIR="${pkgdir}" install -C scripts
+
+  cd "${srcdir}/${_pkgbase}"
+
+  # license
+  install -Dt "${pkgdir}/opt/$_target/share/licenses/${_pkgbase}" -m0644 COPYING
+}
