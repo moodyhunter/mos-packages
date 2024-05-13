@@ -30,7 +30,7 @@ prepare() {
         --prefix=$pkgdir/opt/$_target \
         --cross-file=ci/mos-$_mos_arch.cross-file \
         -Ddefault_library=both \
-        -Dlinux_kernel_headers="/opt/$_target-devel/include"
+        -Dlinux_kernel_headers="/opt/$_target/include"
     sed -i 's/__STDC_HOSTED__/0/g' ./subprojects/frigg/include/frg/logging.hpp
 }
 
