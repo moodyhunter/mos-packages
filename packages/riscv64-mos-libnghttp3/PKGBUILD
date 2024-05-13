@@ -1,0 +1,38 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Maintainer: Christian Hesse <eworm@archlinux.org>
+
+_target=riscv64-mos
+pkgname=$_target-libnghttp3
+pkgver=1.2.0
+pkgrel=1
+pkgdesc="HTTP/3 library written in C"
+url='https://github.com/ngtcp2/nghttp3'
+arch=('any')
+license=('MIT')
+depends=($_target-mlibc)
+makedepends=("$_target-gcc")
+provides=('libnghttp3.so')
+source=("https://github.com/ngtcp2/nghttp3/releases/download/v${pkgver}/nghttp3-${pkgver}.tar.xz")
+sha256sums=('d2e216bae7bd7362f850922e4237a5caa204853b3594b22adccab4c1e1c1d1aa')
+
+prepare() {
+  cd nghttp3-${pkgver}
+  autoreconf -i
+  sed -i 's/| minix/| minix* | mos/' config.sub
+}
+
+build() {
+  cd nghttp3-${pkgver}
+  ./configure \
+    --prefix=/opt/${_target} \
+    --host=${_target}
+  make
+}
+
+package() {
+  cd nghttp3-${pkgver}/lib
+  make DESTDIR="${pkgdir}" install
+  install -Dm644 ../COPYING -t "${pkgdir}/opt/$_target/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

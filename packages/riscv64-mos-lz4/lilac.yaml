@@ -1,0 +1,24 @@
+# created by 'pkg initpkg lz4`
+
+maintainers:
+  - github: moodyhunter
+
+build_prefix: mos-riscv64
+
+repo_depends:
+  - riscv64-mos-mlibc
+
+repo_makedepends:
+  - riscv64-mos-gcc
+
+# epoch: 1
+pre_build_script: update_pkgver_and_pkgrel(_G.newver.split(':')[1], updpkgsums=True)
+post_build: git_pkgbuild_commit
+
+update_on:
+  - source: alpm
+    alpm: lz4
+    strip_release: true
+
+update_on_build:
+  - pkgbase: riscv64-mos-mlibc

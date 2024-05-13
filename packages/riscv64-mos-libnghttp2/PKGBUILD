@@ -1,0 +1,56 @@
+# Maintainer: Anatol Pomozov
+# Contributor: Zhuoyun Wei <wzyboy@wzyboy.org>
+
+_target=riscv64-mos
+pkgname=$_target-libnghttp2
+pkgver=1.61.0
+pkgrel=1
+pkgdesc='Framing layer of HTTP/2 is implemented as a reusable C library'
+arch=('any')
+url='https://nghttp2.org/'
+license=('MIT')
+depends=($_target-mlibc)
+provides=('libnghttp2.so')
+makedepends=('git' "$_target-gcc")
+conflicts=('nghttp2<1.20.0-2')
+source=("git+https://github.com/nghttp2/nghttp2.git#tag=v${pkgver}"
+        'git+https://github.com/ngtcp2/munit.git'
+        'git+https://github.com/mruby/mruby.git'
+        'git+https://github.com/tatsuhiro-t/neverbleed.git')
+sha512sums=('a347249408552b1928ca42955a094be9c69a56fe9eb4a21ec8ac62c8c99ce8fa13a3fb2b1ba6363c75ac73a169ac62cbd954cfad607e872e821a6348817027e4'
+            'SKIP'
+            'SKIP'
+            'SKIP')
+
+prepare() {
+  cd nghttp2
+
+  git config --file=.gitmodules submodule.tests/munit.url ../munit/
+  git config --file=.gitmodules submodule.third-party/mruby.url ../mruby/
+  git config --file=.gitmodules submodule.tests/neverbleed.url ../neverbleed/
+
+  git submodule init
+  git -c protocol.file.allow=always submodule update
+
+  autoreconf -i
+  sed -i 's/| minix/| minix* | mos/' config.sub
+}
+
+build() {
+  cd nghttp2
+
+  ./configure \
+    --prefix=/opt/$_target \
+    --host=$_target \
+    --disable-examples \
+    --disable-python-bindings \
+    --enable-lib-only
+  make
+}
+
+package() {
+  cd nghttp2/lib
+
+  make DESTDIR="$pkgdir" install
+  install -Dm644 ../COPYING "$pkgdir/opt/$_target/share/licenses/libnghttp2/COPYING"
+}

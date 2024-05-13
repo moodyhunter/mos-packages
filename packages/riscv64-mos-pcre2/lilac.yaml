@@ -1,0 +1,29 @@
+# created by 'pkg initpkg pcre2`
+
+maintainers:
+  - github: moodyhunter
+
+build_prefix: mos-riscv64
+
+repo_depends:
+  - riscv64-mos-mlibc
+  - riscv64-mos-bzip2
+  - riscv64-mos-readline
+  - riscv64-mos-zlib
+
+repo_makedepends:
+  - riscv64-mos-gcc
+
+pre_build_script: update_pkgver_and_pkgrel(_G.newver, updpkgsums=True)
+post_build: git_pkgbuild_commit
+
+update_on:
+  - source: alpm
+    alpm: pcre2
+    strip_release: true
+
+update_on_build:
+  - pkgbase: riscv64-mos-mlibc
+  - pkgbase: riscv64-mos-bzip2
+  - pkgbase: riscv64-mos-readline
+  - pkgbase: riscv64-mos-zlib

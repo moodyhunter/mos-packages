@@ -1,0 +1,33 @@
+# created by 'pkg initpkg curl`
+
+maintainers:
+  - github: moodyhunter
+
+build_prefix: mos-riscv64
+
+repo_depends:
+  - riscv64-mos-mlibc
+  - riscv64-mos-brotli
+  - riscv64-mos-libnghttp2
+  - riscv64-mos-libnghttp3
+  - riscv64-mos-openssl
+  - riscv64-mos-zlib
+
+repo_makedepends:
+  - riscv64-mos-gcc
+
+pre_build_script: update_pkgver_and_pkgrel(_G.newver, updpkgsums=True)
+post_build: git_pkgbuild_commit
+
+update_on:
+  - source: alpm
+    alpm: curl
+    strip_release: true
+
+update_on_build:
+  - pkgbase: riscv64-mos-mlibc
+  - pkgbase: riscv64-mos-brotli
+  - pkgbase: riscv64-mos-libnghttp2
+  - pkgbase: riscv64-mos-libnghttp3
+  - pkgbase: riscv64-mos-openssl
+  - pkgbase: riscv64-mos-zlib
