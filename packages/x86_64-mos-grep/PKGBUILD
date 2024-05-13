@@ -1,0 +1,45 @@
+# Maintainer: Sébastien Luttringer <seblu@archlinux.org>
+# Contributor: Allan McRae <allan@archlinux.org>
+# Contributor: judd <jvinet@zeroflux.org>
+
+_target=x86_64-mos
+_pkgbase=grep
+pkgname=$_target-grep
+pkgver=3.11
+pkgrel=1
+pkgdesc='A string search utility'
+arch=('any')
+license=('GPL3')
+url='https://www.gnu.org/software/grep/'
+depends=("$_target-mlibc" "$_target-pcre2")
+makedepends=('texinfo')
+validpgpkeys=('155D3FC500C834486D1EEA677FD9FCCB000BEEEE') # Jim Meyering
+source=("https://ftp.gnu.org/gnu/$_pkgbase/$_pkgbase-$pkgver.tar.xz")
+sha256sums=('1db2aedde89d0dea42b16d9528f894c8d15dae4e190b59aecc78f5a951276eab')
+
+prepare() {
+  cd $_pkgbase-$pkgver
+  # apply patch from the source array (should be a pacman feature)
+  local src
+  for src in "${source[@]}"; do
+    src="${src%%::*}"
+    src="${src##*/}"
+    [[ $src = *.patch ]] || continue
+    msg2 "Applying patch $src..."
+    patch -Np1 <"../$src"
+  done
+}
+
+build() {
+  cd $_pkgbase-$pkgver
+  # configure option --without-included-regex removed in 3.7
+  # see: https://lists.gnu.org/archive/html/bug-grep/2021-08/msg00028.html
+  sed -i 's/| minix/| minix* | mos/' build-aux/config.sub
+  ./configure --prefix=/opt/$_target --host=$_target
+  make
+}
+
+package() {
+  cd $_pkgbase-$pkgver
+  make DESTDIR="$pkgdir" install
+}
