@@ -1,0 +1,69 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Lex Black <autumn-wind at web dot de>
+# Contributor: TingPing <tingping@tingping.se>
+# Contributor: Guillaume Horel <guillaume.horel@gmail.com>
+
+_target=riscv64-mos
+pkgname=$_target-brotli
+_pkgbase=brotli
+_gitcommit=ed738e842d2fbdf2d6459e39267a633c4a9b2f5d
+pkgver=1.1.0
+pkgrel=2
+pkgdesc='Generic-purpose lossless compression algorithm'
+url='https://github.com/google/brotli'
+arch=('riscv64')
+license=('MIT')
+makedepends=(
+  mos-sdk
+  git
+  cmake
+  python-setuptools
+  python-build
+  python-installer
+  python-wheel
+  $_target-gcc
+  $_target-mlibc
+)
+source=(${_pkgbase}::"git+${url}#commit=${_gitcommit}")
+sha512sums=('SKIP')
+
+pkgver() {
+  cd ${_pkgbase}
+  git describe --tags --match 'v*' | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd ${_pkgbase}
+  # python -m build --wheel --no-isolation
+  cmake -S . -B build \
+    -DCMAKE_TOOLCHAIN_FILE=/opt/${_target}/toolchain.cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/opt/$_target/ \
+    -DBUILD_SHARED_LIBS=True \
+    -DCMAKE_C_FLAGS="$CFLAGS -ffat-lto-objects"
+  cmake --build build -v
+}
+
+package() {
+  provides=(libbrotlicommon.so libbrotlidec.so libbrotlienc.so)
+
+  cd ${_pkgbase}
+  DESTDIR="$pkgdir" cmake --install build
+  local man
+  for man in docs/*.?; do
+    install -Dm 644 "$man" "$pkgdir/opt/$_target/share/man/man${man##*.}/${man##*/}"
+  done
+  install -Dm 644 LICENSE -t "$pkgdir/opt/$_target/share/licenses/$pkgname"
+}
+
+# package_python-brotli() {
+#   pkgdesc+=' - python library'
+#   depends=('python')
+
+#   cd ${_pkgbase}
+#   python -m installer --destdir="$pkgdir" dist/*.whl
+#   install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+# }
+
+# vim:set ts=2 sw=2 et:
