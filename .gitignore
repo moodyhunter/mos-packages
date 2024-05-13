@@ -4,7 +4,8 @@ pkg/
 src/
 
 # subdirectories of packages
-packages/*/*/*/
+packages/*/*/
+packages/*/.nvchecker.toml
 *.xz
 *.sig
 *.asc
