@@ -113,13 +113,14 @@ def do_diff_package(p: Package, triple1: str, triple2: str):
             print(line, end="")
 
 
-def do_port_package(pkg: Package, src_triple: str, dst_triple: str, verbose: bool = False, landing: bool = False):
+def do_port_package(pkg: Package, src_triple: str, dst_triple: str, verbose: bool = False, landing: bool = False, force: bool = False):
     src_triple = sanitise_triple(src_triple)
     dst_triple = sanitise_triple(dst_triple)
 
     if dst_triple in pkg.triples:
-        cprint(f"Package {pkg.basename} already supports {dst_triple}", "red", attrs=["bold"])
-        sys.exit(1)
+        cprint(f"'{pkg.basename}' already supports '{dst_triple}'", "red", attrs=["bold"])
+        if not force:
+            return False
 
     cprint(f"Porting package {pkg.basename} from {src_triple} to {dst_triple}", "green", attrs=["bold"])
 
@@ -184,18 +185,28 @@ def do_port_package(pkg: Package, src_triple: str, dst_triple: str, verbose: boo
         # this file is a target-specific file, rename it
         driver.add_step(porting.Action.RENAME_FILE, os.path.join(dst.pkgdir, f), os.path.join(dst.pkgdir, f.replace(src_triple, dst_triple)))
 
-    driver.add_step(porting.Action.PATCH_FILE, src_triple, dst_triple, os.path.join(dst.pkgdir, "PKGBUILD"))
+    src_arch = src_triple.split("-")[0]
+    dst_arch = dst_triple.split("-")[0]
+
+    driver.add_step(porting.Action.PATCH_FILE, src_arch, dst_arch, os.path.join(dst.pkgdir, "PKGBUILD"))
     if files_changed:
         driver.add_step(porting.Action.UPDPKGSUMS, "", "")
 
-    driver.add_step(porting.Action.PATCH_FILE, src_triple, dst_triple, os.path.join(dst.pkgdir, "lilac.yaml"))
+    driver.add_step(porting.Action.PATCH_FILE, src_arch, dst_arch, os.path.join(dst.pkgdir, "lilac.yaml"))
 
-    src_arch = src_triple.split("-")[0]
-    dst_arch = dst_triple.split("-")[0]
     driver.add_step(porting.Action.PATCH_FILE, f"build_prefix: mos-{src_arch}", f"build_prefix: mos-{dst_arch}", os.path.join(dst.pkgdir, "lilac.yaml"))
     driver.print_steps()
 
     if landing:
+        if force and dst_triple in pkg.triples:
+            answer = yes_or_no(f"Do you want to clear '{dst.pkgdir}'?", default='y')
+            if answer:
+                try:
+                    shutil.rmtree(dst.pkgdir)
+                except FileNotFoundError:
+                    pass
+                print(f"Directory '{dst.pkgdir}' removed")
+
         result = driver.execute()
         cprint(f"Porting {'succeeded' if result else 'failed'}", "green" if result else "red", attrs=["bold"])
 
@@ -210,6 +221,11 @@ def do_port_package(pkg: Package, src_triple: str, dst_triple: str, verbose: boo
     else:
         print("Dry-run, no changes made")
         print("To actually port the package, use the -y option")
+
+
+def do_version_package(pkg: Package, version: str | None = None):
+    cprint(f"Changing version of package {pkg.basename} to {version}", "green", attrs=["bold"])
+    pass
 
 
 def main_may_throw():
@@ -246,7 +262,12 @@ def main_may_throw():
     port_parser.add_argument('triple2', type=str, help='The destination target triple')
     port_parser.add_argument('name', type=str, help='The name of the package to port')
     port_parser.add_argument('-y', '--yes', action='store_true', help='Do not dry-run')
+    port_parser.add_argument('--force', action='store_true', help='Force porting even if the package already supports the destination target')
     port_parser.add_argument('-v', '--verbose', action='store_true', help='Show more information')
+
+    version_parser = subparser.add_parser('version', help='Show and modify the version of a package')
+    version_parser.add_argument('name', type=str, help='The name of the package to show')
+    version_parser.add_argument('-s', '--set', type=str, help='Set the version of a package')
 
     args = parser.parse_args()
 
@@ -269,32 +290,28 @@ def main_may_throw():
         do_diff_package(p, args.triple1, args.triple2)
     elif args.command == "port":
         p = PACKAGES[args.name]
-        do_port_package(p, args.triple1, args.triple2, args.verbose, args.yes)
+        do_port_package(p, args.triple1, args.triple2, args.verbose, args.yes, args.force)
+    elif args.command == "version":
+        p = PACKAGES[args.name]
+        version = args.set
+        do_version_package(p, version)
 
 
 def main():
     try:
         main_may_throw()
+        return 0
     except KeyError as e:
         cprint(f"KeyError: {e}, probably misspelled a package name?", "red", attrs=["bold"])
-
-        # print the stack trace
-        import traceback
-        traceback.print_exc()
-
-        sys.exit(1)
     except UnsupportedTargetError as e:
         cprint(f"Error: {e}", "red", attrs=["bold"])
-        sys.exit(1)
     except PackageNotFoundError as e:
         cprint(f"Error: {e}", "red", attrs=["bold"])
-        sys.exit(1)
     except ValueError as e:
         cprint(f"Error: {e}", "red", attrs=["bold"])
-        sys.exit(1)
     except KeyboardInterrupt:
         cprint("Interrupted by user", "red", attrs=["bold"])
-        sys.exit(1)
     except Exception as e:
         cprint(f"Error: {e}", "red", attrs=["bold"])
+    finally:
         sys.exit(1)
