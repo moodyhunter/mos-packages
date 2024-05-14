@@ -3,8 +3,8 @@
 
 _target=riscv64-mos
 pkgname=$_target-libnghttp2
-pkgver=1.61.0
-pkgrel=2
+pkgver=1.62.0
+pkgrel=1
 pkgdesc='Framing layer of HTTP/2 is implemented as a reusable C library'
 arch=('any')
 url='https://nghttp2.org/'
@@ -17,7 +17,7 @@ source=("git+https://github.com/nghttp2/nghttp2.git#tag=v${pkgver}"
         'git+https://github.com/ngtcp2/munit.git'
         'git+https://github.com/mruby/mruby.git'
         'git+https://github.com/tatsuhiro-t/neverbleed.git')
-sha512sums=('a347249408552b1928ca42955a094be9c69a56fe9eb4a21ec8ac62c8c99ce8fa13a3fb2b1ba6363c75ac73a169ac62cbd954cfad607e872e821a6348817027e4'
+sha512sums=('4e775f93cd476660c3bab24820a7f4084dc6779d67894c613528f650cf3172028885c302d5cf22278b69c4431632235d78b88a5b82fdd359702251d386095697'
             'SKIP'
             'SKIP'
             'SKIP')
