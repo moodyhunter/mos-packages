@@ -5,7 +5,7 @@ _prefix=/opt/$_target
 
 pkgname=$_target-tree
 pkgver=2.1.1
-pkgrel=31
+pkgrel=32
 pkgdesc="A directory listing program displaying a depth indented list of files"
 arch=(any)
 url="https://gitlab.com/OldManProgrammer/unix-tree"
