@@ -13,6 +13,8 @@ repo_makedepends:
   - x86_64-mos-gcc
   - riscv64-mos-gcc
 
+time_limit_hours: 3
+
 pre_build_script: update_pkgver_and_pkgrel(_G.newver.split(':')[1], updpkgsums=True)
 post_build: git_pkgbuild_commit
 
