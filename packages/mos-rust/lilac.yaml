@@ -1,0 +1,28 @@
+# created by 'pkg initpkg rust`
+
+maintainers:
+  - github: moodyhunter
+
+build_prefix: mos-x86_64
+
+repo_depends:
+  - x86_64-mos-mlibc
+  - riscv64-mos-mlibc
+
+repo_makedepends:
+  - x86_64-mos-gcc
+  - riscv64-mos-gcc
+
+pre_build_script: update_pkgver_and_pkgrel(_G.newver, updpkgsums=True)
+post_build: git_pkgbuild_commit
+
+update_on:
+  - source: alpm
+    alpm: rust
+    strip_release: true
+
+update_on_build:
+  - pkgbase: x86_64-mos-mlibc
+  - pkgbase: x86_64-mos-gcc
+  - pkgbase: riscv64-mos-mlibc
+  - pkgbase: riscv64-mos-gcc

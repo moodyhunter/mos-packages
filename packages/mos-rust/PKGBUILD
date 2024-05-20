@@ -1,0 +1,128 @@
+pkgname=mos-rust
+pkgver=1.78.0
+pkgrel=1
+pkgdesc="Systems programming language focused on safety, speed and concurrency"
+url=https://www.rust-lang.org/
+arch=(x86_64)
+license=("Apache-2.0 OR MIT")
+options=(
+  !emptydirs
+  !lto
+)
+depends=(
+  bash
+  curl
+  gcc
+  gcc-libs
+  glibc
+  libssh2
+  openssl
+  zlib
+  x86_64-mos-binutils x86_64-mos-gcc x86_64-mos-mlibc
+  riscv64-mos-binutils riscv64-mos-gcc riscv64-mos-mlibc
+)
+makedepends=(
+  git
+  cmake
+  libffi
+  lld
+  musl
+  ninja
+  perl
+  python
+  rust
+  wasi-libc
+)
+source=("rust::git+https://github.com/moodyhunter/rust.git")
+b2sums=('SKIP')
+
+prepare() {
+  cd $srcdir/rust
+
+  cat >config.toml <<END
+profile = "user"
+change-id = 123337
+
+[llvm]
+download-ci-llvm = false
+optimize = true
+thin-lto = false
+targets = "X86;RISCV"
+experimental-targets = ""
+
+[build]
+target = [
+  "x86_64-unknown-linux-gnu",
+  "x86_64-unknown-mos"
+]
+docs = false
+extended = true
+tools = [
+  "cargo",
+  "clippy",
+  "rustdoc",
+  "rustfmt",
+  "rust-analyzer",
+  "rust-analyzer-proc-macro-srv",
+  "analysis",
+  "rust-demangler",
+]
+cargo = "/usr/bin/cargo"
+rustc = "/usr/bin/rustc"
+rustfmt = "/usr/bin/rustfmt"
+locked-deps = true
+
+[install]
+prefix = "/opt/mos-rust/"
+sysconfdir = "etc/"
+
+[rust]
+codegen-units-std = 1
+debuginfo-level = 1
+debuginfo-level-std = 2
+channel = "stable"
+description = "Rust for MOS, $pkgver-$pkgrel"
+rpath = false
+frame-pointers = true
+deny-warnings = false
+backtrace-on-ice = true
+remap-debuginfo = false
+
+[dist]
+compression-formats = ["gz"]
+
+[target.x86_64-unknown-linux-gnu]
+ar = "/usr/bin/ar"
+cc = "/usr/bin/gcc"
+cxx = "/usr/bin/g++"
+linker = "/usr/bin/gcc"
+ranlib = "/usr/bin/ranlib"
+
+[target.x86_64-unknown-mos]
+ar = "/usr/bin/x86_64-mos-ar"
+cc = "/usr/bin/x86_64-mos-gcc"
+cxx = "/usr/bin/x86_64-mos-g++"
+linker = "/usr/bin/x86_64-mos-gcc"
+ranlib = "/usr/bin/x86_64-mos-ranlib"
+
+END
+}
+
+build() {
+  cd $srcdir/rust
+
+  export RUST_BACKTRACE=1
+  unset CFLAGS CXXFLAGS LDFLAGS
+
+  DESTDIR="$srcdir/dest-rust" python ./x.py install -j "$(nproc)"
+}
+
+package() {
+  optdepends=(
+    'gdb: rust-gdb script'
+    'lldb: rust-lldb script'
+  )
+  cp -a dest-rust/* "$pkgdir"
+}
+
+# vim:set ts=2 sw=2 et:
