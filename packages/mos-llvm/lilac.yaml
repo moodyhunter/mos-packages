@@ -1,4 +1,4 @@
-# created by 'pkg initpkg rust`
+# created by 'pkg initpkg llvm`
 
 maintainers:
   - github: moodyhunter
@@ -7,18 +7,16 @@ build_prefix: mos-x86_64
 
 repo_depends:
   - x86_64-mos-mlibc
-  - riscv64-mos-mlibc
 
 repo_makedepends:
   - x86_64-mos-gcc
-  - riscv64-mos-gcc
 
 time_limit_hours: 3
 
-pre_build_script: update_pkgver_and_pkgrel(_G.newver.split(':')[1], updpkgsums=True)
+pre_build_script: update_pkgver_and_pkgrel(_G.newver, updpkgsums=True)
 post_build: git_pkgbuild_commit
 
 update_on:
   - source: alpm
-    alpm: rust
+    alpm: llvm
     strip_release: true
