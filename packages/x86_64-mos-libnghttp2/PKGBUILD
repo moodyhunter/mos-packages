@@ -3,8 +3,8 @@
 
 _target=x86_64-mos
 pkgname=$_target-libnghttp2
-pkgver=1.62.0
-pkgrel=3
+pkgver=1.62.1
+pkgrel=1
 pkgdesc='Framing layer of HTTP/2 is implemented as a reusable C library'
 arch=('any')
 url='https://nghttp2.org/'
@@ -17,7 +17,7 @@ source=("git+https://github.com/nghttp2/nghttp2.git#tag=v${pkgver}"
         'git+https://github.com/ngtcp2/munit.git'
         'git+https://github.com/mruby/mruby.git'
         'git+https://github.com/tatsuhiro-t/neverbleed.git')
-sha512sums=('4e775f93cd476660c3bab24820a7f4084dc6779d67894c613528f650cf3172028885c302d5cf22278b69c4431632235d78b88a5b82fdd359702251d386095697'
+sha512sums=('6ea6059af0aec4133aa83439dfa57bc3a7a3a33aae7028d2009dadd9912df4ede6a8337f053f17caec0276a2fcfca26d9397f5852f6edb9228553b76831fa658'
             'SKIP'
             'SKIP'
             'SKIP')
