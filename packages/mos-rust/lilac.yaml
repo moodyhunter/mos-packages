@@ -8,6 +8,7 @@ build_prefix: mos-x86_64
 repo_depends:
   - x86_64-mos-mlibc
   - riscv64-mos-mlibc
+  - mos-llvm
 
 repo_makedepends:
   - x86_64-mos-gcc
@@ -22,3 +23,6 @@ update_on:
   - source: alpm
     alpm: rust
     strip_release: true
+
+update_on_build:
+  - pkgbase: mos-llvm
