@@ -55,11 +55,6 @@ prepare() {
     git revert -n "${_c}"
   done
 
-  patch -Np1 <../0001-bump-version-to-match-last-tag.patch
-
-  # https://github.com/curl/curl/issues/13474 backported for 8.7.1
-  patch -Np1 <../curl-8_7_1-h2-ngtcp2-write-error-handling.patch
-
   # no '-DEV' in version, release date from tagged commit...
   sed -i \
     -e "/\WLIBCURL_VERSION\W/c #define LIBCURL_VERSION \"${pkgver}\"" \
