@@ -68,9 +68,9 @@ tools = [
   "rust-demangler",
 ]
 
-cargo = "/opt/mos-rust/bin/cargo"
-rustc = "/opt/mos-rust/bin/rustc"
-rustfmt = "/opt/mos-rust/bin/rustfmt"
+# cargo = "/opt/mos-rust/bin/cargo"
+# rustc = "/opt/mos-rust/bin/rustc"
+# rustfmt = "/opt/mos-rust/bin/rustfmt"
 locked-deps = true
 
 [install]
@@ -83,7 +83,7 @@ debuginfo-level = 1
 debuginfo-level-std = 2
 channel = "stable"
 description = "Rust for MOS, $pkgver-$pkgrel"
-rpath = false
+rpath = true
 frame-pointers = true
 deny-warnings = false
 backtrace-on-ice = true
