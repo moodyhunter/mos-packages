@@ -228,6 +228,67 @@ def do_version_package(pkg: Package, version: str | None = None):
     pass
 
 
+def do_initpkg(name: str, target: str):
+    target = sanitise_triple(target)
+
+    dirpath = os.path.join("packages", f"{target}-{name}")
+    if os.path.exists(dirpath):
+        cprint(f"Package {name} already exists at {dirpath}", "red", attrs=["bold"])
+        sys.exit(1)
+
+    cprint(f"Initializing package {name} for target {target}", "green", attrs=["bold"])
+
+    # run `pkgctl repo clone [package]`
+    with porting.AlternativeWorkDir('packages'):
+        result = os.system(f"pkgctl repo clone {name}")
+        if result != 0:
+            cprint(f"Failed to clone package {name}", "red", attrs=["bold"])
+            sys.exit(1)
+
+        # remove .SRCINFO
+        if os.path.exists(f"{name}/.SRCINFO"):
+            os.remove(f"{name}/.SRCINFO")
+
+        # remove the .git directory
+        shutil.rmtree(f"{name}/.git")
+
+        # move {package} to {target}-{package}
+        shutil.move(name, f"{target}-{name}")
+
+    build_prefix = f"mos-{target.split('-')[0]}"  # e.g. mos-x86_64
+
+    with open(f"packages/{target}-{name}/lilac.yaml", "w") as lilac_yaml:  # create lilac.yaml
+        def do_write(line: str):
+            lilac_yaml.write(line + '\n')
+            lilac_yaml.flush()
+        do_write(f"# created by 'pkg {' '.join(sys.argv[1:])}`")
+        do_write(f"")
+        do_write(f"maintainers:")
+        do_write(f"  - github: moodyhunter")
+        do_write(f"")
+        do_write(f"build_prefix: {build_prefix}")
+        do_write(f"")
+        do_write(f"repo_depends:")
+        do_write(f"  - {target}-mlibc")
+        do_write(f"")
+        do_write(f"repo_makedepends:")
+        do_write(f"  - {target}-gcc")
+        do_write(f"")
+        do_write(f"pre_build_script: update_pkgver_and_pkgrel(_G.newver, updpkgsums=True)")
+        do_write(f"post_build: git_pkgbuild_commit")
+        do_write(f"")
+        do_write(f"update_on:")
+        do_write(f"  - source: alpm")
+        do_write(f"    alpm: {name}")
+        do_write(f"    strip_release: true")
+        do_write(f"")
+        do_write(f"update_on_build:")
+        do_write(f"  - pkgbase: {target}-mlibc")
+        lilac_yaml.flush()
+
+    pass
+
+
 def main_may_throw():
     parser = argparse.ArgumentParser(
         description='This script helps you to maintain packages in the MOS package repository',
@@ -269,6 +330,10 @@ def main_may_throw():
     version_parser.add_argument('name', type=str, help='The name of the package to show')
     version_parser.add_argument('-s', '--set', type=str, help='Set the version of a package')
 
+    initpkg_parser = subparser.add_parser('initpkg', help='Initialize a new package')
+    initpkg_parser.add_argument('name', type=str, help='The name of the package to initialize')
+    initpkg_parser.add_argument('-t', '--target', type=str, default="x86_64-mos", help='The target triple of the package')
+
     args = parser.parse_args()
 
     if args.command is None:
@@ -295,6 +360,8 @@ def main_may_throw():
         p = PACKAGES[args.name]
         version = args.set
         do_version_package(p, version)
+    elif args.command == "initpkg":
+        do_initpkg(args.name, args.target)
 
 
 def main():
