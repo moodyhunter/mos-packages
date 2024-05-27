@@ -6,7 +6,7 @@ maintainers:
 build_prefix: mos-x86_64
 
 repo_depends:
-  - mos-api-headers-x86_64-git
+  - x86_64-mos-mos-api-headers
   - x86_64-mos-linux-api-headers
 
 repo_makedepends:
@@ -19,6 +19,6 @@ update_on:
     vcs: git+https://github.com/moodyhunter/mlibc-mos.git
 
 update_on_build:
-  - pkgbase: mos-api-headers-x86_64-git
-  - pkgbase: x86_64-mos-gcc
+  - pkgbase: x86_64-mos-mos-api-headers
   - pkgbase: x86_64-mos-linux-api-headers
+  - pkgbase: x86_64-mos-gcc

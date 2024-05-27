@@ -1,9 +1,9 @@
-# converted by pkg.json-to-lilac.py for mos-api-headers-x86_64-git
+# converted by pkg.json-to-lilac.py for riscv64-mos-mos-api-headers
 
 maintainers:
   - github: moodyhunter
 
-build_prefix: mos-x86_64
+build_prefix: mos-riscv64
 
 repo_makedepends:
   - mos-sdk

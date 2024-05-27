@@ -3,9 +3,9 @@
 _arch=x86_64
 _target=x86_64-mos
 _sysroot=/opt/${_target}
-_pkgbase=mos-api-headers-${_arch}
+_pkgbase=$_target-mos-api-headers
 
-pkgname=${_pkgbase}-git
+pkgname=${_pkgbase}
 epoch=1
 pkgver=1
 pkgrel=12

@@ -6,7 +6,7 @@ maintainers:
 build_prefix: mos-riscv64
 
 repo_depends:
-  - mos-api-headers-riscv64-git
+  - riscv64-mos-mos-api-headers
   - riscv64-mos-linux-api-headers
 
 repo_makedepends:
@@ -19,6 +19,6 @@ update_on:
     vcs: git+https://github.com/moodyhunter/mlibc-mos.git
 
 update_on_build:
-  - pkgbase: mos-api-headers-riscv64-git
+  - pkgbase: riscv64-mos-mos-api-headers
   - pkgbase: riscv64-mos-gcc
   - pkgbase: riscv64-mos-linux-api-headers
