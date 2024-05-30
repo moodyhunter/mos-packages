@@ -3,7 +3,7 @@
 pkgname=devtools-mos
 epoch=1
 pkgver=3
-pkgrel=13
+pkgrel=14
 pkgdesc="Development tools for the MOS's toolchain"
 arch=(any)
 license=('GPL')
