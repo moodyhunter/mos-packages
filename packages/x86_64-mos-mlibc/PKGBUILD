@@ -5,8 +5,8 @@ _mos_arch=x86_64
 _pkgbase=$_target-mlibc
 
 pkgname=$_pkgbase
-pkgver=3847.94877394
-pkgrel=2
+pkgver=3875.c96ae904
+pkgrel=1
 pkgdesc="mlibc for the $_target toolchain"
 arch=('any')
 url="https://github.com/moodyhunter/mlibc-mos"
