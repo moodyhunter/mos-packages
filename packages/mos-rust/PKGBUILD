@@ -67,11 +67,12 @@ tools = [
   "rust-analyzer-proc-macro-srv",
   "analysis",
   "rust-demangler",
+  "src",
 ]
 
-# cargo = "/opt/mos-rust/bin/cargo"
-# rustc = "/opt/mos-rust/bin/rustc"
-# rustfmt = "/opt/mos-rust/bin/rustfmt"
+cargo = "/opt/mos-rust/bin/cargo"
+rustc = "/opt/mos-rust/bin/rustc"
+rustfmt = "/opt/mos-rust/bin/rustfmt"
 locked-deps = true
 
 [install]
