@@ -269,10 +269,10 @@ def do_initpkg(name: str, target: str):
         do_write(f"build_prefix: {build_prefix}")
         do_write(f"")
         do_write(f"repo_depends:")
-        do_write(f"  - {target}-mlibc")
+        do_write(f"  - {target}-mlibc")  # default dependency
         do_write(f"")
         do_write(f"repo_makedepends:")
-        do_write(f"  - {target}-gcc")
+        do_write(f"  - {target}-gcc")  # default makedependency
         do_write(f"")
         do_write(f"pre_build_script: update_pkgver_and_pkgrel(_G.newver, updpkgsums=True)")
         do_write(f"post_build: git_pkgbuild_commit")
@@ -283,7 +283,8 @@ def do_initpkg(name: str, target: str):
         do_write(f"    strip_release: true")
         do_write(f"")
         do_write(f"update_on_build:")
-        do_write(f"  - pkgbase: {target}-mlibc")
+        do_write(f"  - pkgbase: {target}-mlibc")  # default dependency
+        do_write(f"  - pkgbase: {target}-gcc")  # default makedependency
         lilac_yaml.flush()
 
     pass
@@ -295,14 +296,15 @@ def main_may_throw():
         exit_on_error=True,
     )
 
-    subparser = parser.add_subparsers(dest='command', help='Subcommands')
+    subparser = parser.add_subparsers(dest='command', help='Package lookup commands')
 
+    # Package lookup subcommands
     base_subparser = argparse.ArgumentParser(add_help=False)
     base_subparser.add_argument('-v', '--verbose', action='store_true', help='Show more information')
     base_subparser.add_argument('-t', '--target', type=str, default="", help='The target triple of the package')
     base_subparser.add_argument('-f', '--full-names', action='store_true', help='Show full package names')
 
-    list_parser = subparser.add_parser('list', help='List all packages in the repository', parents=[base_subparser])
+    list_parser = subparser.add_parser('list', help='List all packages in the repository', parents=[base_subparser], aliases=['ls'])
     list_parser.add_argument('--deps', action='store_true', help='Show package dependencies')
     list_parser.add_argument('--makedeps', action='store_true', help='Show package makedependencies')
     list_parser.add_argument('--rebuild', action='store_true', help='Show packages which triggers the rebuild of this package')
@@ -312,6 +314,11 @@ def main_may_throw():
 
     info_parser = subparser.add_parser('info', help='Show the information of a package', parents=[base_subparser], aliases=['show'])
     info_parser.add_argument('name', type=str, help='The name of the package to show')
+
+    # Package maintenance subcommands
+    initpkg_parser = subparser.add_parser('initpkg', help='Initialize a new package from Arch Linux package', aliases=['init'])
+    initpkg_parser.add_argument('name', type=str, help='The name of the package to initialize')
+    initpkg_parser.add_argument('-t', '--target', type=str, default="x86_64-mos", help='The target triple of the package')
 
     diffports_parser = subparser.add_parser('diff', help='Diff the ports of a package between two targets', parents=[base_subparser])
     diffports_parser.add_argument('triple1', type=str, help='The first target triple')
@@ -330,10 +337,6 @@ def main_may_throw():
     version_parser.add_argument('name', type=str, help='The name of the package to show')
     version_parser.add_argument('-s', '--set', type=str, help='Set the version of a package')
 
-    initpkg_parser = subparser.add_parser('initpkg', help='Initialize a new package')
-    initpkg_parser.add_argument('name', type=str, help='The name of the package to initialize')
-    initpkg_parser.add_argument('-t', '--target', type=str, default="x86_64-mos", help='The target triple of the package')
-
     args = parser.parse_args()
 
     if args.command is None:
@@ -342,7 +345,7 @@ def main_may_throw():
 
     initialise()
 
-    if args.command == "list":
+    if args.command == "list" or args.command == "ls":
         if args.verbose:
             args.deps = args.makedeps = args.rebuild = True  # show all if verbose
         do_list(args.target, args.deps, args.makedeps, args.rebuild, args.full_names)
@@ -360,7 +363,7 @@ def main_may_throw():
         p = PACKAGES[args.name]
         version = args.set
         do_version_package(p, version)
-    elif args.command == "initpkg":
+    elif args.command == "initpkg" or args.command == "init":
         do_initpkg(args.name, args.target)
 
 
