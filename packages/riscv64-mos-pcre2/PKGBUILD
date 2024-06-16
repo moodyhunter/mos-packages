@@ -32,13 +32,6 @@ validpgpkeys=('45F68D54BBE23FB3039B46E59766E084FB0F43D8')  # Philip Hazel <ph10@
 
 build() {
   cd $_pkgbase-$pkgver
-  # Fix AVX detection
-  # [PATCH] Add xgetbv feature detection support on x86
-  patch -Np2 -i "$srcdir"/56dbde07b05252f0b304b04040a86cfb9f109ae9.patch -d src/sljit
-
-  # Fix thread-safety issue in sljit's allocator
-  # [PATCH] Fix locking region in sjlit_malloc_exec
-  patch -Np2 -i "$srcdir"/ad89dd8ecd25589d236bd20b36f2abf69f938fd1.patch -d src/sljit
 
   # use fat LTO objects for static libraries
   CFLAGS+=" -ffat-lto-objects"
