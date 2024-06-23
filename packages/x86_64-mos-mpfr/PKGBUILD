@@ -12,7 +12,7 @@ if (( _patchver == 0 )); then
 else
   pkgver=$_pkgver.p$_patchver
 fi
-pkgrel=38
+pkgrel=39
 pkgdesc='Multiple-precision floating-point library'
 arch=(any)
 url='https://www.mpfr.org/'
