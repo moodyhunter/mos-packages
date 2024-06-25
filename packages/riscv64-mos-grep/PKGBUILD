@@ -42,4 +42,5 @@ build() {
 package() {
   cd $_pkgbase-$pkgver
   make DESTDIR="$pkgdir" install
+  rm -v "${pkgdir}"/opt/${_target}/share/info/dir
 }
