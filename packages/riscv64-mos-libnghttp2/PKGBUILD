@@ -4,7 +4,7 @@
 _target=riscv64-mos
 pkgname=$_target-libnghttp2
 pkgver=1.62.1
-pkgrel=10
+pkgrel=11
 pkgdesc='Framing layer of HTTP/2 is implemented as a reusable C library'
 arch=('any')
 url='https://nghttp2.org/'
