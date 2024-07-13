@@ -9,7 +9,7 @@ Fixes Protobuf_PROTOC_EXECUTABLE being undefined in that case.
  1 file changed, 4 insertions(+)
 
 diff --git a/cmake/protobuf-module.cmake.in b/cmake/protobuf-module.cmake.in
-index 0bb05e38fad..e5b2b2e4b3a 100644
+index 0bb05e38fad8..e5b2b2e4b3af 100644
 --- a/cmake/protobuf-module.cmake.in
 +++ b/cmake/protobuf-module.cmake.in
 @@ -153,6 +153,10 @@ if(NOT Protobuf_PROTOC_EXECUTABLE AND TARGET protobuf::protoc)
