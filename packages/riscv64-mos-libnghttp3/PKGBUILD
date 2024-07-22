@@ -4,7 +4,7 @@
 _target=riscv64-mos
 pkgname=$_target-libnghttp3
 pkgver=1.4.0
-pkgrel=6
+pkgrel=7
 pkgdesc="HTTP/3 library written in C"
 url='https://github.com/ngtcp2/nghttp3'
 arch=('any')
