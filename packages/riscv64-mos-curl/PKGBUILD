@@ -7,8 +7,8 @@
 _target=riscv64-mos
 _pkgbase=curl
 pkgname=$_target-curl
-pkgver=8.8.0
-pkgrel=14
+pkgver=8.9.0
+pkgrel=1
 pkgdesc='command line tool and library for transferring data with URLs'
 arch=('any')
 url='https://curl.se/'
@@ -30,7 +30,7 @@ makedepends=('git' 'patchelf' "$_target-gcc")
 checkdepends=('valgrind')
 validpgpkeys=('27EDEAF22F3ABCEB50DB9A125CC908FDB71E12C2') # Daniel Stenberg
 source=("git+https://github.com/curl/curl.git#tag=curl-${pkgver//./_}")
-sha512sums=('743cac6059697b8aec637cb0ca94bc0606a9bbcf274f77847a1ceb9bbadc0259a9fbf30133323af2543d8df65ec6cd3e396cd999aca8fe73dde794a9c3dcbf6c')
+sha512sums=('3bb473767cc1482a4fccf871098d98923effce288d2f0c0631e077f075adde85774ca341285153d26de63e70ed89af909485bee4f46310db69987cf148a3dea1')
 
 _backports=(
 )
