@@ -3,7 +3,7 @@ _mos_arch=riscv64
 _pkgbase=$_target-mlibc-headers
 
 pkgname=$_pkgbase
-pkgver=3951.20fdd486
+pkgver=3954.2b4d1b97
 pkgrel=1
 pkgdesc="mlibc for the $_target toolchain - header-only"
 arch=('any')
