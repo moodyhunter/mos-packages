@@ -4,7 +4,7 @@ _pkgbase=$_target-mlibc-headers
 
 pkgname=$_pkgbase
 pkgver=3954.2b4d1b97
-pkgrel=7
+pkgrel=8
 pkgdesc="mlibc for the $_target toolchain - header-only"
 arch=('any')
 url="https://github.com/moodyhunter/mlibc-mos"
