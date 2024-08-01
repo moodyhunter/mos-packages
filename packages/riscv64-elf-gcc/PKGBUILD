@@ -3,7 +3,7 @@
 
 _target=riscv64-elf
 pkgname=$_target-gcc
-pkgver=14.1.0
+pkgver=14.2.0
 pkgrel=1
 pkgdesc='The GNU Compiler Collection - cross compiler for RISCV64 target - bootstrap version. only used to build initial glibc and compiler'
 arch=(x86_64)
@@ -14,7 +14,7 @@ makedepends=(gmp mpfr)
 options=(!emptydirs !strip !lto)
 groups=($_target-toolchain)
 source=(https://ftp.gnu.org/gnu/gcc/gcc-$pkgver/gcc-$pkgver.tar.xz)
-sha512sums=('e9e224f2b26646fcf038d28dfa08b94c623bc57941f99894a321d01c600f7c68aff6b8837fd25e73e540de1f8de5606e98694a62cdcdfb525ce768b3ef6879ea')
+sha512sums=('932bdef0cda94bacedf452ab17f103c0cb511ff2cec55e9112fc0328cbf1d803b42595728ea7b200e0a057c03e85626f937012e49a7515bc5dd256b2bf4bc396')
 
 build() {
     mkdir -p "$_target-$pkgname-$pkgver-build"
