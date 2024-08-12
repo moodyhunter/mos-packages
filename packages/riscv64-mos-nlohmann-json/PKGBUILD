@@ -1,0 +1,49 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+_target=riscv64-mos
+_prefix=/opt/$_target/
+pkgname=$_target-nlohmann-json
+pkgver=3.11.3
+pkgrel=1
+# tests are tracked in a separate repo
+# https://github.com/nlohmann/json_test_data
+_test_pkgver=3.1.0
+pkgdesc="JSON for Modern C++"
+arch=(any)
+url="https://github.com/nlohmann/json"
+license=(MIT)
+makedepends=(
+  cmake
+  git
+)
+source=(
+  $pkgname::git+$url.git#tag=v$pkgver
+)
+sha512sums=('cd1abc605a40c4ec300c0c455e504988e8ce318765e25c7bee4942aa03f0a04c9c8f52e8cf5e464442b87e58a8aace4b81371e7e6848c527f1ddd3a51dac2357')
+b2sums=('8840eb8346065a766c5fff736b36d042ae746696183612c0fb5f6b10b873e29e8f3cc3594c20f0c2a76c59b4a25cbe6ca9825947cf751798b5b0ac60c4dccbd7')
+
+prepare() {
+  mkdir -vp build-test/
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -D BUILD_TESTING=ON
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=$_prefix/
+    -D CMAKE_INSTALL_LIBDIR=$_prefix/lib/
+    -D JSON_BuildTests=OFF
+    -D JSON_MultipleHeaders=ON
+    -S $pkgname
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $pkgname/README.md -t "$pkgdir/$_prefix/share/doc/$pkgname/"
+  install -vDm 644 $pkgname/LICENSE.MIT -t "$pkgdir/$_prefix/share/licenses/$pkgname/"
+}
