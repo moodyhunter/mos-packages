@@ -12,6 +12,7 @@ arch=(any)
 url="https://github.com/nlohmann/json"
 license=(MIT)
 makedepends=(
+  mos-sdk
   cmake
   git
 )
@@ -27,6 +28,7 @@ prepare() {
 
 build() {
   local cmake_options=(
+    -D CMAKE_TOOLCHAIN_FILE=/$_prefix/toolchain.cmake
     -B build
     -D BUILD_TESTING=ON
     -D CMAKE_BUILD_TYPE=None
