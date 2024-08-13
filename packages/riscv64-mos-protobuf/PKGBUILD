@@ -14,7 +14,7 @@ _pkgbase='protobuf'
 _pkgname='protobuf'
 pkgname="$_target-protobuf"
 pkgver=27.3
-pkgrel=1
+pkgrel=0
 pkgdesc="Protocol Buffers - Google's data interchange format"
 arch=(any)
 url='https://developers.google.com/protocol-buffers/'
@@ -61,7 +61,7 @@ build() {
   cmake "${cmake_options[@]}"
   cmake --build build --verbose
 
-  # riscv64: this fails in a cross-compilation environment, riscv64-mos-gcc isn't used
+  # MOS: skip python build for now
   # cd $_pkgbase-$pkgver/python
   # LDFLAGS+=" -L${srcdir}/build" \
   # PROTOC="/usr/bin/protoc" \
