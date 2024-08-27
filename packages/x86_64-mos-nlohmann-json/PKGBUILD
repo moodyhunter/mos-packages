@@ -3,7 +3,7 @@ _target=x86_64-mos
 _prefix=/opt/$_target/
 pkgname=$_target-nlohmann-json
 pkgver=3.11.3
-pkgrel=2
+pkgrel=3
 # tests are tracked in a separate repo
 # https://github.com/nlohmann/json_test_data
 _test_pkgver=3.1.0
