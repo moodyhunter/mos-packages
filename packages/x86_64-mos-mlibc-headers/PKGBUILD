@@ -3,8 +3,8 @@ _mos_arch=x86_64
 _pkgbase=$_target-mlibc-headers
 
 pkgname=$_pkgbase
-pkgver=3954.2b4d1b97
-pkgrel=9
+pkgver=3983.ea8cd990
+pkgrel=1
 pkgdesc="mlibc for the $_target toolchain - header-only"
 arch=('any')
 url="https://github.com/moodyhunter/mlibc-mos"
