@@ -2,8 +2,8 @@
 _target=riscv64-mos
 _target_1=mos-riscv64
 pkgname=$_target-openssl
-pkgver=3.3.1
-pkgrel=11
+pkgver=3.3.2
+pkgrel=1
 pkgdesc='The Open Source toolkit for Secure Sockets Layer and Transport Layer Security'
 arch=(any)
 url='https://www.openssl.org'
@@ -14,7 +14,7 @@ optdepends=("$_target-ca-certificates" "$_target-perl")
 source=("https://www.openssl.org/source/openssl-${pkgver}.tar.gz"
         'ca-dir.patch'
 		10-mos-main.conf.patch)
-sha256sums=('777cd596284c883375a2a7a11bf5d2786fc5413255efab20c50d6ffe6d020b7e'
+sha256sums=('2e8a40b01979afe8be0bbfb3de5dc1c6709fedb46d6c89c10da114ab5fc3d281'
             '0a32d9ca68e8d985ce0bfef6a4c20b46675e06178cc2d0bf6d91bd6865d648b7'
             '3b5f1dbb644d66125cafc6321129cd8cb0ac896ca9c9076d7a93607612d963c4')
 validpgpkeys=('8657ABB260F056B1E5190839D9C4D26D0E604491'
