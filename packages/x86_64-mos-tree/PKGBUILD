@@ -4,8 +4,8 @@ _target=x86_64-mos
 _prefix=/opt/$_target
 
 pkgname=$_target-tree
-pkgver=2.1.3
-pkgrel=5
+pkgver=2.2.1
+pkgrel=1
 pkgdesc="A directory listing program displaying a depth indented list of files"
 arch=(any)
 url="https://gitlab.com/OldManProgrammer/unix-tree"
@@ -14,7 +14,7 @@ depends=($_target-mlibc)
 makedepends=($_target-gcc)
 source=("https://gitlab.com/OldManProgrammer/unix-tree/-/archive/${pkgver}/unix-tree-${pkgver}.tar.gz"
 	"0001-x86_64-mos-target.patch")
-sha512sums=('610afbf93753dcfe2052ec3fbe9fdfaf05ba57694c5b08e13d252ce5048fbdd8463ff12f5a2e2135c7e3825bc40e106f7d19c0d8e205283be52fe81e7ec7f244'
+sha512sums=('e7f514c2c12bc409d28c83a2c359bf463f8c624b6fc78cb847e0849925dfca746a9dac9a9e55b721972c474a33dba99a069f69694eaa08c12f4ce77db6d49953'
             '73cd6a42120eef3742198bdaa5f1d7715bee6005b244c4b7771e2341554ea13b0c4de9840413468f21e98643905436908cc07bb1441c5aa0457401736506029d')
 
 prepare() {
