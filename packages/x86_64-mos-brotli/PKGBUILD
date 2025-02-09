@@ -9,7 +9,7 @@ pkgname=$_target-brotli
 _pkgbase=brotli
 _gitcommit=ed738e842d2fbdf2d6459e39267a633c4a9b2f5d
 pkgver=1.1.0
-pkgrel=19
+pkgrel=20
 pkgdesc='Generic-purpose lossless compression algorithm'
 url='https://github.com/google/brotli'
 arch=('any')
@@ -26,7 +26,7 @@ makedepends=(
   $_target-mlibc
 )
 source=(${_pkgbase}::"git+${url}#commit=${_gitcommit}")
-sha512sums=('354cf25eeae3683001126a174fdbfc15eb4ef81b887c9d508f2a92662f76c2058958a72cecd72d2851d9d54103d27e43bf782817ba8affca0be1b948e0f34013')
+sha512sums=('8ecadb0ca58dfb1cbb506cf048e52bcb0aa6cd6f1c9dc5e54dca806fe1a6f3178d25b13646f55235b2ebec3fa358520756b84874ded7f16be62e829f12436ea1')
 
 pkgver() {
   cd ${_pkgbase}
