@@ -4,8 +4,8 @@
 
 _target=riscv64-elf
 pkgname=$_target-gdb
-pkgver=15.2
-pkgrel=2
+pkgver=16.2
+pkgrel=1
 pkgdesc='The GNU Debugger for the RISCV64 (bare-metal) target'
 arch=(x86_64)
 url='https://www.gnu.org/software/gdb/'
@@ -15,7 +15,7 @@ makedepends=(boost)
 options=(!emptydirs)
 groups=($_target-toolchain)
 source=(https://ftp.gnu.org/gnu/gdb/gdb-$pkgver.tar.xz)
-sha512sums=('624007deceb5b15ba89c0725883d1a699fa46714ef30887f3d0165e17c5d65d634671740a135aa69e437d916218abb08cfa2a38ed309ff19d48f51da56b2a8ba')
+sha512sums=('f04a6335dbdee371edb7e3213294fcbb878ac39adedb73f7e17e621f54350488f5f5bea9bc742639239c122d590bed158771a74fc3aaeaa7fa0ae304232576a3')
 
 build() {
     cd gdb-$pkgver
