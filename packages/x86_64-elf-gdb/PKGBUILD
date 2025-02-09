@@ -1,8 +1,8 @@
 _target=x86_64-elf
 
 pkgname=$_target-gdb
-pkgver=15.2
-pkgrel=2
+pkgver=16.2
+pkgrel=1
 pkgdesc="GNU debugger crosscompiled for $_target development"
 arch=(x86_64)
 url="https://www.gnu.org/software/gdb"
@@ -12,7 +12,7 @@ makedepends=(gmp mpfr)
 depends=(xz ncurses expat python guile gdb-common mpfr libelf source-highlight)
 provides=($pkgname)
 source=("http://ftpmirror.gnu.org/gdb/gdb-$pkgver.tar.xz")
-sha256sums=('83350ccd35b5b5a0cba6b334c41294ea968158c573940904f00b92f76345314d')
+sha256sums=('4002cb7f23f45c37c790536a13a720942ce4be0402d929c9085e92f10d480119')
 
 build() {
     mkdir -p "$_target-gdb-$pkgver-build"
