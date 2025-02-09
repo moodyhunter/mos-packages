@@ -6,8 +6,8 @@ _prefix=/opt/$_target
 
 _pkgname=abseil-cpp
 pkgname=$_target-abseil-cpp
-pkgver=20240722.0
-pkgrel=3
+pkgver=20240722.1
+pkgrel=1
 pkgdesc="Collection of C++ library code designed to augment the C++ standard library"
 arch=(any)
 url='https://abseil.io'
@@ -17,7 +17,7 @@ makedepends=('cmake' "$_target-gcc" 'mos-sdk' "$_target-gtest")
 source=("https://github.com/abseil/abseil-cpp/archive/$pkgver/$_pkgname-$pkgver.tar.gz"
          scoped-mock-log.patch
          mos-abseil-cpp.patch)
-sha256sums=('f50e5ac311a81382da7fa75b97310e4b9006474f9560ac46f54a9967f07d4ae3'
+sha256sums=('40cee67604060a7c8794d931538cb55f4d444073e556980c88b6c49bb9b19bb7'
             'a6cbc612a2b96fcbd52d081e03e8581107ceb4827edb19d96510a31c568e1396'
             'f868ad3846cf9ee62de53e6dd6183d8d7708421c71dba283f00d333558ec1171')
 
