@@ -2,8 +2,8 @@
 _target=x86_64-mos
 _target_1=mos-x86_64
 pkgname=$_target-openssl
-pkgver=3.4.0
-pkgrel=3
+pkgver=3.4.1
+pkgrel=1
 pkgdesc='The Open Source toolkit for Secure Sockets Layer and Transport Layer Security'
 arch=(any)
 url='https://www.openssl.org'
@@ -14,7 +14,7 @@ optdepends=("$_target-ca-certificates" "$_target-perl")
 source=("https://www.openssl.org/source/openssl-${pkgver}.tar.gz"
         'ca-dir.patch'
 		10-mos-main.conf.patch)
-sha256sums=('e15dda82fe2fe8139dc2ac21a36d4ca01d5313c75f99f46c4e8a27709b7294bf'
+sha256sums=('002a2d6b30b58bf4bea46c43bdd96365aaf8daa6c428782aa4feee06da197df3'
             '0a32d9ca68e8d985ce0bfef6a4c20b46675e06178cc2d0bf6d91bd6865d648b7'
             '3b5f1dbb644d66125cafc6321129cd8cb0ac896ca9c9076d7a93607612d963c4')
 validpgpkeys=('8657ABB260F056B1E5190839D9C4D26D0E604491'
