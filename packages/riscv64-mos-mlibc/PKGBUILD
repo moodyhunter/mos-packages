@@ -5,7 +5,7 @@ _mos_arch=riscv64
 _pkgbase=$_target-mlibc
 
 pkgname=$_pkgbase
-pkgver=4226.58c0a278
+pkgver=4269.6a384abe
 pkgrel=1
 pkgdesc="mlibc for the $_target toolchain"
 arch=('any')
