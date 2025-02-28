@@ -47,7 +47,7 @@ profile = "user"
 change-id = 123337
 
 [llvm]
-link-shared = true
+link-shared = false
 
 [build]
 target = [
@@ -84,7 +84,7 @@ codegen-units-std = 1
 debuginfo-level = 1
 debuginfo-level-std = 2
 channel = "stable"
-description = "Rust for MOS, $pkgver-$pkgrel, built on $(date)"
+description = "Rust for MOS, built on $(date)"
 rpath = true
 frame-pointers = true
 deny-warnings = false
