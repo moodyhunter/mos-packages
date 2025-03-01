@@ -70,9 +70,9 @@ tools = [
   "src",
 ]
 
-cargo = "/opt/mos-rust/bin/cargo"
-rustc = "/opt/mos-rust/bin/rustc"
-rustfmt = "/opt/mos-rust/bin/rustfmt"
+#cargo = "/opt/mos-rust/bin/cargo"
+#rustc = "/opt/mos-rust/bin/rustc"
+#rustfmt = "/opt/mos-rust/bin/rustfmt"
 locked-deps = true
 
 [install]
@@ -119,7 +119,7 @@ build() {
   export RUST_BACKTRACE=1
   unset CFLAGS CXXFLAGS LDFLAGS
 
-  DESTDIR="$srcdir/dest-rust" python ./x.py install -j "$(nproc)"
+  DESTDIR="$srcdir/dest-rust" BOOTSTRAP_SKIP_TARGET_SANITY=1 python ./x.py install -j "$(nproc)"
 }
 
 package() {
