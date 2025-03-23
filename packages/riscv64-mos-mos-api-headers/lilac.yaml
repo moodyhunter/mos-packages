@@ -12,7 +12,7 @@ post_build: git_pkgbuild_commit
 
 update_on:
   - source: manual
-    manual: 11
+    manual: 12
 
 update_on_build:
   - pkgbase: mos-sdk
