@@ -32,18 +32,18 @@ source=(https://ftp.gnu.org/gnu/$_pkgname/$_pkgname-$_pkgver.tar.xz
         configure.patch)
 sha512sums=('bc68c0d755d5446403644833ecbb07e37360beca45f474297b5d5c40926df1efc3e2067eecffdf253f946288bcca39ca89b0613f545d46a9e767d1d4cf358475'
             '07829e4f0e3a22d1f16b74ca5d369b801b6bb56e8f3d712e5e0312b9c579ce9340b31552c7019da71f2161528ba0ebff5d76a0d002ac0784f47ec70cb98d857d'
-            '9e02b888bb6b77e29809efaca469aa033407a7c641bd3fc5bb3e35b36013d8cb037a2712530818390f38cf3ab23c09ea4f0498c092316ed3382f43c15f56a58f')
+            'e61a73b0c521ad7ef06cb48a970eb0a3a18a8ab641a51c153eef16ee33a772568eece0ff8eeb58577bc48b0bad40cdf1f64bc05a76076c48a13b224b5c5c542f')
 b2sums=('ad69f53bc910294647523e7613b18a683f1d0f3dd994168ab2a46b66d0371ffa9b8e7cb59495f898470aea69d343e83fc722f11babe4af7b3a12665a1e65860c'
         '1250074144a7f19e4c04033b396c1a924f3b0349c23cbc4246f6127f9e9653b0c52db6d3c67e86a72e40ef2622f5989400a04efa1609ae6b8d571ed2e3de089a'
-        '8446de9a1e2863b1f39309c9071f6f5fd16d143499314d5d6f0fd6f2cc2af90784cb67580077ca9e16a377ebc57d0c4b45fd2e4b4958092f67759371e785057b')
+        '00797fc1c77855215d1e9564bc4c92deb21cdfed1b30c649dc3623afae303fc6de881b90fa785c70dbbd9a2c9c692b8ee7dc34216dd2f17b19fa5969eab8399b')
 validpgpkeys=('07F3DBBECC1A39605078094D980C197698C3739D'
               'A534BE3F83E241D918280AEB5831D11A0D4DB02A') # Vincent Lefevre <vincent@vinc17.net>
 
 prepare() {
   cd $_pkgname-${_pkgver}
   autoreconf -fiv
-  patch -Np1 -i ../config.sub.patch
-  patch -Np1 -s < ../configure.patch
+  patch -p1 -i ../config.sub.patch
+  patch -p1 -i ../configure.patch
 }
 
 build() {
