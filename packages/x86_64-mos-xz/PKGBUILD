@@ -4,8 +4,8 @@
 _target=x86_64-mos
 _pkgbase=xz
 pkgname=$_target-xz
-pkgver=5.6.4
-pkgrel=6
+pkgver=5.8.0
+pkgrel=1
 pkgdesc='Library and command line tools for XZ and LZMA compressed files'
 arch=('any')
 url='https://xz.tukaani.org/xz-utils/'
@@ -16,8 +16,8 @@ provides=('liblzma.so')
 options+=('!lto') # lto complains 'may be uninitialized `error_pos`'
 validpgpkeys=('3690C240CE51B4670D30AD1C38EE757D69184620') # Lasse Collin <lasse.collin@tukaani.org>
 source=("git+https://git.tukaani.org/xz.git#tag=v${pkgver}")
-sha256sums=('0473bff1378094f9868d6f42effab0962d5c9e26616a6b88af3f72abcd8fce04')
-sha512sums=('e3216eca5fae2c9ce419e698bfbe186903088dad0a579749cb49bcde8f9d4073b98bf1570fe69190a9a41feb2a7c9814498ec9b867527de1c74ff75a1cbdfc17')
+sha256sums=('57caa7cf1678e8442e5979831a3caaedbbee707ff67f462280c918277fd6eca0')
+sha512sums=('40e5639dc024d9c40ac71c649a6b0408e15b02535763b1cdaa3e326fc14e5728918c5570454135f4ee7145a18da0a0a93d23f650b9653d939b2652ca0eed9961')
 
 prepare() {
   cd $_pkgbase
