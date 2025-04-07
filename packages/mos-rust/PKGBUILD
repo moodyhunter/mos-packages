@@ -1,5 +1,5 @@
 pkgname=mos-rust
-pkgver=1.85.1
+pkgver=1.86.0
 pkgrel=1
 pkgdesc="Systems programming language focused on safety, speed and concurrency"
 url=https://www.rust-lang.org/
