@@ -21,7 +21,7 @@ depends=(
   x86_64-mos-binutils x86_64-mos-gcc x86_64-mos-mlibc
   riscv64-mos-binutils riscv64-mos-gcc riscv64-mos-mlibc
   mos-llvm
-  llvm18
+  llvm
 )
 makedepends=(
   git
@@ -52,7 +52,8 @@ link-shared = false
 [build]
 target = [
   "x86_64-unknown-linux-gnu",
-  "x86_64-unknown-mos"
+  "x86_64-unknown-mos",
+  "riscv64gc-unknown-mos"
 ]
 
 docs = false
@@ -108,6 +109,14 @@ cc = "/usr/bin/x86_64-mos-gcc"
 cxx = "/usr/bin/x86_64-mos-g++"
 linker = "/usr/bin/x86_64-mos-gcc"
 ranlib = "/usr/bin/x86_64-mos-ranlib"
+llvm-config = "/opt/mos-llvm/bin/llvm-config"
+
+[target.riscv64gc-unknown-mos]
+ar = "/usr/bin/riscv64-mos-ar"
+cc = "/usr/bin/riscv64-mos-gcc"
+cxx = "/usr/bin/riscv64-mos-g++"
+linker = "/usr/bin/riscv64-mos-gcc"
+ranlib = "/usr/bin/riscv64-mos-ranlib"
 llvm-config = "/opt/mos-llvm/bin/llvm-config"
 
 END
