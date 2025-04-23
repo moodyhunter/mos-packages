@@ -3,8 +3,8 @@
 
 _target=x86_64-mos
 pkgname=$_target-libnghttp3
-pkgver=1.8.0
-pkgrel=2
+pkgver=1.9.0
+pkgrel=1
 pkgdesc="HTTP/3 library written in C"
 url='https://github.com/ngtcp2/nghttp3'
 arch=('any')
@@ -13,7 +13,7 @@ depends=($_target-mlibc)
 makedepends=("$_target-gcc")
 provides=('libnghttp3.so')
 source=("https://github.com/ngtcp2/nghttp3/releases/download/v${pkgver}/nghttp3-${pkgver}.tar.xz")
-sha256sums=('a9dd28970977e6802a3eaf2cfaeae6d0fae60c8d2c0f2c4ce600036a7998ee9a')
+sha256sums=('b1b531cf6ae5c9366abea2d3319e4ac932fd64c072c8aafd69cf6295733ce12a')
 
 prepare() {
   cd nghttp3-${pkgver}
