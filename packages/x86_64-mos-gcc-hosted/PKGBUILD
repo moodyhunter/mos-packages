@@ -2,8 +2,8 @@ _target=x86_64-mos
 _sysroot=/opt/$_target
 
 pkgname=$_target-gcc-hosted
-pkgver=14.2.0
-pkgrel=3
+pkgver=15.1.0
+pkgrel=1
 pkgdesc="GNU gcc for the $_target toolchain"
 arch=(any)
 url="https://www.gnu.org/software/gcc"
@@ -17,7 +17,7 @@ source=(
     "http://ftpmirror.gnu.org/gcc/gcc-$pkgver/gcc-$pkgver.tar.xz"
     "mos-gcc.patch"
 )
-sha256sums=('a7b39bc69cbf9e25826c5a60ab26477001f7c08d85cec04bc0e29cabed6f3cc9'
+sha256sums=('e2b09ec21660f01fecffb715e0120265216943f038d0e48a9868713e54f06cea'
             'fbe252319b6bbbbe4cad0efed9d00d67634cd63554c5daa3dc3313b1afdf4489')
 
 prepare() {
