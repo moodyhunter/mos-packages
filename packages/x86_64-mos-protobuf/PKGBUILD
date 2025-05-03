@@ -13,7 +13,7 @@ _prefix=/opt/$_target
 _pkgbase='protobuf'
 _pkgname='protobuf'
 pkgname="$_target-protobuf"
-pkgver=30.1
+pkgver=30.2
 pkgrel=1
 pkgdesc="Protocol Buffers - Google's data interchange format"
 arch=(any)
@@ -37,7 +37,7 @@ makedepends=(
 )
 source=(https://github.com/protocolbuffers/protobuf/archive/v$pkgver/$_pkgname-$pkgver.tar.gz
         https://github.com/protocolbuffers/protobuf/commit/2e62ef1e.patch)  # let's not call setup.py like a script and just build...
-sha512sums=('bd1516718a8bfa2420a75ac94476dcc3315ee78633656d3ccdb346189320bad1584040d0c13904139dd0d11c89472dcc2b211f92efd6b298a648714fac56bb95'
+sha512sums=('f639c0970039d20eb3b05246db9b476a21d90f858fda958cc22162e064ad2d26383fc3679317e37a74e35f02948228dbce13885e7097834ed93b27131c97e70b'
             '18bc71031bbcbc3810a9985fa670465040f06a6c104ab8079b56bdfc499bb6cec40805a0cefd455031142490a576dc60aa8000523877ac0353b93558e9beabbd')
 
 prepare() {
