@@ -1,6 +1,6 @@
 _target=x86_64-mos
 pkgname=$_target-linux-api-headers
-pkgver=6.14
+pkgver=6.15
 pkgrel=1
 pkgdesc='Kernel headers sanitized for use in userspace'
 arch=('any')
@@ -8,7 +8,7 @@ url='https://www.gnu.org/software/libc'
 license=(GPL-2.0-only)
 makedepends=(rsync)
 source=(https://www.kernel.org/pub/linux/kernel/v${pkgver:0:1}.x/linux-${pkgver}.tar.xz)
-sha256sums=('a294b683e7b161bb0517bb32ec7ed1d2ea7603dfbabad135170ed12d00c47670')
+sha256sums=('7586962547803be7ecc4056efc927fb25214548722bd28171172f3599abb9764')
 
 build() {
   cd linux-$pkgver
