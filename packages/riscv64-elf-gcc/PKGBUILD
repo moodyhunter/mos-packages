@@ -4,7 +4,7 @@
 _target=riscv64-elf
 pkgname=$_target-gcc
 pkgver=15.2.0
-pkgrel=1
+pkgrel=2
 pkgdesc='The GNU Compiler Collection - cross compiler for RISCV64 target - bootstrap version. only used to build initial glibc and compiler'
 arch=(x86_64)
 url='http://gcc.gnu.org/'
