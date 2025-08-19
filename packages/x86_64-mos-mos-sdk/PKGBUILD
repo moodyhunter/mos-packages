@@ -1,0 +1,43 @@
+# Maintainer: Moody <mooodyhunter@outlook.com>
+
+_arch=x86_64
+_target=x86_64-mos
+_sysroot=/opt/${_target}
+_pkgbase=$_target-mos-sdk
+
+pkgname=${_pkgbase}
+epoch=1
+pkgver=1
+pkgrel=20
+pkgdesc="MOS SDK for ${_arch}"
+arch=('any')
+url="https://github.com/moodyhunter/MOS"
+license=('GPL3')
+provides=($_pkgbase)
+conflicts=($_pkgbase)
+groups=(mos-toolchain)
+makedepends=(git cmake python mos-sdk nasm $_target-gcc $_target-mlibc)
+depends=($_target-mos-api-headers)
+source=("mos::git+https://github.com/moodyhunter/MOS.git")
+sha512sums=('SKIP')
+
+prepare() {
+    cd mos
+    git submodule update --init --recursive
+}
+
+build() {
+    cd mos
+    mkdir -p build && cd build
+    cmake .. \
+        -DMOS_ARCH=${_arch} \
+        -DCMAKE_INSTALL_PREFIX=${pkgdir}$_sysroot
+
+    cmake --build . --target all
+}
+
+package() {
+    cd mos/build
+    cmake --install . --component sdk
+    cmake --install . --component mosrpc-headers
+}

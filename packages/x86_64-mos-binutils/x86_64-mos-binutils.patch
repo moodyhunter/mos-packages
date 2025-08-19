@@ -27,18 +27,17 @@ index 1b0111fd..36a4ef84 100644
      targ_defvec=x86_64_elf64_vec
      targ_selvecs="i386_elf32_vec iamcu_elf32_vec i386_coff_vec i386_pei_vec x86_64_pe_vec x86_64_pei_vec"
 diff --git a/config.sub b/config.sub
-index dba16e84..7d902b5d 100755
+index 48f47c5..4aaae46 100755
 --- a/config.sub
 +++ b/config.sub
-@@ -1749,7 +1749,7 @@ case $os in
- 	     | mirbsd* | netbsd* | dicos* | openedition* | ose* \
- 	     | bitrig* | openbsd* | secbsd* | solidbsd* | libertybsd* | os108* \
- 	     | ekkobsd* | freebsd* | riscix* | lynxos* | os400* \
--	     | bosx* | nextstep* | cxux* | oabi* \
-+	     | bosx* | nextstep* | cxux* | oabi* | mos* \
- 	     | ptx* | ecoff* | winnt* | domain* | vsta* \
- 	     | udi* | lites* | ieee* | go32* | aux* | hcos* \
- 	     | chorusrdb* | cegcc* | glidix* | serenity* \
+@@ -2048,6 +2048,7 @@ case $os in
+ 	| mon960* \
+ 	| morphos* \
+ 	| moss* \
++	| mos* \
+ 	| moxiebox* \
+ 	| mpeix* \
+ 	| mpw* \
 diff --git a/gas/configure.tgt b/gas/configure.tgt
 index 765ba736..f703fdb9 100644
 --- a/gas/configure.tgt
@@ -151,14 +150,14 @@ index de04a44b..25292fc9 100644
 @@ -1138,6 +1146,10 @@ i[03-9x]86-*-cygwin* | x86_64-*-cygwin*)
    NATIVE_LIB_DIRS='/usr/lib /usr/lib/w32api'
    ;;
- 
+
 +*-*-mos)
 +  NATIVE_LIB_DIRS='/lib /initrd/lib /data/lib'
 +  ;;
 +
  *-*-linux*)
    ;;
- 
+
 diff --git a/ld/emulparams/elf_i386_mos.sh b/ld/emulparams/elf_i386_mos.sh
 new file mode 100644
 index 00000000..23e9a606

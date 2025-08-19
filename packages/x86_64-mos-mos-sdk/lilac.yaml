@@ -1,0 +1,18 @@
+# converted by pkg.json-to-lilac.py for x86_64-mos-mos-api-headers
+
+maintainers:
+  - github: moodyhunter
+
+build_prefix: mos-x86_64
+
+repo_makedepends:
+  - mos-sdk
+
+post_build: git_pkgbuild_commit
+
+update_on:
+  - source: manual
+    manual: 12
+
+update_on_build:
+  - pkgbase: mos-sdk
