@@ -3,7 +3,6 @@ from typing import Any
 
 import yaml
 from termcolor import colored, cprint
-from termcolor._types import Color
 
 
 class UnsupportedTargetError(Exception):
@@ -32,7 +31,7 @@ def sanitise_triple(target: str) -> str:
     return target
 
 
-def colored_list(l: list[str], color: Color | None):
+def colored_list(l: list[str], color: str | None):
     return [colored(e, color, attrs=['bold']) for e in l]
 
 

@@ -3,7 +3,7 @@
 _arch=x86_64
 _target=x86_64-mos
 _sysroot=/opt/${_target}
-_pkgbase=$_target-mos-sdk
+_pkgbase=$_target-sdk
 
 pkgname=${_pkgbase}
 epoch=1
@@ -16,7 +16,7 @@ license=('GPL3')
 provides=($_pkgbase)
 conflicts=($_pkgbase)
 groups=(mos-toolchain)
-makedepends=(git cmake python mos-sdk nasm $_target-gcc $_target-mlibc)
+makedepends=(git cmake python mos-sdk nasm $_target-gcc $_target-mlibc $_target-tomlplusplus-headers $_target-nlohmann-json protobuf python-protobuf)
 depends=($_target-mos-api-headers)
 source=("mos::git+https://github.com/moodyhunter/MOS.git")
 sha512sums=('SKIP')
